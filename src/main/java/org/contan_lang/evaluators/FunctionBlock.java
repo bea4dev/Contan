@@ -23,8 +23,8 @@ public class FunctionBlock {
     public Token[] getArgs() {return args;}
     
     
-    public ContanVariable<?> eval(ContanVariable<?>... contanVariables) {
-        Environment environment = new Environment(null);
+    public ContanVariable<?> eval(Environment parentEnvironment, ContanVariable<?>... contanVariables) {
+        Environment environment = new Environment(parentEnvironment);
         if (args.length != contanVariables.length) {
             throw new IllegalStateException("");//TODO
         }

@@ -1,5 +1,6 @@
 package org.contan_lang.standard.functions;
 
+import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.syntax.tokens.Token;
@@ -13,7 +14,7 @@ public class Print extends FunctionBlock {
     }
     
     @Override
-    public ContanVariable<?> eval(ContanVariable<?>... contanVariables) {
+    public ContanVariable<?> eval(Environment environment, ContanVariable<?>... contanVariables) {
         for (ContanVariable<?> variable : contanVariables) {
             if (variable instanceof ContanVoid) {
                 System.out.println("NULL");

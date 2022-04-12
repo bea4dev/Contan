@@ -15,7 +15,8 @@ public enum Identifier {
     OPERATOR_PLUS(5, true, "+"),
     OPERATOR_MULTIPLY(4, true, "*"),
     SUBSTITUTION(7, true, "="),
-    ARGUMENT_SPLIT(0, true, ",");
+    ARGUMENT_SPLIT(0, true, ","),
+    NULL(1, false, "null", "NULL");
     
     
     public final int priority;

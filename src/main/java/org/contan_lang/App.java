@@ -36,15 +36,18 @@ public class App
         
         
         String test = "function test() {\n" +
-                "    \n" +
-                "    print((20 + 1))\n" +
-                "    \n" +
+                "\n" +
+                "    data a = 20\n" +
+                "    print(a)\n" +
+                "\n" +
                 "}";
     
         Parser parser = new Parser();
         try {
+            Environment global = new Environment(null);
             ScriptTree scriptTree = parser.parse(test);
-            scriptTree.invokeFunction("test");
+            scriptTree.getGlobalEvaluator().eval(global);
+            scriptTree.invokeFunction(global, "test");
             
         } catch (UnexpectedSyntaxException e) {
             e.printStackTrace();

@@ -52,7 +52,7 @@ public class PreLinkedFunctionEvaluator implements Evaluator {
             variables[i] = args[i].eval(environment).createClone();
         }
         
-        return functionBlock.eval(variables);
+        return functionBlock.eval(environment, variables);
     }
     
 }
