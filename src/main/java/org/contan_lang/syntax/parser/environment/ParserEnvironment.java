@@ -8,18 +8,23 @@ import java.util.Set;
 
 public class ParserEnvironment {
 
+    private final String rootName;
+
     private final ParserEnvironment parent;
 
     private final ScopeType scopeType;
 
     private final Set<String> definedVariables = new HashSet<>();
 
-    public ParserEnvironment(ParserEnvironment parent, ScopeType scopeType) {
+    public ParserEnvironment(String rootName, ParserEnvironment parent, ScopeType scopeType) {
+        this.rootName = rootName;
         this.parent = parent;
         this.scopeType = scopeType;
     }
 
     public ScopeType getScopeType() {return scopeType;}
+
+    public String getRootName() {return rootName;}
 
     public boolean hasVariable(String name) {
         if (definedVariables.contains(name)) {

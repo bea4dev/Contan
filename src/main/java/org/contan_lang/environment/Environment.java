@@ -39,5 +39,11 @@ public class Environment {
         variableMap.put(name, environmentVariable);
         return environmentVariable;
     }
+
+    public Environment createMergedEnvironment(Environment environment) {
+        Environment newEnv = new Environment(this);
+        newEnv.variableMap.putAll(environment.variableMap);
+        return newEnv;
+    }
     
 }

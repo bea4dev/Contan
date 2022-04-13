@@ -20,4 +20,9 @@ public class ContanClassInstance extends ContanPrimitiveVariable<ClassBlock> {
 
     public Environment getEnvironment() {return environment;}
 
+    @Override
+    public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
+        return based.invokeFunction(this.environment, functionName, variables);
+    }
+
 }

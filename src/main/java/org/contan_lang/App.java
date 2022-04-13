@@ -41,11 +41,12 @@ public class App
                 "    print(a)\n" +
                 "\n" +
                 "}";
-    
-        Parser parser = new Parser();
+
+        ContanEngine contanEngine = new ContanEngine();
+        Parser parser = new Parser(contanEngine);
         try {
             Environment global = new Environment(null);
-            ScriptTree scriptTree = parser.parse(test);
+            ScriptTree scriptTree = parser.parse("test", test);
             scriptTree.getGlobalEvaluator().eval(global);
             scriptTree.invokeFunction(global, "test");
             

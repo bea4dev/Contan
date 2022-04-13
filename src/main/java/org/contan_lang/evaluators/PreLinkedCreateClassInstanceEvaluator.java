@@ -29,6 +29,13 @@ public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
             if (collidedClassName.contains(nameToken.getText())) {
                 throw new UnexpectedSyntaxException("");
             }
+        } else {
+            for (ClassBlock classBlock : classBlocks) {
+                if (classBlock.getClassName().getText().equals(nameToken.getText())) {
+                    this.classBlock = classBlock;
+                    return;
+                }
+            }
         }
 
         for (ClassBlock classBlock : classBlocks) {

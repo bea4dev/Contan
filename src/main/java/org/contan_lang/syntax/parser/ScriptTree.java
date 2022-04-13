@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ScriptTree implements FunctionInvokable {
     
-    private final Parser parser;
+    private final String rootName;
     
     private final Map<String, List<FunctionBlock>> functionMap;
     
@@ -21,8 +21,8 @@ public class ScriptTree implements FunctionInvokable {
 
     private final Evaluator globalEvaluator;
     
-    public ScriptTree(Parser parser, List<FunctionBlock> functionBlocks, Evaluator globalEvaluator) {
-        this.parser = parser;
+    public ScriptTree(String rootName, List<FunctionBlock> functionBlocks, Evaluator globalEvaluator) {
+        this.rootName = rootName;
         this.functionBlocks = functionBlocks;
         this.globalEvaluator = globalEvaluator;
         this.functionMap = new HashMap<>();
@@ -32,9 +32,9 @@ public class ScriptTree implements FunctionInvokable {
             functions.add(functionBlock);
         }
     }
-    
-    public Parser getParser() {return parser;}
-    
+
+    public String getRootName() {return rootName;}
+
     public List<FunctionBlock> getFunctionBlocks() {return functionBlocks;}
 
     public Evaluator getGlobalEvaluator() {return globalEvaluator;}

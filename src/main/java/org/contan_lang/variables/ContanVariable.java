@@ -1,6 +1,8 @@
 package org.contan_lang.variables;
 
-public interface ContanVariable<T> {
+import org.contan_lang.evaluators.FunctionInvokable;
+
+public interface ContanVariable<T> extends FunctionInvokable {
     
     T getBasedJavaObject();
     

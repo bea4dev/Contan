@@ -1,5 +1,6 @@
 package org.contan_lang.syntax.parser;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.evaluators.*;
 import org.contan_lang.operators.primitives.*;
 import org.contan_lang.syntax.Identifier;
@@ -20,25 +21,50 @@ import java.util.Collections;
 import java.util.List;
 
 public class Parser {
+
+    private final ContanEngine contanEngine;
+
+    public Parser(ContanEngine contanEngine) {
+        this.contanEngine = contanEngine;
+    }
+
     
     private List<PreLinkedFunctionEvaluator> preLinkedFunctions;
     private List<FunctionBlock> functions;
 
+    private List<FunctionBlock> classFunctionBlocks;
+
+    private List<Evaluator> classInitializers = new ArrayList<>();
+
+    private List<PreLinkedCreateClassInstanceEvaluator> preLinkedCreateClassInstanceEvaluators;
+
     private ParserEnvironment globalEnvironment;
+
+    private String rootName;
     
-    public ScriptTree parse(String text) throws UnexpectedSyntaxException {
+    public synchronized ScriptTree parse(String rootName, String text) throws UnexpectedSyntaxException {
+        this.rootName = rootName;
+
         List<Token> tokens = Lexer.split(text);
         functions = new ArrayList<>();
         preLinkedFunctions = new ArrayList<>();
-        globalEnvironment = new ParserEnvironment(null, ScopeType.GLOBAL);
+        classFunctionBlocks = new ArrayList<>();
+        classInitializers = new ArrayList<>();
+        globalEnvironment = new ParserEnvironment(rootName, null, ScopeType.GLOBAL);
+
+        preLinkedCreateClassInstanceEvaluators = new ArrayList<>();
 
         Evaluator globalEvaluator = parseBlock(globalEnvironment, tokens);
         
         for (PreLinkedFunctionEvaluator functionEvaluator : preLinkedFunctions) {
             functionEvaluator.link(functions);
         }
+
+        for (PreLinkedCreateClassInstanceEvaluator classInstanceEvaluator : preLinkedCreateClassInstanceEvaluators) {
+            contanEngine.linkClass(classInstanceEvaluator);
+        }
         
-        return new ScriptTree(this, functions, globalEvaluator);
+        return new ScriptTree(rootName, functions, globalEvaluator);
     }
     
     public Evaluator parseBlock(ParserEnvironment environment, List<Token> tokens) throws UnexpectedSyntaxException {
@@ -57,6 +83,20 @@ public class Parser {
 
             if (identifier != null) {
                 switch (identifier) {
+                    case CLASS:
+
+                    case IF: {
+                        List<Token> first = getTokensUntilFindIdentifier(tokens, i, Identifier.BLOCK_START);
+                        i += first.size();
+
+                        List<Token> second = getNestedToken(tokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, true);
+                        i += second.size();
+
+                        first.addAll(second);
+                        blockEvaluators.add(parseNestedBlock(environment, first));
+                        continue;
+                    }
+
                     case FUNCTION: {
                         if (environment.getScopeType() == ScopeType.FUNCTION) {
                             throw new UnexpectedSyntaxException("");
@@ -69,19 +109,7 @@ public class Parser {
                         i += second.size();
 
                         first.addAll(second);
-                        blockEvaluators.add(parseNestedBlock(new ParserEnvironment(environment, ScopeType.FUNCTION), first));
-                        continue;
-                    }
-
-                    case IF: {
-                        List<Token> first = getTokensUntilFindIdentifier(tokens, i, Identifier.BLOCK_START);
-                        i += first.size();
-
-                        List<Token> second = getNestedToken(tokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, true);
-                        i += second.size();
-
-                        first.addAll(second);
-                        blockEvaluators.add(parseNestedBlock(new ParserEnvironment(environment, ScopeType.FUNCTION), first));
+                        blockEvaluators.add(parseNestedBlock(new ParserEnvironment(environment.getRootName(), environment, ScopeType.FUNCTION), first));
                         continue;
                     }
 
@@ -89,7 +117,7 @@ public class Parser {
                         List<Token> nestedToken = getNestedToken(tokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END);
                         i += nestedToken.size();
 
-                        blockEvaluators.add(parseBlock(new ParserEnvironment(environment, ScopeType.FUNCTION), nestedToken));
+                        blockEvaluators.add(parseBlock(environment, nestedToken));
                         continue;
                     }
                 }
@@ -244,7 +272,7 @@ public class Parser {
             
             if (identifier != null) {
                 
-                if (identifier.priority >= 10) {
+                if (identifier.priority >= Identifier.BLOCK_OPERATOR_START.priority) {
                     throw new UnexpectedSyntaxException("");
                 }
 
@@ -375,6 +403,78 @@ public class Parser {
         }
 
         switch (firstIdentifier) {
+            case CLASS: {
+                int length = tokens.size();
+                if (length < 4) {
+                    throw new UnexpectedSyntaxException("");
+                }
+
+                Token className = tokens.get(1);
+                if (className instanceof IdentifierToken) {
+                    throw new UnexpectedSyntaxException("");
+                }
+
+                if (className.getText().contains(".")) {
+                    throw new UnexpectedSyntaxException("");
+                }
+
+                environment = new ParserEnvironment(environment.getRootName() + "." + className.getText(), environment, ScopeType.CLASS);
+
+                int index = 2;
+                List<Token> argTokens = getTokensUntilFindIdentifier(tokens, index, Identifier.BLOCK_START);
+                index += argTokens.size();
+
+                List<Token> args = new ArrayList<>();
+                for (Token t : argTokens) {
+                    Identifier id = null;
+                    if (t instanceof IdentifierToken) {
+                        id = ((IdentifierToken) t).getIdentifier();
+                    }
+
+                    if (id != Identifier.ARGUMENT_SPLIT && id != Identifier.BLOCK_OPERATOR_START && id != Identifier.BLOCK_OPERATOR_END) {
+                        args.add(t);
+                        environment.addVariable(t.getText());
+                    }
+                }
+
+
+                List<Token> blockTokens = getNestedToken(tokens, index, Identifier.BLOCK_START, Identifier.BLOCK_END);
+                Evaluator blockEval = parseBlock(environment, blockTokens);
+
+
+                ClassBlock classBlock = new ClassBlock(className, environment.getRootName() + "." + className, args.toArray(new Token[0]));
+
+                classFunctionBlocks.forEach(classBlock::addFunctionBlock);
+                classInitializers.forEach(classBlock::addInitializer);
+                classBlock.addInitializer(blockEval);
+                contanEngine.addClassBlock(classBlock);
+                classFunctionBlocks.clear();
+                classInitializers.clear();
+
+                return new Expressions();
+            }
+
+            case INITIALIZE: {
+                int length = tokens.size();
+                if (length < 3) {
+                    throw new UnexpectedSyntaxException("");
+                }
+
+                Token secondToken = tokens.get(1);
+                if (secondToken instanceof IdentifierToken) {
+                    if (((IdentifierToken) secondToken).getIdentifier() != Identifier.BLOCK_START) {
+                        throw new UnexpectedSyntaxException("");
+                    }
+                } else {
+                    throw new UnexpectedSyntaxException("");
+                }
+
+                List<Token> blockTokens = getNestedToken(tokens, 1, Identifier.BLOCK_START, Identifier.BLOCK_END);
+                classInitializers.add(parseBlock(environment, blockTokens));
+
+                return new Expressions();
+            }
+
             case FUNCTION: {
                 int length = tokens.size();
                 if (length < 6) {
@@ -390,10 +490,6 @@ public class Parser {
                 List<Token> argTokens = getTokensUntilFindIdentifier(tokens, index, Identifier.BLOCK_START);
                 index += argTokens.size();
 
-                List<Token> blockTokens = getNestedToken(tokens, index, Identifier.BLOCK_START, Identifier.BLOCK_END);
-
-                Evaluator blockEval = parseBlock(environment, blockTokens);
-
                 List<Token> args = new ArrayList<>();
                 for (Token t : argTokens) {
                     Identifier id = null;
@@ -403,8 +499,13 @@ public class Parser {
 
                     if (id != Identifier.ARGUMENT_SPLIT && id != Identifier.BLOCK_OPERATOR_START && id != Identifier.BLOCK_OPERATOR_END) {
                         args.add(t);
+                        environment.addVariable(t.getText());
                     }
                 }
+
+
+                List<Token> blockTokens = getNestedToken(tokens, index, Identifier.BLOCK_START, Identifier.BLOCK_END);
+                Evaluator blockEval = parseBlock(environment, blockTokens);
 
                 functions.add(new FunctionBlock(functionName, blockEval, args.toArray(new Token[0])));
                 return new Expressions();
