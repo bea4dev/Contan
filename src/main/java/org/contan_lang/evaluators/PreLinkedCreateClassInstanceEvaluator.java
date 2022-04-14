@@ -29,31 +29,31 @@ public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
             if (collidedClassName.contains(nameToken.getText())) {
                 throw new UnexpectedSyntaxException("");
             }
-        } else {
+
             for (ClassBlock classBlock : classBlocks) {
                 if (classBlock.getClassName().getText().equals(nameToken.getText())) {
                     this.classBlock = classBlock;
+                    checkArgLength(classBlock);
+                    return;
+                }
+            }
+        } else {
+            for (ClassBlock classBlock : classBlocks) {
+                if (classBlock.getClassPath().equals(classPath)) {
+                    this.classBlock = classBlock;
+                    checkArgLength(classBlock);
                     return;
                 }
             }
         }
 
-        for (ClassBlock classBlock : classBlocks) {
-            if (!classBlock.getClassName().getText().equals(nameToken.getText())) {
-                continue;
-            }
-
-            if (classPath != null) {
-                if (!classBlock.getClassPath().equals(classPath)) {
-                    continue;
-                }
-            }
-
-            this.classBlock = classBlock;
-            return;
-        }
-
         throw new UnexpectedSyntaxException("");
+    }
+
+    public void checkArgLength(ClassBlock classBlock) throws UnexpectedSyntaxException {
+        if (this.args.length > classBlock.getInitializeArgs().length) {
+            throw new UnexpectedSyntaxException("");
+        }
     }
 
     @Override

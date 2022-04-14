@@ -35,11 +35,17 @@ public class App
         }*/
         
         
-        String test = "function test() {\n" +
+        String test = "print(check(15, 5))\n" +
+                "print(check(200, 5))\n" +
                 "\n" +
-                "    data a = 20\n" +
-                "    print(a)\n" +
                 "\n" +
+                "function check(i, j) {\n" +
+                "\n" +
+                "    if (i + j == 20) {\n" +
+                "        return \"i + j is 20!!!\"\n" +
+                "    }\n" +
+                "\n" +
+                "    return \"i + j is \" + (i + j)\n" +
                 "}";
 
         ContanEngine contanEngine = new ContanEngine();
@@ -48,7 +54,6 @@ public class App
             Environment global = new Environment(null);
             ScriptTree scriptTree = parser.parse("test", test);
             scriptTree.getGlobalEvaluator().eval(global);
-            scriptTree.invokeFunction(global, "test");
             
         } catch (UnexpectedSyntaxException e) {
             e.printStackTrace();

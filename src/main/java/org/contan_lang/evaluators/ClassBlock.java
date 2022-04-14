@@ -1,9 +1,11 @@
 package org.contan_lang.evaluators;
 
 import org.contan_lang.environment.Environment;
+import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.primitive.ContanClassInstance;
+import org.contan_lang.variables.primitive.ContanVoid;
 
 import java.util.*;
 
@@ -43,8 +45,12 @@ public class ClassBlock implements FunctionInvokable {
     public ContanClassInstance createInstance(Environment parentEnvironment, ContanVariable<?>... contanVariables) {
         Environment environment = new Environment(parentEnvironment);
 
-        for (int i = 0; i < contanVariables.length; i++) {
-            environment.createVariable(initializeArgs[i].getText(), contanVariables[i]);
+        for (int i = 0; i < initializeArgs.length; i++) {
+            if (i < contanVariables.length) {
+                environment.createVariable(initializeArgs[i].getText(), contanVariables[i]);
+            } else {
+                environment.createVariable(initializeArgs[i].getText(), ContanVoid.INSTANCE);
+            }
         }
 
         for (Evaluator evaluator : initializers) {
@@ -57,13 +63,17 @@ public class ClassBlock implements FunctionInvokable {
     @Override
     public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName);
+        if (functions == null) {
+            throw new ContanRuntimeException("NOT FOUND FUNCTION " + functionName);//TODO
+        }
+
         for (FunctionBlock functionBlock : functions) {
             if (functionBlock.getArgs().length == variables.length) {
                 return functionBlock.eval(new Environment(environment), variables);
             }
         }
 
-        throw new IllegalStateException("NOT FOUND FUNCTION " + functionName);//TODO
+        throw new ContanRuntimeException("NOT FOUND FUNCTION " + functionName);//TODO
     }
 
 }

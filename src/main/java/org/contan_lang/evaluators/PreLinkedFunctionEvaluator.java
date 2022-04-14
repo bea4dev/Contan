@@ -8,7 +8,6 @@ import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.primitive.ContanClassInstance;
-import org.contan_lang.variables.primitive.ContanVoid;
 
 import java.util.Collection;
 import java.util.regex.Pattern;
@@ -34,8 +33,13 @@ public class PreLinkedFunctionEvaluator implements Evaluator {
     
     
     public void link(Collection<FunctionBlock> functionBlocks) throws UnexpectedSyntaxException {
-        if (functionName.getText().contains(".")){
-            tokens = functionName.getText().split(Pattern.quote("."));
+        String nameText = functionName.getText();
+        if (nameText.contains(".")){
+            if (nameText.toCharArray()[0] == '.') {
+                tokens = ("data" + nameText).split(Pattern.quote("."));
+            } else {
+                tokens = nameText.split(Pattern.quote("."));
+            }
             return;
         }
 

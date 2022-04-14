@@ -24,7 +24,7 @@ public class FunctionBlock {
     
     
     public ContanVariable<?> eval(Environment parentEnvironment, ContanVariable<?>... contanVariables) {
-        Environment environment = new Environment(parentEnvironment);
+        Environment environment = new Environment(parentEnvironment, true);
         if (args.length != contanVariables.length) {
             throw new IllegalStateException("");//TODO
         }
@@ -33,7 +33,12 @@ public class FunctionBlock {
             environment.createVariable(args[i].getText(), contanVariables[i]);
         }
         
-        return evaluator.eval(environment);
+        ContanVariable<?> variable = evaluator.eval(environment);
+        if (environment.hasReturnValue()) {
+            return environment.getReturnValue();
+        } else {
+            return variable;
+        }
     }
     
 }
