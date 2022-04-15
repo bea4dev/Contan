@@ -35,18 +35,10 @@ public class App
         }*/
         
         
-        String test = "print(check(15, 5))\n" +
-                "print(check(200, 5))\n" +
+        String test = "data instance = new TestClass(\"TEST!\")\n" +
+                "print(instance.text)\n" +
                 "\n" +
-                "\n" +
-                "function check(i, j) {\n" +
-                "\n" +
-                "    if (i + j == 20) {\n" +
-                "        return \"i + j is 20!!!\"\n" +
-                "    }\n" +
-                "\n" +
-                "    return \"i + j is \" + (i + j)\n" +
-                "}";
+                "class TestClass(text) {}";
 
         ContanEngine contanEngine = new ContanEngine();
         Parser parser = new Parser(contanEngine);

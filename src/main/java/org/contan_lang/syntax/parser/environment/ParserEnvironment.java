@@ -11,6 +11,8 @@ public class ParserEnvironment {
     private final String rootName;
 
     private final ParserEnvironment parent;
+    
+    
 
     private final ScopeType scopeType;
 
@@ -41,7 +43,7 @@ public class ParserEnvironment {
     public void addVariable(String name) {definedVariables.add(name);}
 
     public void checkHasVariable(Token token) throws UnexpectedSyntaxException {
-        if (!hasVariable(token.getText())) {
+        if (!hasVariable(token.getText()) && !token.getText().contains(".")) {
             throw new UnexpectedSyntaxException("UNKNOWN VARIABLE : " + token.getText());
         }
     }

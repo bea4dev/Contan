@@ -268,7 +268,7 @@ public class Parser {
                     String name = token.getText();
                     if (!name.matches("[+-]?\\d+(?:\\.\\d+)?")) {
                         environment.checkHasVariable(token);
-                        return new Expression(new GetValueOperator(name));
+                        return new Expression(new GetValueOperator(token));
                     } else if (name.contains(".")) {
                         return new Expression(new DefinedValueOperator(new ContanFloat(Double.parseDouble(name))));
                     } else {
@@ -397,6 +397,18 @@ public class Parser {
                     if (token instanceof IdentifierToken) {
                         identifier = ((IdentifierToken) token).getIdentifier();
                     }
+    
+                    if (identifier == Identifier.BLOCK_OPERATOR_START) {
+                        List<Token> inBlockTokens = getNestedToken(args, i, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, true);
+                        i += inBlockTokens.size() - 1;
+                        evalTokens.addAll(inBlockTokens);
+        
+                        if (i == argLength - 1) {
+                            evaluators.add(parseExpression(environment, evalTokens));
+                            evalTokens.clear();
+                            continue;
+                        }
+                    }
 
                     if (identifier != Identifier.ARGUMENT_SPLIT) {
                         evalTokens.add(token);
@@ -420,7 +432,7 @@ public class Parser {
 
                 if (args.size() + 3 < treeRTokens.size()) {
                     Evaluator createValue = new Expressions(new CreateVariableOperator("data"));
-                    Evaluator setValue = new Expression(new SetValueOperator("data", classInstanceEvaluator));
+                    Evaluator setValue = new Expression(new SetValueOperator(new NameToken("data"), classInstanceEvaluator));
                     Evaluator invoke = parseExpression(environment, treeRTokens.subList(args.size() + 3, treeRTokens.size()));
                     return new Expressions(createValue, setValue, invoke);
                 }
@@ -442,7 +454,7 @@ public class Parser {
                 Evaluator valueEval = parseExpression(environment, treeRTokens);
                 environment.checkHasVariable(nameToken);
 
-                return new Expression(new SetValueOperator(nameToken.getText(), valueEval));
+                return new Expression(new SetValueOperator(nameToken, valueEval));
             }
             
             //+
