@@ -7,6 +7,7 @@ import org.contan_lang.operators.Operator;
 import org.contan_lang.operators.primitives.*;
 import org.contan_lang.syntax.Identifier;
 import org.contan_lang.syntax.Lexer;
+import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
 import org.contan_lang.syntax.parser.Parser;
 import org.contan_lang.syntax.parser.ScriptTree;
@@ -15,6 +16,7 @@ import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.primitive.ContanInteger;
 import org.contan_lang.variables.primitive.ContanString;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -35,10 +37,19 @@ public class App
         }*/
         
         
-        String test = "data instance = new TestClass(\"TEST!\")\n" +
-                "print(instance.text)\n" +
+        
+        String test = "import org.contan_lang.ContanEngine\n" +
+                "import org.contan_lang.syntax.parser.Parser\n" +
+                "import org.contan_lang.environment.Environment\n" +
                 "\n" +
-                "class TestClass(text) {}";
+                "data text = \"print(\\\"Hello, world!\\\")\"\n" +
+                "\n" +
+                "data contanEngine = new ContanEngine()\n" +
+                "data parser = new Parser(contanEngine)\n" +
+                "\n" +
+                "data global = new Environment(null)\n" +
+                "data scriptTree = parser.parse(\"test\", text)\n" +
+                "scriptTree.getGlobalEvaluator().eval(global)";
 
         ContanEngine contanEngine = new ContanEngine();
         Parser parser = new Parser(contanEngine);
@@ -47,7 +58,7 @@ public class App
             ScriptTree scriptTree = parser.parse("test", test);
             scriptTree.getGlobalEvaluator().eval(global);
             
-        } catch (UnexpectedSyntaxException e) {
+        } catch (ContanParseException e) {
             e.printStackTrace();
         }
     }

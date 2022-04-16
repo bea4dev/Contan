@@ -5,6 +5,7 @@ import org.contan_lang.evaluators.*;
 import org.contan_lang.operators.primitives.*;
 import org.contan_lang.syntax.Identifier;
 import org.contan_lang.syntax.Lexer;
+import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
 import org.contan_lang.syntax.parser.environment.ParserEnvironment;
 import org.contan_lang.syntax.parser.environment.ScopeType;
@@ -17,6 +18,7 @@ import org.contan_lang.variables.primitive.ContanString;
 import org.contan_lang.variables.primitive.ContanVoid;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -43,7 +45,7 @@ public class Parser {
 
     private String rootName;
     
-    public synchronized ScriptTree parse(String rootName, String text) throws UnexpectedSyntaxException {
+    public synchronized ScriptTree parse(String rootName, String text) throws ContanParseException {
         this.rootName = rootName;
 
         List<Token> tokens = Lexer.split(text);
@@ -68,7 +70,7 @@ public class Parser {
         return new ScriptTree(rootName, functions, globalEvaluator);
     }
     
-    public Evaluator parseBlock(ParserEnvironment environment, List<Token> tokens) throws UnexpectedSyntaxException {
+    public Evaluator parseBlock(ParserEnvironment environment, List<Token> tokens) throws ContanParseException {
         int length = tokens.size();
         
         List<Evaluator> blockEvaluators = new ArrayList<>();
@@ -144,7 +146,7 @@ public class Parser {
                 expressionTokens.add(token);
             }
             
-            if (identifier == Identifier.EXPRESSION_SPLIT) {
+            if (identifier == Identifier.EXPRESSION_SPLIT || i == length - 1) {
                 blockEvaluators.add(parseExpression(environment, expressionTokens));
                 expressionTokens.clear();
             }
@@ -153,7 +155,7 @@ public class Parser {
         return new Expressions(blockEvaluators.toArray(new Evaluator[0]));
     }
     
-    public Evaluator parseExpression(ParserEnvironment environment, List<Token> tokens) throws UnexpectedSyntaxException {
+    public Evaluator parseExpression(ParserEnvironment environment, List<Token> tokens) throws ContanParseException {
         int length = tokens.size();
         
         
@@ -176,20 +178,12 @@ public class Parser {
                 if (tokens.get(1) instanceof IdentifierToken) {
                     Identifier identifier = ((IdentifierToken) tokens.get(1)).getIdentifier();
                     if (identifier == Identifier.BLOCK_OPERATOR_START) {
-                        List<Token> args = tokens.subList(2, length - 1);
                         
-                        Token lastToken = tokens.get(length - 1);
-                        if (lastToken instanceof IdentifierToken) {
-                            if (((IdentifierToken) lastToken).getIdentifier() != Identifier.BLOCK_OPERATOR_END) {
-                                throw new UnexpectedSyntaxException(lastToken.getText());
-                            }
-                        } else {
-                            throw new UnexpectedSyntaxException(tokens.get(0).getText() + ", " + lastToken.getText());
-                        }
+                        List<Token> args = getNestedToken(tokens, 1, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END);
                         
                         List<Token> evalTokens = new ArrayList<>();
                         List<Evaluator> evaluators = new ArrayList<>();
-
+                        
                         int argLength = args.size();
                         for (int i = 0; i < argLength; i++) {
                             Token token = args.get(i);
@@ -223,8 +217,19 @@ public class Parser {
                             }
                         }
                         
+                        if (argLength + 3 < tokens.size()) {
+                            List<Token> nextTokens = tokens.subList(argLength + 3, tokens.size());
+        
+                            PreLinkedFunctionEvaluator functionEvaluator = new PreLinkedFunctionEvaluator(contanEngine, tokens.get(0), evaluators.toArray(new Evaluator[0]));
+                            preLinkedFunctions.add(functionEvaluator);
+        
+                            Expression create = new Expression(new CreateVariableOperator("data"));
+                            Expression set = new Expression(new SetValueOperator(new NameToken("data"), functionEvaluator));
+        
+                            return new Expressions(create, set, parseExpression(environment, nextTokens));
+                        }
                         
-                        PreLinkedFunctionEvaluator functionEvaluator = new PreLinkedFunctionEvaluator(tokens.get(0), evaluators.toArray(new Evaluator[0]));
+                        PreLinkedFunctionEvaluator functionEvaluator = new PreLinkedFunctionEvaluator(contanEngine, tokens.get(0), evaluators.toArray(new Evaluator[0]));
                         preLinkedFunctions.add(functionEvaluator);
                         return functionEvaluator;
                     }
@@ -256,7 +261,23 @@ public class Parser {
             if (t0 instanceof IdentifierToken && t2 instanceof IdentifierToken) {
                 if (((IdentifierToken) t0).getIdentifier() == Identifier.DEFINE_STRING_START_OR_END
                         && ((IdentifierToken) t2).getIdentifier() == Identifier.DEFINE_STRING_START_OR_END) {
-                    return new Expression(new DefinedValueOperator(new ContanString(t1.getText())));
+                    
+                    char[] words = t1.getText().toCharArray();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    
+                    for (int i = 0; i < words.length; i++) {
+                        char word = words[i];
+                        
+                        if (i <= words.length - 2 && word == '\\') {
+                            if (words[i + 1] == '"') {
+                                continue;
+                            }
+                        }
+                        
+                        stringBuilder.append(word);
+                    }
+                    
+                    return new Expression(new DefinedValueOperator(new ContanString(stringBuilder.toString())));
                 }
             }
         }
@@ -439,6 +460,25 @@ public class Parser {
 
                 return classInstanceEvaluator;
             }
+            
+            case IMPORT: {
+                if (treeRTokens.size() != 1) {
+                    throw new UnexpectedSyntaxException("");
+                }
+                
+                if (!(treeRTokens.get(0) instanceof NameToken)) {
+                    throw new UnexpectedSyntaxException("");
+                }
+                
+                try {
+                    contanEngine.addJavaClass(treeRTokens.get(0).getText());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new ContanParseException("");
+                }
+                
+                return new Expressions();
+            }
 
             //=
             case SUBSTITUTION: {
@@ -492,7 +532,7 @@ public class Parser {
     }
     
     
-    public Evaluator parseNestedBlock(ParserEnvironment environment, List<Token> tokens) throws UnexpectedSyntaxException {
+    public Evaluator parseNestedBlock(ParserEnvironment environment, List<Token> tokens) throws ContanParseException {
         if (tokens.size() == 0) return new Expressions();
         
         Token firstToken = tokens.get(0);
@@ -639,11 +679,11 @@ public class Parser {
     }
 
 
-    public List<Token> getNestedToken(List<Token> tokens, int startIndex, Identifier start, Identifier end) throws UnexpectedSyntaxException {
+    public List<Token> getNestedToken(List<Token> tokens, int startIndex, Identifier start, Identifier end) throws ContanParseException {
         return getNestedToken(tokens, startIndex, start, end, false);
     }
 
-    public List<Token> getNestedToken(List<Token> tokens, int startIndex, Identifier start, Identifier end, boolean contain) throws UnexpectedSyntaxException {
+    public List<Token> getNestedToken(List<Token> tokens, int startIndex, Identifier start, Identifier end, boolean contain) throws ContanParseException {
         int length = tokens.size();
         List<Token> nestedToken = new ArrayList<>();
         int nest = 0;
@@ -681,7 +721,7 @@ public class Parser {
     }
 
 
-    public List<Token> getTokensUntilFindIdentifier(List<Token> tokens, int startIndex, Identifier end) throws UnexpectedSyntaxException {
+    public List<Token> getTokensUntilFindIdentifier(List<Token> tokens, int startIndex, Identifier end) throws ContanParseException {
         int length = tokens.size();
         List<Token> nestedToken = new ArrayList<>();
         for (int i = startIndex; i < length; i++) {

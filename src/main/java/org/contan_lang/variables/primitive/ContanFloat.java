@@ -14,7 +14,27 @@ public class ContanFloat extends ContanPrimitiveVariable<Double> {
     public ContanVariable<Double> createClone() {
         return new ContanFloat(based);
     }
-
+    
+    @Override
+    public long asLong() {
+        return (long) ((double) based);
+    }
+    
+    @Override
+    public double asDouble() {
+        return based;
+    }
+    
+    @Override
+    public boolean convertibleToLong() {
+        return true;
+    }
+    
+    @Override
+    public boolean convertibleToDouble() {
+        return true;
+    }
+    
     @Override
     public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
         throw new ContanRuntimeException("");

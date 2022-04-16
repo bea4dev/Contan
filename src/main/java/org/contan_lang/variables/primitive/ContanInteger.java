@@ -14,7 +14,27 @@ public class ContanInteger extends ContanPrimitiveVariable<Long> {
     public ContanVariable<Long> createClone() {
         return new ContanInteger(based);
     }
-
+    
+    @Override
+    public long asLong() {
+        return based;
+    }
+    
+    @Override
+    public double asDouble() {
+        return (double) ((long) based);
+    }
+    
+    @Override
+    public boolean convertibleToLong() {
+        return true;
+    }
+    
+    @Override
+    public boolean convertibleToDouble() {
+        return true;
+    }
+    
     @Override
     public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
         throw new ContanRuntimeException("");

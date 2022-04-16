@@ -10,4 +10,6 @@ public class ContanRunner {
     
     public ContanEngine getEngine() {return engine;}
     
+    public static <T> void test(T object, int i){System.out.println("test! " + i);}
+    
 }

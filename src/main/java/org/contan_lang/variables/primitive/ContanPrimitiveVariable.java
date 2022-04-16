@@ -18,5 +18,10 @@ public abstract class ContanPrimitiveVariable<T> implements ContanVariable<T> {
     
     @Override
     public void setBasedJavaObject(T basedJavaObject) { this.based = basedJavaObject; }
-
+    
+    @Override
+    public String toString() {
+        return based.toString();
+    }
+    
 }

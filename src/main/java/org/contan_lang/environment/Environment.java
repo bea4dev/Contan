@@ -64,10 +64,11 @@ public class Environment {
         return parent.getVariable(name);
     }
     
-    public EnvironmentVariable createVariable(String name, ContanVariable<?> contanVariable) {
+    public void createVariable(String name, ContanVariable<?> contanVariable) {
+        if (variableMap.containsKey(name)) return;
+    
         EnvironmentVariable environmentVariable = new EnvironmentVariable(name, this, contanVariable);
         variableMap.put(name, environmentVariable);
-        return environmentVariable;
     }
 
     public Environment createMergedEnvironment(Environment environment) {

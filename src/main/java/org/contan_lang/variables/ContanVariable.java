@@ -10,4 +10,12 @@ public interface ContanVariable<T> extends FunctionInvokable {
     
     ContanVariable<T> createClone();
     
+    long asLong();
+    
+    double asDouble();
+    
+    boolean convertibleToLong();
+    
+    boolean convertibleToDouble();
+    
 }

@@ -19,6 +19,7 @@ public enum Identifier {
     OPERATOR_MULTIPLY(4, true, "*"),
     SUBSTITUTION(8, true, "="),
     NEW(7, false, "new"),
+    IMPORT(7, false, "import"),
     ARGUMENT_SPLIT(0, true, ","),
     NULL(1, false, "null", "NULL");
     
