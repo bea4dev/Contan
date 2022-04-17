@@ -206,7 +206,7 @@ public class Parser {
                             }
                             
                             if (id != Identifier.ARGUMENT_SPLIT) {
-                                evalTokens.add(token);
+                                if (id != Identifier.BLOCK_OPERATOR_START) evalTokens.add(token);
                                 if (i == argLength - 1) {
                                     evaluators.add(parseExpression(environment, evalTokens));
                                     evalTokens.clear();
@@ -223,8 +223,8 @@ public class Parser {
                             PreLinkedFunctionEvaluator functionEvaluator = new PreLinkedFunctionEvaluator(contanEngine, tokens.get(0), evaluators.toArray(new Evaluator[0]));
                             preLinkedFunctions.add(functionEvaluator);
         
-                            Expression create = new Expression(new CreateVariableOperator("data"));
-                            Expression set = new Expression(new SetValueOperator(new NameToken("data"), functionEvaluator));
+                            Expression create = new Expression(new CreateVariableOperator(contanEngine, "data"));
+                            Expression set = new Expression(new SetValueOperator(contanEngine, new NameToken("data"), functionEvaluator));
         
                             return new Expressions(create, set, parseExpression(environment, nextTokens));
                         }
@@ -277,7 +277,7 @@ public class Parser {
                         stringBuilder.append(word);
                     }
                     
-                    return new Expression(new DefinedValueOperator(new ContanString(stringBuilder.toString())));
+                    return new Expression(new DefinedValueOperator(contanEngine, new ContanString(stringBuilder.toString())));
                 }
             }
         }
@@ -289,15 +289,15 @@ public class Parser {
                     String name = token.getText();
                     if (!name.matches("[+-]?\\d+(?:\\.\\d+)?")) {
                         environment.checkHasVariable(token);
-                        return new Expression(new GetValueOperator(token));
+                        return new Expression(new GetValueOperator(contanEngine, token));
                     } else if (name.contains(".")) {
-                        return new Expression(new DefinedValueOperator(new ContanFloat(Double.parseDouble(name))));
+                        return new Expression(new DefinedValueOperator(contanEngine, new ContanFloat(Double.parseDouble(name))));
                     } else {
-                        return new Expression(new DefinedValueOperator(new ContanInteger(Long.parseLong(name))));
+                        return new Expression(new DefinedValueOperator(contanEngine, new ContanInteger(Long.parseLong(name))));
                     }
                 }
             }
-            return new Expression(new DefinedValueOperator(ContanVoid.INSTANCE));
+            return new Expression(new DefinedValueOperator(contanEngine, ContanVoid.INSTANCE));
         }
         
         //Parse expression
@@ -355,7 +355,7 @@ public class Parser {
         
         
         if (id == null) {
-            return new Expression(new DefinedValueOperator(ContanVoid.INSTANCE));
+            return new Expression(new DefinedValueOperator(contanEngine, ContanVoid.INSTANCE));
         }
         
         switch (id) {
@@ -384,13 +384,13 @@ public class Parser {
 
                     List<Token> setValueTokens = treeRTokens.subList(0, treeRTokens.size());
                     environment.addVariable(nameToken.getText());
-                    Evaluator defineEval = new Expression(new CreateVariableOperator(nameToken.getText()));
+                    Evaluator defineEval = new Expression(new CreateVariableOperator(contanEngine, nameToken.getText()));
                     Evaluator valueEval = parseExpression(environment, setValueTokens);
                     
                     return new Expressions(defineEval, valueEval);
                     
                 } else {
-                    return new Expression(new CreateVariableOperator(nameToken.getText()));
+                    return new Expression(new CreateVariableOperator(contanEngine, nameToken.getText()));
                 }
             }
 
@@ -432,7 +432,7 @@ public class Parser {
                     }
 
                     if (identifier != Identifier.ARGUMENT_SPLIT) {
-                        evalTokens.add(token);
+                        if (identifier != Identifier.BLOCK_OPERATOR_START) evalTokens.add(token);
                         if (i == argLength - 1) {
                             evaluators.add(parseExpression(environment, evalTokens));
                             evalTokens.clear();
@@ -452,8 +452,8 @@ public class Parser {
                 preLinkedCreateClassInstanceEvaluators.add(classInstanceEvaluator);
 
                 if (args.size() + 3 < treeRTokens.size()) {
-                    Evaluator createValue = new Expressions(new CreateVariableOperator("data"));
-                    Evaluator setValue = new Expression(new SetValueOperator(new NameToken("data"), classInstanceEvaluator));
+                    Evaluator createValue = new Expressions(new CreateVariableOperator(contanEngine, "data"));
+                    Evaluator setValue = new Expression(new SetValueOperator(contanEngine, new NameToken("data"), classInstanceEvaluator));
                     Evaluator invoke = parseExpression(environment, treeRTokens.subList(args.size() + 3, treeRTokens.size()));
                     return new Expressions(createValue, setValue, invoke);
                 }
@@ -494,7 +494,7 @@ public class Parser {
                 Evaluator valueEval = parseExpression(environment, treeRTokens);
                 environment.checkHasVariable(nameToken);
 
-                return new Expression(new SetValueOperator(nameToken, valueEval));
+                return new Expression(new SetValueOperator(contanEngine, nameToken, valueEval));
             }
             
             //+
@@ -502,7 +502,7 @@ public class Parser {
                 Evaluator left = parseExpression(environment, treeLTokens);
                 Evaluator right = parseExpression(environment, treeRTokens);
                 
-                return new Expression(new AddOperator(left, right));
+                return new Expression(new AddOperator(contanEngine, left, right));
             }
 
             //*
@@ -510,7 +510,7 @@ public class Parser {
                 Evaluator left = parseExpression(environment, treeLTokens);
                 Evaluator right = parseExpression(environment, treeRTokens);
         
-                return new Expression(new MultiplyOperator(left, right));
+                return new Expression(new MultiplyOperator(contanEngine, left, right));
             }
             
             //==
@@ -518,12 +518,12 @@ public class Parser {
                 Evaluator left = parseExpression(environment, treeLTokens);
                 Evaluator right = parseExpression(environment, treeRTokens);
                 
-                return new Expression(new EqualOperator(left, right));
+                return new Expression(new EqualOperator(contanEngine, left, right));
             }
 
             //return
             case RETURN: {
-                return new Expression(new SetReturnValueOperator(parseExpression(environment, treeRTokens)));
+                return new Expression(new SetReturnValueOperator(contanEngine, parseExpression(environment, treeRTokens)));
             }
         }
         

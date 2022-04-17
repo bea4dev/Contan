@@ -79,12 +79,18 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
     
     @Override
     public boolean convertibleToLong() {
-        return based instanceof String || based instanceof Integer || based instanceof Long || based instanceof Float || based instanceof Double;
+        if (based instanceof Integer || based instanceof Long || based instanceof Float || based instanceof Double) {
+            return true;
+        } else if (based instanceof String) {
+            return ((String) based).matches("[+-]?\\d+(?:\\.\\d+)?");
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean convertibleToDouble() {
-        return based instanceof String || based instanceof Integer || based instanceof Long || based instanceof Float || based instanceof Double;
+        return convertibleToLong();
     }
     
     

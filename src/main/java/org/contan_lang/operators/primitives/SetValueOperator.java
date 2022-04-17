@@ -1,5 +1,6 @@
 package org.contan_lang.operators.primitives;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.EnvironmentUtil;
 import org.contan_lang.environment.EnvironmentVariable;
@@ -18,8 +19,8 @@ public class SetValueOperator extends Operator {
     private final String[] targetVariableTokens;
     private final Evaluator valueEval;
     
-    public SetValueOperator(Token targetVariableName, Evaluator valueEval) {
-        super();
+    public SetValueOperator(ContanEngine contanEngine, Token targetVariableName, Evaluator valueEval) {
+        super(contanEngine);
         this.targetVariableName = targetVariableName;
         this.valueEval = valueEval;
     
@@ -41,7 +42,7 @@ public class SetValueOperator extends Operator {
         if (targetVariableTokens == null) {
             variable = environment.getVariable(targetVariableName.getText());
         } else {
-            variable = EnvironmentUtil.getClassEnvironmentVariable(environment, targetVariableTokens, targetVariableName);
+            variable = EnvironmentUtil.getClassEnvironmentVariable(contanEngine, environment, targetVariableTokens, targetVariableName);
         }
     
         if (variable == null) {

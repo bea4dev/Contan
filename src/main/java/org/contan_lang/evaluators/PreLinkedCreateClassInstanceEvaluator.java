@@ -162,7 +162,7 @@ public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
                 e.printStackTrace();
                 throw new ContanRuntimeException("A problem has occurred when executing a java method."
                         + System.lineSeparator() + "ClassPath : " + classPath
-                        + System.lineSeparator() + "ClassPath : " + nameToken.getText()
+                        + System.lineSeparator() + "ClassName : " + nameToken.getText()
                         + System.lineSeparator() + "Arguments : " + Arrays.toString(variables));
             }
             

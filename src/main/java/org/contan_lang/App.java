@@ -38,18 +38,9 @@ public class App
         
         
         
-        String test = "import org.contan_lang.ContanEngine\n" +
-                "import org.contan_lang.syntax.parser.Parser\n" +
-                "import org.contan_lang.environment.Environment\n" +
+        String test = "import org.contan_lang.TestClass\n" +
                 "\n" +
-                "data text = \"print(\\\"Hello, world!\\\")\"\n" +
-                "\n" +
-                "data contanEngine = new ContanEngine()\n" +
-                "data parser = new Parser(contanEngine)\n" +
-                "\n" +
-                "data global = new Environment(null)\n" +
-                "data scriptTree = parser.parse(\"test\", text)\n" +
-                "scriptTree.getGlobalEvaluator().eval(global)";
+                "print(new TestClass(\"TEST!!\").test.text)";
 
         ContanEngine contanEngine = new ContanEngine();
         Parser parser = new Parser(contanEngine);

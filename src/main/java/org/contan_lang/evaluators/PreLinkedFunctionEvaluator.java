@@ -11,6 +11,7 @@ import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.primitive.ContanClassInstance;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
@@ -93,6 +94,17 @@ public class PreLinkedFunctionEvaluator implements Evaluator {
                             }
                 
                             currentVariable = ev.getContanVariable();
+                        } else if (currentVariable instanceof JavaClassInstance) {
+                            try {
+                                Object based = currentVariable.getBasedJavaObject();
+                                Class<?> clazz = based.getClass();
+
+                                Field field = clazz.getField(token);
+
+                                currentVariable = new JavaClassInstance(field.get(based));
+                            } catch (Exception e) {
+                                break;
+                            }
                         } else {
                             break;
                         }
