@@ -9,7 +9,6 @@ import org.contan_lang.variables.primitive.ContanClassInstance;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class EnvironmentUtil {
