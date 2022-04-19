@@ -1,18 +1,20 @@
 package org.contan_lang.variables.primitive;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeException;
+import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 
 public class ContanInteger extends ContanPrimitiveVariable<Long> {
     
-    public ContanInteger(Long based) {
-        super(based);
+    public ContanInteger(ContanEngine contanEngine, Long based) {
+        super(contanEngine, based);
     }
     
     @Override
     public ContanVariable<Long> createClone() {
-        return new ContanInteger(based);
+        return new ContanInteger(contanEngine, based);
     }
     
     @Override

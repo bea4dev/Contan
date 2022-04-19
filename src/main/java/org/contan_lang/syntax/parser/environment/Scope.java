@@ -6,19 +6,17 @@ import org.contan_lang.syntax.tokens.Token;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ParserEnvironment {
+public class Scope {
 
     private final String rootName;
 
-    private final ParserEnvironment parent;
-    
-    
+    private final Scope parent;
 
     private final ScopeType scopeType;
 
     private final Set<String> definedVariables = new HashSet<>();
 
-    public ParserEnvironment(String rootName, ParserEnvironment parent, ScopeType scopeType) {
+    public Scope(String rootName, Scope parent, ScopeType scopeType) {
         this.rootName = rootName;
         this.parent = parent;
         this.scopeType = scopeType;

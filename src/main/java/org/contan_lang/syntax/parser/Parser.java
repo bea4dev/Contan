@@ -7,10 +7,8 @@ import org.contan_lang.syntax.Identifier;
 import org.contan_lang.syntax.Lexer;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
-import org.contan_lang.syntax.parser.environment.ParserEnvironment;
+import org.contan_lang.syntax.parser.environment.Scope;
 import org.contan_lang.syntax.parser.environment.ScopeType;
-import org.contan_lang.syntax.tokens.IdentifierToken;
-import org.contan_lang.syntax.tokens.NameToken;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.primitive.ContanFloat;
 import org.contan_lang.variables.primitive.ContanInteger;
@@ -18,10 +16,8 @@ import org.contan_lang.variables.primitive.ContanString;
 import org.contan_lang.variables.primitive.ContanVoid;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class Parser {
 
@@ -41,11 +37,11 @@ public class Parser {
 
     private List<PreLinkedCreateClassInstanceEvaluator> preLinkedCreateClassInstanceEvaluators;
 
-    private ParserEnvironment globalEnvironment;
+    private Scope globalEnvironment;
 
     private String rootName;
     
-    public synchronized ScriptTree parse(String rootName, String text) throws ContanParseException {
+    public synchronized ContanModule parse(String rootName, String text) throws ContanParseException {
         this.rootName = rootName;
 
         List<Token> tokens = Lexer.split(text);
@@ -53,7 +49,7 @@ public class Parser {
         preLinkedFunctions = new ArrayList<>();
         classFunctionBlocks = new ArrayList<>();
         classInitializers = new ArrayList<>();
-        globalEnvironment = new ParserEnvironment(rootName, null, ScopeType.GLOBAL);
+        globalEnvironment = new Scope(rootName, null, ScopeType.MODULE);
 
         preLinkedCreateClassInstanceEvaluators = new ArrayList<>();
 
@@ -67,10 +63,10 @@ public class Parser {
             contanEngine.linkClass(classInstanceEvaluator);
         }
         
-        return new ScriptTree(rootName, functions, globalEvaluator);
+        return new ContanModule(rootName, functions, globalEvaluator);
     }
     
-    public Evaluator parseBlock(ParserEnvironment environment, List<Token> tokens) throws ContanParseException {
+    public Evaluator parseBlock(Scope environment, List<Token> tokens) throws ContanParseException {
         int length = tokens.size();
         
         List<Evaluator> blockEvaluators = new ArrayList<>();
@@ -155,7 +151,7 @@ public class Parser {
         return new Expressions(blockEvaluators.toArray(new Evaluator[0]));
     }
     
-    public Evaluator parseExpression(ParserEnvironment environment, List<Token> tokens) throws ContanParseException {
+    public Evaluator parseExpression(Scope environment, List<Token> tokens) throws ContanParseException {
         int length = tokens.size();
         
         
@@ -532,7 +528,7 @@ public class Parser {
     }
     
     
-    public Evaluator parseNestedBlock(ParserEnvironment environment, List<Token> tokens) throws ContanParseException {
+    public Evaluator parseNestedBlock(Scope environment, List<Token> tokens) throws ContanParseException {
         if (tokens.size() == 0) return new Expressions();
         
         Token firstToken = tokens.get(0);
@@ -559,7 +555,7 @@ public class Parser {
                     throw new UnexpectedSyntaxException("");
                 }
 
-                environment = new ParserEnvironment(environment.getRootName() + "." + className.getText(), environment, ScopeType.CLASS);
+                environment = new Scope(environment.getRootName() + "." + className.getText(), environment, ScopeType.CLASS);
 
                 int index = 2;
                 List<Token> argTokens = getTokensUntilFindIdentifier(tokens, index, Identifier.BLOCK_START);
@@ -646,7 +642,7 @@ public class Parser {
 
 
                 List<Token> blockTokens = getNestedToken(tokens, index, Identifier.BLOCK_START, Identifier.BLOCK_END);
-                Evaluator blockEval = parseBlock(new ParserEnvironment(environment.getRootName(), environment, ScopeType.FUNCTION), blockTokens);
+                Evaluator blockEval = parseBlock(new Scope(environment.getRootName(), environment, ScopeType.FUNCTION), blockTokens);
 
                 if (environment.getScopeType() == ScopeType.CLASS) {
                     classFunctionBlocks.add(new FunctionBlock(functionName, blockEval, args.toArray(new Token[0])));

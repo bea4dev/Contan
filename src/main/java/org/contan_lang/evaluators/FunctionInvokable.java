@@ -5,6 +5,6 @@ import org.contan_lang.variables.ContanVariable;
 
 public interface FunctionInvokable {
 
-    ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables);
+    ContanVariable<?> invokeFunction(String functionName, ContanVariable<?>... variables);
 
 }

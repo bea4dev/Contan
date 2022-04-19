@@ -1,18 +1,20 @@
 package org.contan_lang.variables.primitive;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeException;
+import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 
 public class ContanFloat extends ContanPrimitiveVariable<Double> {
     
-    public ContanFloat(Double based) {
-        super(based);
+    public ContanFloat(ContanEngine contanEngine, Double based) {
+        super(contanEngine, based);
     }
     
     @Override
     public ContanVariable<Double> createClone() {
-        return new ContanFloat(based);
+        return new ContanFloat(contanEngine, based);
     }
     
     @Override

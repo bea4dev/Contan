@@ -10,7 +10,7 @@ public class ContanVoid extends ContanPrimitiveVariable<Boolean> {
     
     public static final ContanVoid INSTANCE = new ContanVoid();
     
-    private ContanVoid() {super(false);}
+    private ContanVoid() {super(null, false);}
     
     @Override
     public ContanVariable<Boolean> createClone() {return INSTANCE;}

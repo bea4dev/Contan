@@ -1,23 +1,27 @@
 package org.contan_lang.syntax;
 
-import org.contan_lang.syntax.tokens.IdentifierToken;
-import org.contan_lang.syntax.tokens.NameToken;
+import org.contan_lang.syntax.tokens.DefinedStringToken;
 import org.contan_lang.syntax.tokens.Token;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
+
+    public final String text;
+
+    public Lexer(String text) {
+        this.text = text;
+    }
     
-    public static List<Token> split(String text) {
+    public List<Token> split() {
         List<Token> tokens = new ArrayList<>();
         
         int length = text.length();
         
         StringBuilder stringBuilder = new StringBuilder();
         boolean isInStringDefine = false;
-        boolean isInStringDefinePre = false;
+        boolean isInStringDefinePrevious = false;
         
         for(int i = 0; i < length; i++) {
             //Check identifier
@@ -35,7 +39,7 @@ public class Lexer {
                 }
             }
     
-            isInStringDefinePre = isInStringDefine;
+            isInStringDefinePrevious = isInStringDefine;
             
             if (identifier != null) {
                 if (identifier == Identifier.DEFINE_STRING_START_OR_END) {
@@ -75,48 +79,36 @@ public class Lexer {
                     }
                 }
             }
+
             
-            if (identifier == null) {
+            if (identifier == null || identifier == Identifier.DEFINE_STRING_START_OR_END) {
                 stringBuilder.append(text.charAt(i));
             } else {
                 String name = stringBuilder.toString();
-                if (!isInStringDefinePre) name = name.replace(" ", "");
-                if(name.length() != 0) tokens.add(new NameToken(name));
+                if (!isInStringDefinePrevious) name = name.replace(" ", "");
+                if(name.length() != 0) tokens.add(new Token(this, name, null));
                 stringBuilder = new StringBuilder();
                 
-                tokens.add(new IdentifierToken(word, identifier));
+                tokens.add(new Token(this, word, identifier));
                 i += word.length() - 1;
+            }
+
+            if (isInStringDefinePrevious && !isInStringDefine) {
+                tokens.add(new DefinedStringToken(this, stringBuilder.toString(), null));
+                stringBuilder = new StringBuilder();
+                continue;
             }
             
             if (i == length - 1) {
                 if (stringBuilder.length() != 0) {
                     String name = stringBuilder.toString();
-                    if (!isInStringDefinePre) name = name.replace(" ", "");
-                    if(name.length() != 0) tokens.add(new NameToken(name));
+                    if (!isInStringDefinePrevious) name = name.replace(" ", "");
+                    if(name.length() != 0) tokens.add(new Token(this, name, null));
                 }
             }
         }
         
         return tokens;
-    }
-    
-    
-    public static @Nullable Identifier getIdentifier(String text, int index) {
-        int length = text.length();
-        if (length <= index) return null;
-        
-        for(Identifier identifier : Identifier.values()) {
-            for(String word : identifier.words) {
-                int endIndex = index + word.length();
-                if (length <= endIndex) continue;
-                
-                if (word.equals(text.substring(index, endIndex))) {
-                    return identifier;
-                }
-            }
-        }
-        
-        return null;
     }
     
 }

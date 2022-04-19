@@ -2,7 +2,6 @@ package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.expection.ContanRuntimeException;
-import org.contan_lang.syntax.tokens.NameToken;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.primitive.ContanClassInstance;

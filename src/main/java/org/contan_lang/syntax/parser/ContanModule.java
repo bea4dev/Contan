@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ScriptTree implements FunctionInvokable {
+public class ContanModule implements FunctionInvokable {
     
     private final String rootName;
     
@@ -20,12 +20,15 @@ public class ScriptTree implements FunctionInvokable {
     private final List<FunctionBlock> functionBlocks;
 
     private final Evaluator globalEvaluator;
+
+    private final Environment moduleEnvironment;
     
-    public ScriptTree(String rootName, List<FunctionBlock> functionBlocks, Evaluator globalEvaluator) {
+    public ContanModule(String rootName, List<FunctionBlock> functionBlocks, Evaluator globalEvaluator) {
         this.rootName = rootName;
         this.functionBlocks = functionBlocks;
         this.globalEvaluator = globalEvaluator;
         this.functionMap = new HashMap<>();
+        this.moduleEnvironment = new Environment(null);
         
         for (FunctionBlock functionBlock : functionBlocks) {
             List<FunctionBlock> functions = functionMap.computeIfAbsent(functionBlock.getFunctionName().getText(), k -> new ArrayList<>());
@@ -40,11 +43,11 @@ public class ScriptTree implements FunctionInvokable {
     public Evaluator getGlobalEvaluator() {return globalEvaluator;}
 
     @Override
-    public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
+    public ContanVariable<?> invokeFunction(String functionName, ContanVariable<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName);
         for (FunctionBlock functionBlock : functions) {
             if (functionBlock.getArgs().length == variables.length) {
-                return functionBlock.eval(new Environment(environment), variables);
+                return functionBlock.eval(new Environment(moduleEnvironment), variables);
             }
         }
         

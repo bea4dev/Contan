@@ -1,19 +1,21 @@
 package org.contan_lang.variables.primitive;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.environment.expection.ContanTypeConvertException;
+import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 
 public class ContanString extends ContanPrimitiveVariable<String> {
     
-    public ContanString(String based) {
-        super(based);
+    public ContanString(ContanEngine contanEngine, String based) {
+        super(contanEngine, based);
     }
     
     @Override
     public ContanVariable<String> createClone() {
-        return new ContanString(based);
+        return new ContanString(contanEngine, based);
     }
     
     @Override

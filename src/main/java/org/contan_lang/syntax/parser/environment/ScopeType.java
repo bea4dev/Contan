@@ -1,7 +1,9 @@
 package org.contan_lang.syntax.parser.environment;
 
 public enum ScopeType {
-    GLOBAL,
+    MODULE,
     CLASS,
+    INITIALIZE,
+    IF,
     FUNCTION,
 }

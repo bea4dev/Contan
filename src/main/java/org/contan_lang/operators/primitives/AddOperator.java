@@ -4,6 +4,7 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
+import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.primitive.ContanFloat;
 import org.contan_lang.variables.primitive.ContanInteger;
@@ -15,8 +16,8 @@ import java.util.List;
 
 public class AddOperator extends Operator {
     
-    public AddOperator(ContanEngine contanEngine, Evaluator... operators) {
-        super(contanEngine, operators);
+    public AddOperator(ContanEngine contanEngine, Token token, Evaluator... operators) {
+        super(contanEngine, token, operators);
     }
     
     @Override
@@ -65,12 +66,12 @@ public class AddOperator extends Operator {
         if (hasString) {
             StringBuilder stringBuilder = new StringBuilder();
             results.forEach(stringBuilder::append);
-            return new ContanString(stringBuilder.toString());
+            return new ContanString(contanEngine, stringBuilder.toString());
         } else {
             if (asFloat) {
-                return new ContanFloat(sum);
+                return new ContanFloat(contanEngine, sum);
             } else {
-                return new ContanInteger((long) sum);
+                return new ContanInteger(contanEngine, (long) sum);
             }
         }
     }

@@ -1,7 +1,9 @@
 package org.contan_lang.variables.primitive;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeException;
+import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.NumberType;
 import org.jetbrains.annotations.Nullable;
@@ -13,18 +15,18 @@ import java.util.Objects;
 
 public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
     
-    public JavaClassInstance(Object based) {
-        super(based);
+    public JavaClassInstance(ContanEngine contanEngine, Object based) {
+        super(contanEngine, based);
     }
     
     @Override
     public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
-        return invokeJavaMethod(based.getClass(), based, environment, functionName, variables);
+        return invokeJavaMethod(contanEngine, based.getClass(), based, environment, functionName, variables);
     }
     
     @Override
     public ContanVariable<Object> createClone() {
-        return new JavaClassInstance(based);
+        return new JavaClassInstance(contanEngine, based);
     }
     
     @Override
@@ -94,7 +96,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
     }
     
     
-    public static ContanVariable<?> invokeJavaMethod(Class<?> clazz, @Nullable Object based, Environment environment, String functionName, ContanVariable<?>... variables) {
+    public static ContanVariable<?> invokeJavaMethod(ContanEngine contanEngine, Class<?> clazz, @Nullable Object based, Environment environment, String functionName, ContanVariable<?>... variables) {
         try {
             methodLoop : for (Method method : clazz.getMethods()) {
                 if (method.getParameterCount() != variables.length) continue;
@@ -151,7 +153,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
                 if (returned == null) {
                     return ContanVoid.INSTANCE;
                 } else {
-                    return new JavaClassInstance(returned);
+                    return new JavaClassInstance(contanEngine, based);
                 }
             }
         

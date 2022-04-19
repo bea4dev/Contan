@@ -1,5 +1,6 @@
 package org.contan_lang.evaluators;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.tokens.Token;
@@ -11,6 +12,8 @@ import java.util.*;
 
 public class ClassBlock implements FunctionInvokable {
 
+    private final ContanEngine contanEngine;
+
     private final Token className;
 
     private final String classPath;
@@ -21,7 +24,8 @@ public class ClassBlock implements FunctionInvokable {
 
     private final Token[] initializeArgs;
 
-    public ClassBlock(Token className, String classPath, Token... initializeArgs) {
+    public ClassBlock(ContanEngine contanEngine, Token className, String classPath, Token... initializeArgs) {
+        this.contanEngine = contanEngine;
         this.className = className;
         this.classPath = classPath;
         this.initializers = new ArrayList<>();
@@ -57,11 +61,11 @@ public class ClassBlock implements FunctionInvokable {
             evaluator.eval(environment);
         }
 
-        return new ContanClassInstance(this, environment);
+        return new ContanClassInstance(contanEngine,this, environment);
     }
 
     @Override
-    public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
+    public ContanVariable<?> invokeFunction(String functionName, ContanVariable<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName);
         if (functions == null) {
             throw new ContanRuntimeException("NOT FOUND FUNCTION " + functionName);//TODO
@@ -69,7 +73,7 @@ public class ClassBlock implements FunctionInvokable {
 
         for (FunctionBlock functionBlock : functions) {
             if (functionBlock.getArgs().length == variables.length) {
-                return functionBlock.eval(new Environment(environment), variables);
+                return functionBlock.eval(new Environment(null), variables);
             }
         }
 

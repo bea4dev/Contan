@@ -1,23 +1,9 @@
 package org.contan_lang;
 
 import org.contan_lang.environment.Environment;
-import org.contan_lang.environment.EnvironmentVariable;
-import org.contan_lang.evaluators.*;
-import org.contan_lang.operators.Operator;
-import org.contan_lang.operators.primitives.*;
-import org.contan_lang.syntax.Identifier;
-import org.contan_lang.syntax.Lexer;
 import org.contan_lang.syntax.exception.ContanParseException;
-import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
 import org.contan_lang.syntax.parser.Parser;
-import org.contan_lang.syntax.parser.ScriptTree;
-import org.contan_lang.syntax.tokens.IdentifierToken;
-import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.primitive.ContanInteger;
-import org.contan_lang.variables.primitive.ContanString;
-
-import java.lang.reflect.Method;
-import java.util.List;
+import org.contan_lang.syntax.parser.ContanModule;
 
 /**
  * Hello world!
@@ -46,8 +32,8 @@ public class App
         Parser parser = new Parser(contanEngine);
         try {
             Environment global = new Environment(null);
-            ScriptTree scriptTree = parser.parse("test", test);
-            scriptTree.getGlobalEvaluator().eval(global);
+            ContanModule contanModule = parser.parse("test", test);
+            contanModule.getGlobalEvaluator().eval(global);
             
         } catch (ContanParseException e) {
             e.printStackTrace();

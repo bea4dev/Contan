@@ -1,5 +1,6 @@
 package org.contan_lang.variables.primitive;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.environment.expection.ContanTypeConvertException;
@@ -10,8 +11,8 @@ public class ContanClassInstance extends ContanPrimitiveVariable<ClassBlock> {
 
     private final Environment environment;
 
-    public ContanClassInstance(ClassBlock based, Environment environment) {
-        super(based);
+    public ContanClassInstance(ContanEngine contanEngine, ClassBlock based, Environment environment) {
+        super(contanEngine, based);
         this.environment = environment;
     }
 
