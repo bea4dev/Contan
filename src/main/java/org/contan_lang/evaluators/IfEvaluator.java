@@ -5,21 +5,25 @@ import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.primitive.ContanVoid;
 import org.jetbrains.annotations.Nullable;
 
-public class IfElseEvaluator implements Evaluator {
+public class IfEvaluator implements Evaluator {
     
-    private final Evaluator equalEvaluator;
+    private final Evaluator termsEvaluator;
     private final Evaluator trueExpression;
-    private final Evaluator falseExpression;
     
-    public IfElseEvaluator(Evaluator equalEvaluator, @Nullable Evaluator trueExpression, @Nullable Evaluator falseExpression) {
-        this.equalEvaluator = equalEvaluator;
+    private IfEvaluator linkedElseEvaluator = null;
+    
+    public IfEvaluator(Evaluator termsEvaluator, @Nullable Evaluator trueExpression) {
+        this.termsEvaluator = termsEvaluator;
         this.trueExpression = trueExpression;
-        this.falseExpression = falseExpression;
+    }
+    
+    public void setLinkedElseEvaluator(IfEvaluator linkedElseEvaluator) {
+        this.linkedElseEvaluator = linkedElseEvaluator;
     }
     
     @Override
     public ContanVariable<?> eval(Environment environment) {
-        Boolean bool = (Boolean) equalEvaluator.eval(environment).getBasedJavaObject();
+        Boolean bool = (Boolean) termsEvaluator.eval(environment).getBasedJavaObject();
         
         if (bool) {
             if(trueExpression != null) {
@@ -27,9 +31,8 @@ public class IfElseEvaluator implements Evaluator {
                 trueExpression.eval(nestedEnv);
             }
         } else {
-            if(falseExpression != null) {
-                Environment nestedEnv = new Environment(environment);
-                falseExpression.eval(nestedEnv);
+            if (linkedElseEvaluator != null) {
+                linkedElseEvaluator.eval(environment);
             }
         }
         

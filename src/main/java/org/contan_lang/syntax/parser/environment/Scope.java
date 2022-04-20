@@ -1,5 +1,6 @@
 package org.contan_lang.syntax.parser.environment;
 
+import org.contan_lang.evaluators.IfEvaluator;
 import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
 import org.contan_lang.syntax.tokens.Token;
 
@@ -15,6 +16,8 @@ public class Scope {
     private final ScopeType scopeType;
 
     private final Set<String> definedVariables = new HashSet<>();
+    
+    private IfEvaluator previousIfEvaluator = null;
 
     public Scope(String rootName, Scope parent, ScopeType scopeType) {
         this.rootName = rootName;
@@ -39,7 +42,11 @@ public class Scope {
     }
 
     public void addVariable(String name) {definedVariables.add(name);}
-
+    
+    public IfEvaluator getPreviousIfEvaluator() {return previousIfEvaluator;}
+    
+    public void setPreviousIfEvaluator(IfEvaluator previousIfEvaluator) {this.previousIfEvaluator = previousIfEvaluator;}
+    
     public void checkHasVariable(Token token) throws UnexpectedSyntaxException {
         if (!hasVariable(token.getText()) && !token.getText().contains(".")) {
             throw new UnexpectedSyntaxException("UNKNOWN VARIABLE : " + token.getText());

@@ -5,7 +5,7 @@ import org.contan_lang.evaluators.*;
 import org.contan_lang.syntax.Identifier;
 import org.contan_lang.syntax.Lexer;
 import org.contan_lang.syntax.exception.ContanParseException;
-import org.contan_lang.syntax.exception.ParseError;
+import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.parser.environment.Scope;
 import org.contan_lang.syntax.parser.environment.ScopeType;
 import org.contan_lang.syntax.tokens.Token;
@@ -66,25 +66,48 @@ public class NewParser {
 
         return new ContanModule(moduleName, moduleFunctions, globalEvaluator);
     }
-
-
-
-    public Evaluator parseBlock(Scope scope, @Nullable List<Token> firstTokens, List<Token> blockTokens) throws ContanParseException {
+    
+    
+    /**
+     * The given token is traversed one by one from the front to generate an evaluator
+     * by dividing it into sentences and block parts.
+     *
+     * @param scope Scope of blocks to be scanned
+     * @param firstTokens Token list for the pre-evaluation portion of the block.
+     *                    <p>
+     *                    For example, in the case of an if block,
+     *                    it refers to the "if (a == b)" part of "if (a == b) {//do something}".
+     *
+     * @param blockTokens Token list for the execution part of the block.
+     *                    <p>
+     *                    For example, in the case of an if block,
+     *                    it refers to the "{//do something}" part of "if (a == b) {//do something}".
+     *
+     * @return Parsed {@link Evaluator}
+     * @throws ContanParseException
+     */
+    public Evaluator parseBlock(Scope scope, @Nullable List<Token> firstTokens, List<Token> blockTokens)
+            throws ContanParseException {
+        
         int length = blockTokens.size();
 
         if (firstTokens != null) {
+            //Parses a sequence of tokens already separated by the first and second halves.
+            
             Token first = firstTokens.get(0);
             Identifier identifier = first.getIdentifier();
 
             if (identifier == null) {
-                ParseError.E0000.throwError("", first);
+                ParserError.E0000.throwError("", first);
             } else {
+                
+                //Create each block from the split tokens.
                 switch (identifier) {
                     case CLASS: {
                         Token classNameToken = firstTokens.get(1);
 
                         if (scope.getScopeType() != ScopeType.MODULE) {
-                            ParseError.E0004.throwError("", classNameToken);
+                            ParserError.E0004.throwError("", first);
                         }
 
                         List<Token> args = ParserUtil.getDefinedArguments(firstTokens.subList(2, firstTokens.size()));
@@ -107,6 +130,10 @@ public class NewParser {
                     }
 
                     case INITIALIZE: {
+                        if (scope.getScopeType() != ScopeType.CLASS && scope.getScopeType() == ScopeType.MODULE) {
+                            ParserError.E0006.throwError("", first);
+                        }
+                        
                         Scope initializeScope = new Scope(moduleName + ".initialize", scope, ScopeType.INITIALIZE);
 
                         Evaluator blockEval = parseBlock(initializeScope, null, blockTokens);
@@ -119,12 +146,12 @@ public class NewParser {
                         Token functionNameToken = firstTokens.get(1);
 
                         if (scope.getScopeType() != ScopeType.MODULE && scope.getScopeType() != ScopeType.CLASS) {
-                            ParseError.E0005.throwError("", functionNameToken);
+                            ParserError.E0005.throwError("", first);
                         }
 
                         List<Token> args = ParserUtil.getDefinedArguments(firstTokens.subList(2, firstTokens.size()));
 
-                        Scope functionScope = new Scope(moduleName + "." + functionNameToken.getText(), scope, ScopeType.FUNCTION);
+                        Scope functionScope = new Scope(scope.getRootName() + "." + functionNameToken.getText(), scope, ScopeType.FUNCTION);
                         args.forEach(token -> functionScope.addVariable(token.getText()));
 
                         Evaluator blockEval = parseBlock(functionScope, null, blockTokens);
@@ -141,21 +168,34 @@ public class NewParser {
                     }
 
                     case IF: {
-
+                        Scope ifScope = new Scope(scope.getRootName() + ".if", scope, ScopeType.FUNCTION);
+                        
+                        Evaluator termsEval = parseBlock(ifScope, null, firstTokens.subList(1, firstTokens.size()));
+                        Evaluator blockEval = parseBlock(ifScope, null, blockTokens);
+                        
+                        IfEvaluator ifEvaluator = new IfEvaluator(termsEval, blockEval);
+                        scope.setPreviousIfEvaluator(ifEvaluator);
+                        
+                        return ifEvaluator;
+                    }
+                    
+                    default: {
+                        ParserError.E0000.throwError("", first);
                     }
                 }
             }
         }
 
+        
+        
         List<Evaluator> blockEvaluators = new ArrayList<>();
         List<Token> expressionTokens = new ArrayList<>();
 
+        //Parses a block or statement that has not yet been split.
         for (int i = 0; i < length; i++) {
             Token token = blockTokens.get(i);
             Identifier identifier = token.getIdentifier();
-
-
-
+            
             //Parse expression
             if (identifier != Identifier.EXPRESSION_SPLIT) {
                 expressionTokens.add(token);

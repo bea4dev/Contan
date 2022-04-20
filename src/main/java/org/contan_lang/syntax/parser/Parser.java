@@ -667,7 +667,7 @@ public class Parser {
                 Evaluator ifEval = parseExpression(environment, ifTokens);
                 Evaluator blockEval = parseBlock(environment, blockTokens);
 
-                return new IfElseEvaluator(ifEval, blockEval, null);
+                return new IfEvaluator(ifEval, blockEval, null);
             }
         }
         

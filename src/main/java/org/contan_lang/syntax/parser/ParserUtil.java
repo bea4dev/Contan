@@ -2,8 +2,7 @@ package org.contan_lang.syntax.parser;
 
 import org.contan_lang.syntax.Identifier;
 import org.contan_lang.syntax.exception.ContanParseException;
-import org.contan_lang.syntax.exception.ParseError;
-import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
+import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.tokens.Token;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class ParserUtil {
 
                 if (nest == 0) {
                     if (checkLastIsEndOfTopNest && i != length - 1) {
-                        ParseError.E0002.throwError(end.words[0], tokens.get(startIndex));
+                        ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
                     }
                     return nestedToken;
                 }
@@ -45,7 +44,7 @@ public class ParserUtil {
 
         }
 
-        ParseError.E0002.throwError(end.words[0], tokens.get(startIndex));
+        ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
         return null;
     }
 
@@ -65,7 +64,7 @@ public class ParserUtil {
             nestedToken.add(token);
         }
 
-        ParseError.E0002.throwError(end.words[0], tokens.get(startIndex));
+        ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
         return null;
     }
 
@@ -83,7 +82,7 @@ public class ParserUtil {
                     continue;
                 }
 
-                ParseError.E0003.throwError("", token);
+                ParserError.E0003.throwError("", token);
             }
 
             args.add(token);
