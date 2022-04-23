@@ -1,6 +1,8 @@
 package org.contan_lang.syntax.parser.environment;
 
 import org.contan_lang.evaluators.IfEvaluator;
+import org.contan_lang.syntax.exception.ContanParseException;
+import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
 import org.contan_lang.syntax.tokens.Token;
 
@@ -47,9 +49,9 @@ public class Scope {
     
     public void setPreviousIfEvaluator(IfEvaluator previousIfEvaluator) {this.previousIfEvaluator = previousIfEvaluator;}
     
-    public void checkHasVariable(Token token) throws UnexpectedSyntaxException {
-        if (!hasVariable(token.getText()) && !token.getText().contains(".")) {
-            throw new UnexpectedSyntaxException("UNKNOWN VARIABLE : " + token.getText());
+    public void checkHasVariable(Token token) throws ContanParseException {
+        if (!hasVariable(token.getText())) {
+            ParserError.E0001.throwError("", token);
         }
     }
 

@@ -12,16 +12,16 @@ public class CreateVariableOperator extends Operator {
     
     protected final String variableName;
     
-    public CreateVariableOperator(ContanEngine contanEngine, Token token, String variableName, Evaluator... operator) {
+    public CreateVariableOperator(ContanEngine contanEngine, Token token, Evaluator... operator) {
         super(contanEngine, token, operator);
-        this.variableName = variableName;
+        this.variableName = token.getText();
     }
     
     public String getVariableName() {return variableName;}
     
     @Override
     public ContanVariable<?> eval(Environment environment) {
-        environment.createVariable(variableName, operators[0].eval(environment));
+        environment.createVariable(variableName, ContanVoid.INSTANCE);
         return ContanVoid.INSTANCE;
     }
     

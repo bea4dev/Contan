@@ -2,7 +2,7 @@ package org.contan_lang.evaluators;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
-import org.contan_lang.environment.EnvironmentVariable;
+import org.contan_lang.environment.ContanVariableReference;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.standard.functions.StandardFunctions;
 import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
@@ -77,9 +77,9 @@ public class PreLinkedFunctionEvaluator implements Evaluator {
 
         if (tokens != null) {
             ContanVariable<?> currentVariable;
-            EnvironmentVariable environmentVariable = environment.getVariable(tokens[0]);
-            if (environmentVariable != null) {
-                currentVariable = environmentVariable.getContanVariable();
+            ContanVariableReference contanVariableReference = environment.getVariable(tokens[0]);
+            if (contanVariableReference != null) {
+                currentVariable = contanVariableReference.getContanVariable();
     
                 for (int i = 1; i < tokens.length; i++) {
                     String token = tokens[i];
@@ -88,7 +88,7 @@ public class PreLinkedFunctionEvaluator implements Evaluator {
                         return currentVariable.invokeFunction(environment, token, variables);
                     } else {
                         if (currentVariable instanceof ContanClassInstance) {
-                            EnvironmentVariable ev = ((ContanClassInstance) currentVariable).getEnvironment().getVariable(token);
+                            ContanVariableReference ev = ((ContanClassInstance) currentVariable).getEnvironment().getVariable(token);
                             if (ev == null) {
                                 break;
                             }

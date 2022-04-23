@@ -38,7 +38,7 @@ public class ContanFloat extends ContanPrimitiveVariable<Double> {
     }
     
     @Override
-    public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
+    public ContanVariable<?> invokeFunction(String functionName, ContanVariable<?>... variables) {
         throw new ContanRuntimeException("");
     }
 

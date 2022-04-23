@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class EnvironmentUtil {
     
-    public static EnvironmentVariable getClassEnvironmentVariable(ContanEngine contanEngine, Environment environment, String[] tokens, Token name) {
+    public static ContanVariableReference getClassEnvironmentVariable(ContanEngine contanEngine, Environment environment, String[] tokens, Token name) {
         Token nameToken = name;
         if (name.getText().toCharArray()[0] == '.') {
             nameToken = new NameToken("data" + name.getText());
@@ -20,28 +20,28 @@ public class EnvironmentUtil {
         }
 
         ContanVariable<?> currentVariable;
-        EnvironmentVariable environmentVariable = environment.getVariable(tokens[0]);
+        ContanVariableReference contanVariableReference = environment.getVariable(tokens[0]);
 
-        if (environmentVariable == null) {
+        if (contanVariableReference == null) {
 
         }
 
-        if (environmentVariable != null) {
-            currentVariable = environmentVariable.getContanVariable();
+        if (contanVariableReference != null) {
+            currentVariable = contanVariableReference.getContanVariable();
 
             for (int i = 1; i < tokens.length; i++) {
                 String token = tokens[i];
 
                 if (currentVariable instanceof ContanClassInstance) {
-                    EnvironmentVariable ev = ((ContanClassInstance) currentVariable).getEnvironment().getVariable(token);
+                    ContanVariableReference ev = ((ContanClassInstance) currentVariable).getEnvironment().getVariable(token);
                     if (ev == null) {
                         break;
                     }
 
-                    environmentVariable = ev;
+                    contanVariableReference = ev;
                     currentVariable = ev.getContanVariable();
                     if (i == tokens.length - 1) {
-                        return environmentVariable;
+                        return contanVariableReference;
                     }
                 } else if (currentVariable instanceof JavaClassInstance) {
                     try {
@@ -51,9 +51,9 @@ public class EnvironmentUtil {
                         Field field = clazz.getField(token);
 
                         currentVariable = new JavaClassInstance(field.get(based));
-                        environmentVariable = new JavaBaseEnvironmentVariable(token, null, null, field, based);
+                        contanVariableReference = new ContanJavaBaseVariableReference(token, null, null, field, based);
                         if (i == tokens.length - 1) {
-                            return environmentVariable;
+                            return contanVariableReference;
                         }
                     } catch (Exception e) {
                         break;
@@ -91,7 +91,7 @@ public class EnvironmentUtil {
             throw new ContanRuntimeException("");
         }
 
-        return new JavaBaseEnvironmentVariable(nameToken.getText(), null, null, field, null);
+        return new ContanJavaBaseVariableReference(nameToken.getText(), null, null, field, null);
     }
     
 }

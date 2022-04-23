@@ -9,10 +9,6 @@ import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.primitive.ContanFloat;
 import org.contan_lang.variables.primitive.ContanInteger;
 import org.contan_lang.variables.primitive.ContanString;
-import org.contan_lang.variables.primitive.ContanVoid;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddOperator extends Operator {
     
@@ -22,58 +18,57 @@ public class AddOperator extends Operator {
     
     @Override
     public ContanVariable<?> eval(Environment environment) {
-        double sum = 0.0;
-        List<Object> results = new ArrayList<>();
-        boolean hasString = false;
-        boolean asFloat = false;
-        for (Evaluator arg : operators) {
-            ContanVariable<?> variable = arg.eval(environment);
-            Object result = variable.getBasedJavaObject();
+        Object first = operators[0].eval(environment).getBasedJavaObject();
+        Object second = operators[0].eval(environment).getBasedJavaObject();
+        
+        if ((first instanceof Integer || first instanceof Long || first instanceof Float || first instanceof Double) &&
+                (second instanceof Integer || second instanceof Long || second instanceof Float || second instanceof Double)) {
             
-            if (variable instanceof ContanVoid) {
-                results.add(variable.toString());
-            } else {
-                results.add(result);
-            }
-            
-            if (!hasString) {
-                boolean isInteger = result instanceof Integer;
-                boolean isLong = result instanceof Long;
-                boolean isFloat = result instanceof Float;
-                boolean isDouble = result instanceof Double;
-                if (!(isInteger || isLong || isFloat || isDouble)) {
-                    hasString = true;
+            if (first instanceof Float || first instanceof Double || second instanceof Float || second instanceof Double) {
+                double sum = 0.0;
+                
+                if (first instanceof Integer) {
+                    sum += (Integer) first;
+                } else if (first instanceof Long) {
+                    sum += (Long) first;
+                } else if (first instanceof Float) {
+                    sum += (Float) first;
+                } else {
+                    sum += (Double) first;
+                }
+    
+                if (second instanceof Integer) {
+                    sum += (Integer) second;
+                } else if (second instanceof Long) {
+                    sum += (Long) second;
+                } else if (second instanceof Float) {
+                    sum += (Float) second;
+                } else {
+                    sum += (Double) second;
                 }
                 
-                if (isFloat || isDouble) {
-                    asFloat = true;
-                }
+                return new ContanFloat(contanEngine, sum);
+            }
+            
+            
+            long sum = 0L;
+            
+            if (first instanceof Integer) {
+                sum += (Integer) first;
+            } else {
+                sum += (Long) first;
             }
     
-            if (!hasString) {
-                if (result instanceof Integer) {
-                    sum += (int) result;
-                } else if (result instanceof Long) {
-                    sum += (long) result;
-                } else if (result instanceof Float) {
-                    sum += (float) result;
-                } else {
-                    sum += (double) result;
-                }
-            }
-        }
-        
-        if (hasString) {
-            StringBuilder stringBuilder = new StringBuilder();
-            results.forEach(stringBuilder::append);
-            return new ContanString(contanEngine, stringBuilder.toString());
-        } else {
-            if (asFloat) {
-                return new ContanFloat(contanEngine, sum);
+            if (second instanceof Integer) {
+                sum += (Integer) second;
             } else {
-                return new ContanInteger(contanEngine, (long) sum);
+                sum += (Long) second;
             }
+            
+            return new ContanInteger(contanEngine, sum);
         }
+    
+        return new ContanString(contanEngine, first.toString() + second.toString());
     }
     
 }

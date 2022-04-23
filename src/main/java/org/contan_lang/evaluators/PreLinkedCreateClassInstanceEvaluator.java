@@ -1,5 +1,6 @@
 package org.contan_lang.evaluators;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.exception.ContanParseException;
@@ -21,6 +22,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
+    
+    private final ContanEngine contanEngine;
 
     private final String classPath;
 
@@ -32,7 +35,8 @@ public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
     
     private Class<?> javaClass = null;
 
-    public PreLinkedCreateClassInstanceEvaluator(@Nullable String classPath, Token nameToken, Evaluator... args) {
+    public PreLinkedCreateClassInstanceEvaluator(ContanEngine contanEngine, @Nullable String classPath, Token nameToken, Evaluator... args) {
+        this.contanEngine = contanEngine;
         this.classPath = classPath;
         this.nameToken = nameToken;
         this.args = args;
@@ -154,7 +158,7 @@ public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
                     }
         
                     Object instance = constructor.newInstance(convertedArgs);
-                    return new JavaClassInstance(instance);
+                    return new JavaClassInstance(contanEngine, instance);
                 }
     
                 throw new ContanRuntimeException("Not fount java class constructor.");

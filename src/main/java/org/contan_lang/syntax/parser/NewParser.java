@@ -2,6 +2,7 @@ package org.contan_lang.syntax.parser;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.evaluators.*;
+import org.contan_lang.operators.primitives.*;
 import org.contan_lang.syntax.Identifier;
 import org.contan_lang.syntax.Lexer;
 import org.contan_lang.syntax.exception.ContanParseException;
@@ -9,6 +10,8 @@ import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.parser.environment.Scope;
 import org.contan_lang.syntax.parser.environment.ScopeType;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.variables.primitive.ContanFloat;
+import org.contan_lang.variables.primitive.ContanInteger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -192,23 +195,6 @@ public class NewParser {
             return NullEvaluator.INSTANCE;
         }
 
-
-        if (blockTokens.get(0).getIdentifier() == Identifier.BLOCK_START) {
-            List<Token> block = ParserUtil.getNestedToken(blockTokens, 0, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
-
-            if (block.size() + 2 == blockTokenLength) {
-                return parseBlock(scope, null, blockTokens);
-            }
-        }
-
-        if (blockTokens.get(0).getIdentifier() == Identifier.BLOCK_OPERATOR_START) {
-            List<Token> block = ParserUtil.getNestedToken(blockTokens, 0, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
-
-            if (block.size() + 2 == blockTokenLength) {
-                return parseBlock(scope, null, blockTokens);
-            }
-        }
-
         
         List<Evaluator> blockEvaluators = new ArrayList<>();
         List<Token> expressionTokens = new ArrayList<>();
@@ -231,14 +217,25 @@ public class NewParser {
                         i += first.size();
 
                         List<Token> block = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
-                        i += block.size();
+                        i += block.size() + 2;
 
                         parseBlock(scope, first, block);
                         continue;
                     }
                 }
             }
-
+    
+    
+            //Skip over the contents of the parentheses.
+            if (identifier == Identifier.BLOCK_OPERATOR_START) {
+                List<Token> nestedTokens = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
+                i += nestedTokens.size() + 2;
+    
+                //Ignore line breaks.
+                nestedTokens.removeIf(t -> t.getText().equals("\n"));
+                
+                expressionTokens.addAll(nestedTokens);
+            }
             
             //Parse expression
             if (identifier != Identifier.EXPRESSION_SPLIT) {
@@ -251,7 +248,7 @@ public class NewParser {
             }
         }
 
-        return new Expressions(blockEvaluators);
+        return new Expressions(blockEvaluators.toArray(new Evaluator[0]));
     }
 
 
@@ -262,10 +259,169 @@ public class NewParser {
             return NullEvaluator.INSTANCE;
         }
 
+        
+        //Determine if it is a variable name or an integer definition.
         if (tokenLength == 1) {
             Token first = tokens.get(0);
 
-
+            //Checks if a variable name is specified.
+            if (first.getIdentifier() != null) {
+                ParserError.E0006.throwError("", first);
+            }
+    
+            
+            String name = first.getText();
+            if (ParserUtil.isNumber(name)) {
+                //Integer
+                return new DefinedValueOperator(contanEngine, first, new ContanInteger(contanEngine, Long.parseLong(name)));
+            } else {
+                //Not number
+                scope.checkHasVariable(first);
+                return new GetValueOperator(contanEngine, first);
+            }
+        }
+        
+        
+        //Obtains a numeric value divided into integer and decimal portions by lexer.
+        if (tokenLength == 3) {
+            Token first = tokens.get(0);
+            Token second = tokens.get(1);
+            Token third = tokens.get(2);
+            
+            //Determine if the first and third are numeric.
+            if (ParserUtil.isNumber(first.getText()) && ParserUtil.isNumber(third.getText())) {
+                //Determine if the second is dot.
+                if (second.getIdentifier() == Identifier.DOT) {
+                    double value = Double.parseDouble(first.getText() + second.getText() + third.getText());
+                    return new DefinedValueOperator(contanEngine, first.marge(second, third), new ContanFloat(contanEngine, value));
+                }
+            }
+        }
+        
+        
+        //From right to left, it searches for the highest-priority Identifier and divides the surrounding sentence.
+        //When scanning, skip over the contents of the parentheses.
+        Token highestIdentifierToken = null;
+        Identifier highestIdentifier = null;
+        String word = "";
+        int currentHighestPriority = 0;
+        int highestIdentifierTokenIndex = 0;
+        
+        for (int i = tokenLength - 1; i >= 0; i--) {
+            Token token = tokens.get(i);
+            
+            Identifier identifier = token.getIdentifier();
+            
+            //Skip if the current token is not an Identifier.
+            if (identifier == null) {
+                continue;
+            }
+            
+            if (identifier.priority >= Identifier.BLOCK_START.priority) {
+                ParserError.E0000.throwError("", token);
+            }
+    
+            //Skip over the contents of the parentheses.
+            if (identifier == Identifier.BLOCK_OPERATOR_END) {
+                i -= ParserUtil.getNestedTokenReverse(tokens, i, Identifier.BLOCK_OPERATOR_END, Identifier.BLOCK_OPERATOR_START, true, false).size();
+            }
+            
+            if (identifier.priority > currentHighestPriority) {
+                highestIdentifierToken = token;
+                highestIdentifier = identifier;
+                word = token.getText();
+                currentHighestPriority = identifier.priority;
+                highestIdentifierTokenIndex = i;
+            }
+        }
+        
+        if (highestIdentifier == null) {
+            ParserError.E0008.throwError("", tokens.get(0));
+            return null;
+        }
+        
+        //Split sentences.
+        List<Token> leftTokenList = tokens.subList(0, highestIdentifierTokenIndex);
+        List<Token> rightTokenList = tokens.subList(highestIdentifierTokenIndex + 1, tokenLength);
+        
+        switch (highestIdentifier) {
+            //data value = 0
+            case DEFINE_VARIABLE: {
+                if (leftTokenList.size() != 0) {
+                    ParserError.E0009.throwError("", leftTokenList.toArray(new Token[0]));
+                }
+                
+                Token variableNameToken = rightTokenList.get(0);
+                if (variableNameToken.getIdentifier() != null) {
+                    ParserError.E0010.throwError("", variableNameToken);
+                }
+                
+                int rightTokenListLength = rightTokenList.size();
+                if (rightTokenListLength != 1) {
+                    //If the expression is incomplete.
+                    if (rightTokenListLength < 3) {
+                        ParserError.E0011.throwError("", rightTokenList.toArray(new Token[0]));
+                    }
+                    
+                    Evaluator define = new CreateVariableOperator(contanEngine, rightTokenList.get(0));
+                    Evaluator set = parseExpression(scope, rightTokenList.subList(1, rightTokenListLength));
+                    
+                    return new Expressions(define, set);
+                }
+            }
+            
+            //20 + 10 or +10
+            case OPERATOR_PLUS: {
+                if (leftTokenList.size() == 0) {
+                    return parseExpression(scope, rightTokenList);
+                }
+                
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+                
+                return new AddOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+            
+            //20 * 10
+            case OPERATOR_MULTIPLY: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+    
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+                
+                return new MultiplyOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+            
+            //20 == 20
+            case OPERATOR_EQUAL: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+    
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+                
+                return new EqualOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+            
+            //value = 20
+            case SUBSTITUTION: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+    
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+                
+                return new SetValueOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+            
+            //null
+            case NULL: {
+                return new NullValueOperator(contanEngine, highestIdentifierToken);
+            }
         }
     }
 

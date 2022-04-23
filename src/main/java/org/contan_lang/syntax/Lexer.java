@@ -23,7 +23,7 @@ public class Lexer {
         boolean isInStringDefine = false;
         boolean isInStringDefinePrevious = false;
         
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             //Check identifier
             Identifier identifier = null;
             String word = "";
@@ -86,7 +86,7 @@ public class Lexer {
             } else {
                 String name = stringBuilder.toString();
                 if (!isInStringDefinePrevious) name = name.replace(" ", "");
-                if(name.length() != 0) tokens.add(new Token(this, name, null));
+                if (name.length() != 0) tokens.add(new Token(this, name, null));
                 stringBuilder = new StringBuilder();
                 
                 tokens.add(new Token(this, word, identifier));
@@ -103,7 +103,7 @@ public class Lexer {
                 if (stringBuilder.length() != 0) {
                     String name = stringBuilder.toString();
                     if (!isInStringDefinePrevious) name = name.replace(" ", "");
-                    if(name.length() != 0) tokens.add(new Token(this, name, null));
+                    if (name.length() != 0) tokens.add(new Token(this, name, null));
                 }
             }
         }

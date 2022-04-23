@@ -21,5 +21,9 @@ public class Token {
     public String getText() {return text;}
 
     public @Nullable Identifier getIdentifier() {return identifier;}
+    
+    public Token marge(Token... tokens) {
+        return this;
+    }
 
 }

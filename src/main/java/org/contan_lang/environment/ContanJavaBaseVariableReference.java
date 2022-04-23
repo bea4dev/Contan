@@ -1,19 +1,22 @@
 package org.contan_lang.environment;
 
+import org.contan_lang.ContanEngine;
+import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeException;
+import org.contan_lang.environment.ContanVariableReference;
 import org.contan_lang.variables.ContanVariable;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 
 import java.lang.reflect.Field;
 
-public class JavaBaseEnvironmentVariable extends EnvironmentVariable {
+public class ContanJavaBaseVariableReference extends ContanVariableReference {
 
     private final Field field;
 
     private final Object javaObject;
 
-    public JavaBaseEnvironmentVariable(String name, Environment environment, ContanVariable<?> contanVariable, Field field, Object javaObject) {
-        super(name, environment, contanVariable);
+    public ContanJavaBaseVariableReference(ContanEngine contanEngine, String name, Environment environment, ContanVariable<?> contanVariable, Field field, Object javaObject) {
+        super(contanEngine, name, environment, contanVariable);
         this.field = field;
         this.javaObject = javaObject;
     }
@@ -32,7 +35,7 @@ public class JavaBaseEnvironmentVariable extends EnvironmentVariable {
     @Override
     public ContanVariable<?> getContanVariable() {
         try {
-            return new JavaClassInstance(field.get(javaObject));
+            return new JavaClassInstance(contanEngine, field.get(javaObject));
         } catch (Exception e) {
             e.printStackTrace();
             throw new ContanRuntimeException("");

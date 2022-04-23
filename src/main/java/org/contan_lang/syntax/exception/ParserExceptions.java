@@ -2,7 +2,7 @@ package org.contan_lang.syntax.exception;
 
 import org.contan_lang.syntax.tokens.Token;
 
-public enum InternalParseException {
+public enum ParserExceptions {
 
     INTERNAL_ERROR(ContanParseException::new),
     UNEXPECTED_SYNTAX(UnexpectedSyntaxException::new),
@@ -10,7 +10,7 @@ public enum InternalParseException {
 
     private final CreateExceptionFunction createExceptionFunction;
 
-    InternalParseException(CreateExceptionFunction createExceptionFunction) {
+    ParserExceptions(CreateExceptionFunction createExceptionFunction) {
         this.createExceptionFunction = createExceptionFunction;
     }
 

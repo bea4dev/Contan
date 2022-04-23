@@ -4,26 +4,32 @@ import org.contan_lang.syntax.tokens.Token;
 
 public enum ParserError {
 
-    E0000(InternalParseException.INTERNAL_ERROR, "Internal error %0."),
-    E0001(InternalParseException.UNDEFINED_VARIABLE, "Undefined variable %0"),
-    E0002(InternalParseException.UNEXPECTED_SYNTAX, "Does not match the expected token."
+    E0000(ParserExceptions.INTERNAL_ERROR, "Internal error %0."),
+    E0001(ParserExceptions.UNDEFINED_VARIABLE, "Undefined variable : %0"),
+    E0002(ParserExceptions.UNEXPECTED_SYNTAX, "Does not match the expected token."
             + System.lineSeparator() + "Expected : %s"),
-    E0003(InternalParseException.UNEXPECTED_SYNTAX, "The reserved word '%0' cannot be used in the argument name."),
-    E0004(InternalParseException.UNEXPECTED_SYNTAX, "Classes can only be defined within the module scope."),
-    E0005(InternalParseException.UNEXPECTED_SYNTAX, "Functions can only be defined within the module or class scope."),
-    E0006(InternalParseException.UNEXPECTED_SYNTAX, "Initializers can only be defined within the module or class scope.");
+    E0003(ParserExceptions.UNEXPECTED_SYNTAX, "The reserved word '%0' cannot be used in the argument name."),
+    E0004(ParserExceptions.UNEXPECTED_SYNTAX, "Classes can only be defined within the module scope."),
+    E0005(ParserExceptions.UNEXPECTED_SYNTAX, "Functions can only be defined within the module or class scope."),
+    E0006(ParserExceptions.UNEXPECTED_SYNTAX, "Initializers can only be defined within the module or class scope."),
+    E0007(ParserExceptions.UNEXPECTED_SYNTAX, "A variable name was expected, but a reserved word was specified."),
+    E0008(ParserExceptions.UNEXPECTED_SYNTAX, "Invalid syntax. Variable names are contiguous."),
+    E0009(ParserExceptions.UNEXPECTED_SYNTAX, "Expressions cannot be written to the left of variable declarations."),
+    E0010(ParserExceptions.UNEXPECTED_SYNTAX, "Reserved words are not allowed in variable names."),
+    E0011(ParserExceptions.UNEXPECTED_SYNTAX, "It is an incomplete substitution expression."),
+    E0012(ParserExceptions.UNEXPECTED_SYNTAX, "The expression is required on both sides.");
 
-    private final InternalParseException internalParseException;
+    private final ParserExceptions parserExceptions;
 
     private final String reason;
 
-    ParserError(InternalParseException internalParseException, String reason) {
-        this.internalParseException = internalParseException;
+    ParserError(ParserExceptions parserExceptions, String reason) {
+        this.parserExceptions = parserExceptions;
         this.reason = reason;
     }
 
     public void throwError(String replace, Token... tokens) throws ContanParseException {
-        internalParseException.throwException(("[" + this.name() + "] " + reason).replace("%s", replace), tokens);
+        parserExceptions.throwException(("[" + this.name() + "] " + reason).replace("%s", replace), tokens);
     }
 
 }

@@ -47,6 +47,44 @@ public class ParserUtil {
         ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
         return new ArrayList<>();
     }
+    
+    
+    public static List<Token> getNestedTokenReverse(List<Token> tokens, int startIndex, Identifier start, Identifier end, boolean containStartAndEnd, boolean checkLastIsEndOfTopNest) throws ContanParseException {
+        List<Token> nestedToken = new ArrayList<>();
+        int nest = 0;
+        for (int i = startIndex; i >= 0; i--) {
+            Token token = tokens.get(i);
+            
+            Identifier identifier = token.getIdentifier();
+            
+            if (identifier == end && i != startIndex) {
+                nest--;
+                
+                if (containStartAndEnd && nest == 0) {
+                    nestedToken.add(token);
+                }
+                
+                if (nest == 0) {
+                    if (checkLastIsEndOfTopNest && i != 0) {
+                        ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
+                    }
+                    return nestedToken;
+                }
+            }
+            
+            if (nest != 0 || containStartAndEnd) {
+                nestedToken.add(token);
+            }
+            
+            if (identifier == start) {
+                nest++;
+            }
+            
+        }
+        
+        ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
+        return new ArrayList<>();
+    }
 
 
     public static List<Token> getTokensUntilFoundIdentifier(List<Token> tokens, int startIndex, Identifier end) throws ContanParseException {
@@ -77,7 +115,7 @@ public class ParserUtil {
 
             if (identifier != null) {
                 if (identifier == Identifier.BLOCK_OPERATOR_START || identifier == Identifier.BLOCK_OPERATOR_END
-                        || identifier == Identifier.ARGUMENT_SPLIT) {
+                        || identifier == Identifier.ARGUMENT_SPLIT || identifier == Identifier.EXPRESSION_SPLIT) {
 
                     continue;
                 }
@@ -92,4 +130,7 @@ public class ParserUtil {
     }
 
 
+    public static boolean isNumber(String text) {
+        return text.matches("[+-]?\\d+(?:\\.\\d+)?");
+    }
 }

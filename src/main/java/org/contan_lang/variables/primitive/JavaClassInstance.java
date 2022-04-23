@@ -20,8 +20,8 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
     }
     
     @Override
-    public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
-        return invokeJavaMethod(contanEngine, based.getClass(), based, environment, functionName, variables);
+    public ContanVariable<?> invokeFunction(String functionName, ContanVariable<?>... variables) {
+        return invokeJavaMethod(contanEngine, based.getClass(), based, functionName, variables);
     }
     
     @Override
@@ -96,7 +96,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
     }
     
     
-    public static ContanVariable<?> invokeJavaMethod(ContanEngine contanEngine, Class<?> clazz, @Nullable Object based, Environment environment, String functionName, ContanVariable<?>... variables) {
+    public static ContanVariable<?> invokeJavaMethod(ContanEngine contanEngine, Class<?> clazz, @Nullable Object based, String functionName, ContanVariable<?>... variables) {
         try {
             methodLoop : for (Method method : clazz.getMethods()) {
                 if (method.getParameterCount() != variables.length) continue;

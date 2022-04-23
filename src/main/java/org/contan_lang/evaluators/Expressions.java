@@ -9,18 +9,18 @@ import java.util.List;
 
 public class Expressions implements Evaluator {
     
-    private final List<Evaluator> expressions;
+    private final Evaluator[] expressions;
     
-    public Expressions(List<Evaluator> expressions) {
+    public Expressions(Evaluator... expressions) {
         this.expressions = expressions;
     }
     
     @Override
     public ContanVariable<?> eval(Environment environment) {
-        for (int i = 0; i < expressions.size(); i ++) {
-            Evaluator evaluator = expressions.get(i);
+        for (int i = 0; i < expressions.length; i ++) {
+            Evaluator evaluator = expressions[i];
 
-            if (i == expressions.size() - 1) {
+            if (i == expressions.length - 1) {
                 return evaluator.eval(environment);
             } else {
                 evaluator.eval(environment);

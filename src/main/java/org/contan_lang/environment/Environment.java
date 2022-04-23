@@ -1,5 +1,6 @@
 package org.contan_lang.environment;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.variables.ContanVariable;
 import org.jetbrains.annotations.Nullable;
@@ -9,20 +10,24 @@ import java.util.Map;
 
 public class Environment {
 
+    protected final ContanEngine contanEngine;
+    
     protected final Environment parent;
 
     protected final boolean canHasReturnValue;
     
-    protected final Map<String, EnvironmentVariable> variableMap = new HashMap<>();
+    protected final Map<String, ContanVariableReference> variableMap = new HashMap<>();
     
     protected ContanVariable<?> returnValue = null;
 
-    public Environment(@Nullable Environment parent) {
+    public Environment(ContanEngine contanEngine, @Nullable Environment parent) {
+        this.contanEngine = contanEngine;
         this.parent = parent;
         this.canHasReturnValue = false;
     }
 
-    public Environment(@Nullable Environment parent, boolean canHasReturnValue) {
+    public Environment(ContanEngine contanEngine, @Nullable Environment parent, boolean canHasReturnValue) {
+        this.contanEngine = contanEngine;
         this.parent = parent;
         this.canHasReturnValue = canHasReturnValue;
     }
@@ -56,8 +61,8 @@ public class Environment {
         parent.setReturnValue(returnValue);
     }
     
-    public @Nullable EnvironmentVariable getVariable(String name) {
-        EnvironmentVariable variable = variableMap.get(name);
+    public @Nullable ContanVariableReference getVariable(String name) {
+        ContanVariableReference variable = variableMap.get(name);
         if(variable != null) return variable;
         if(parent == null) return null;
         
@@ -67,12 +72,12 @@ public class Environment {
     public void createVariable(String name, ContanVariable<?> contanVariable) {
         if (variableMap.containsKey(name)) return;
     
-        EnvironmentVariable environmentVariable = new EnvironmentVariable(name, this, contanVariable);
-        variableMap.put(name, environmentVariable);
+        ContanVariableReference contanVariableReference = new ContanVariableReference(contanEngine, name, this, contanVariable);
+        variableMap.put(name, contanVariableReference);
     }
 
     public Environment createMergedEnvironment(Environment environment) {
-        Environment newEnv = new Environment(this);
+        Environment newEnv = new Environment(contanEngine, this);
         newEnv.variableMap.putAll(environment.variableMap);
         return newEnv;
     }

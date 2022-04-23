@@ -356,7 +356,7 @@ public class Parser {
         
         switch (id) {
             //data
-            case DEFINE_DATA: {
+            case DEFINE_VARIABLE: {
                 if (treeRTokens.size() < 1) {
                     throw new UnexpectedSyntaxException("");
                 }
