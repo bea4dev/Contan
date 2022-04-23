@@ -88,8 +88,6 @@ public class NewParser {
      */
     public Evaluator parseBlock(Scope scope, @Nullable List<Token> firstTokens, List<Token> blockTokens)
             throws ContanParseException {
-        
-        int length = blockTokens.size();
 
         if (firstTokens != null) {
             //Parses a sequence of tokens already separated by the first and second halves.
@@ -186,31 +184,89 @@ public class NewParser {
             }
         }
 
-        
+
+
+        int blockTokenLength = blockTokens.size();
+
+        if (blockTokenLength == 0) {
+            return NullEvaluator.INSTANCE;
+        }
+
+
+        if (blockTokens.get(0).getIdentifier() == Identifier.BLOCK_START) {
+            List<Token> block = ParserUtil.getNestedToken(blockTokens, 0, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
+
+            if (block.size() + 2 == blockTokenLength) {
+                return parseBlock(scope, null, blockTokens);
+            }
+        }
+
+        if (blockTokens.get(0).getIdentifier() == Identifier.BLOCK_OPERATOR_START) {
+            List<Token> block = ParserUtil.getNestedToken(blockTokens, 0, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
+
+            if (block.size() + 2 == blockTokenLength) {
+                return parseBlock(scope, null, blockTokens);
+            }
+        }
+
         
         List<Evaluator> blockEvaluators = new ArrayList<>();
         List<Token> expressionTokens = new ArrayList<>();
 
         //Parses a block or statement that has not yet been split.
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < blockTokenLength; i++) {
             Token token = blockTokens.get(i);
             Identifier identifier = token.getIdentifier();
+
+            if (identifier != null) {
+                switch (identifier) {
+                    case CLASS:
+
+                    case INITIALIZE:
+
+                    case FUNCTION:
+
+                    case IF: {
+                        List<Token> first = ParserUtil.getTokensUntilFoundIdentifier(blockTokens, i, Identifier.BLOCK_START);
+                        i += first.size();
+
+                        List<Token> block = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
+                        i += block.size();
+
+                        parseBlock(scope, first, block);
+                        continue;
+                    }
+                }
+            }
+
             
             //Parse expression
             if (identifier != Identifier.EXPRESSION_SPLIT) {
                 expressionTokens.add(token);
             }
 
-            if (identifier == Identifier.EXPRESSION_SPLIT || i == length - 1) {
+            if (identifier == Identifier.EXPRESSION_SPLIT || i == blockTokenLength - 1) {
                 blockEvaluators.add(parseExpression(scope, expressionTokens));
                 expressionTokens.clear();
             }
         }
+
+        return new Expressions(blockEvaluators);
     }
 
 
     public Evaluator parseExpression(Scope scope, List<Token> tokens) throws ContanParseException {
+        int tokenLength = tokens.size();
 
+        if (tokenLength == 0) {
+            return NullEvaluator.INSTANCE;
+        }
+
+        if (tokenLength == 1) {
+            Token first = tokens.get(0);
+
+
+        }
     }
 
 }

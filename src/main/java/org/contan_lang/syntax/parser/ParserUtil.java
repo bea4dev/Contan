@@ -45,7 +45,7 @@ public class ParserUtil {
         }
 
         ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
-        return null;
+        return new ArrayList<>();
     }
 
 
@@ -65,7 +65,7 @@ public class ParserUtil {
         }
 
         ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
-        return null;
+        return new ArrayList<>();
     }
 
 
