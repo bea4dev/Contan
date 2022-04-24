@@ -2,6 +2,7 @@ package org.contan_lang.variables.primitive;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
+import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
@@ -11,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
     
@@ -20,7 +20,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
     }
     
     @Override
-    public ContanVariable<?> invokeFunction(String functionName, ContanVariable<?>... variables) {
+    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
         return invokeJavaMethod(contanEngine, based.getClass(), based, functionName, variables);
     }
     
@@ -51,7 +51,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
             return (long) ((double) based);
         }
     
-        throw new ContanRuntimeException("This type does not support conversion to numeric.");
+        return 0;
     }
     
     @Override
@@ -76,7 +76,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
             return (double) ((double) based);
         }
     
-        throw new ContanRuntimeException("This type does not support conversion to numeric.");
+        return 0.0;
     }
     
     @Override
@@ -95,47 +95,52 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
         return convertibleToLong();
     }
     
+    @Override
+    public String toString() {
+        return based.toString();
+    }
     
-    public static ContanVariable<?> invokeJavaMethod(ContanEngine contanEngine, Class<?> clazz, @Nullable Object based, String functionName, ContanVariable<?>... variables) {
+    
+    public static ContanVariable<?> invokeJavaMethod(ContanEngine contanEngine, Class<?> clazz, @Nullable Object based, Token functionName, ContanVariable<?>... variables) {
         try {
             methodLoop : for (Method method : clazz.getMethods()) {
                 if (method.getParameterCount() != variables.length) continue;
-                if (!method.getName().equals(functionName)) continue;
-            
+                if (!method.getName().equals(functionName.getText())) continue;
+                
                 Object[] convertedArgs = new Object[variables.length];
                 Parameter[] parameters = method.getParameters();
                 for (int i = 0; i < variables.length; i++) {
                     Parameter parameter = parameters[i];
                     ContanVariable<?> variable = variables[i];
                     Class<?> parameterType = parameter.getType();
-                
+                    
                     if (variable.convertibleToDouble()) {
                         double original = variable.asDouble();
                         NumberType numberType = NumberType.getType(original);
-                    
+                        
                         if (parameterType == int.class || parameterType == Integer.class) {
                             if (numberType != NumberType.INTEGER) {
                                 continue methodLoop;
                             }
-                        
+                            
                             convertedArgs[i] = (int) original;
                         } else if (parameterType == long.class || parameterType == Long.class) {
                             if (numberType != NumberType.LONG) {
                                 continue methodLoop;
                             }
-                        
+                            
                             convertedArgs[i] = (long) original;
                         } else if (parameterType == float.class || parameterType == Float.class) {
                             if (numberType != NumberType.FLOAT) {
                                 continue methodLoop;
                             }
-                        
+                            
                             convertedArgs[i] = (float) original;
                         } else if (parameterType == double.class || parameterType == Double.class) {
                             if (numberType != NumberType.DOUBLE) {
                                 continue methodLoop;
                             }
-                        
+                            
                             convertedArgs[i] = original;
                         } else {
                             convertedArgs[i] = variable.getBasedJavaObject();
@@ -148,7 +153,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
                         }
                     }
                 }
-            
+                
                 Object returned = method.invoke(based, convertedArgs);
                 if (returned == null) {
                     return ContanVoid.INSTANCE;
@@ -156,15 +161,17 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
                     return new JavaClassInstance(contanEngine, based);
                 }
             }
-        
-            throw new ContanRuntimeException("Not fount java method."
-                    + System.lineSeparator() + "Method : " + functionName
+            
+            ContanRuntimeError.E0007.throwError(System.lineSeparator() + "Method : " + functionName.getText()
                     + (based == null ? "" : System.lineSeparator() + "Class : " + based.getClass().getName())
-                    + System.lineSeparator() + "Arguments : " + Arrays.toString(variables));
+                    + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), null, functionName);
         } catch (Exception e){
-            e.printStackTrace();
-            throw new ContanRuntimeException("A problem has occurred when executing a java method.");
+            ContanRuntimeError.E0007.throwError(System.lineSeparator() + "Method : " + functionName.getText()
+                    + (based == null ? "" : System.lineSeparator() + "Class : " + based.getClass().getName())
+                    + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), e, functionName);
         }
+        
+        return null;
     }
     
 }

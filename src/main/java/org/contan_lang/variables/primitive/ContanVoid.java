@@ -2,8 +2,10 @@ package org.contan_lang.variables.primitive;
 
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanNullPointerException;
+import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.environment.expection.ContanTypeConvertException;
+import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 
 public class ContanVoid extends ContanPrimitiveVariable<Boolean> {
@@ -17,20 +19,21 @@ public class ContanVoid extends ContanPrimitiveVariable<Boolean> {
     
     @Override
     public String toString() {return "NULL";}
-
+    
     @Override
-    public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
-        throw new ContanNullPointerException("");
+    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
+        ContanRuntimeError.E0011.throwError("", null, functionName);
+        return null;
     }
     
     @Override
     public long asLong() {
-        throw new ContanTypeConvertException("This type does not support conversion to numeric.");
+        return 0;
     }
     
     @Override
     public double asDouble() {
-        throw new ContanRuntimeException("This type does not support conversion to numeric.");
+        return 0;
     }
     
     @Override

@@ -22,23 +22,13 @@ public class ContanJavaBaseVariableReference extends ContanVariableReference {
     }
 
     @Override
-    public void setContanVariable(ContanVariable<?> contanVariable) {
+    public void setContanVariable(ContanVariable<?> contanVariable) throws IllegalAccessException {
         super.setContanVariable(contanVariable);
-        try {
-            field.set(javaObject, contanVariable.getBasedJavaObject());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ContanRuntimeException("");
-        }
+        field.set(javaObject, contanVariable.getBasedJavaObject());
     }
 
     @Override
-    public ContanVariable<?> getContanVariable() {
-        try {
-            return new JavaClassInstance(contanEngine, field.get(javaObject));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ContanRuntimeException("");
-        }
+    public ContanVariable<?> getContanVariable() throws IllegalAccessException {
+        return new JavaClassInstance(contanEngine, field.get(javaObject));
     }
 }

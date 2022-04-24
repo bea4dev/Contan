@@ -1,9 +1,7 @@
 package org.contan_lang.variables.primitive;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.Environment;
-import org.contan_lang.environment.expection.ContanRuntimeException;
-import org.contan_lang.environment.expection.ContanTypeConvertException;
+import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
 
@@ -39,15 +37,16 @@ public class ContanString extends ContanPrimitiveVariable<String> {
     }
     
     @Override
-    public ContanVariable<?> invokeFunction(Environment environment, String functionName, ContanVariable<?>... variables) {
-        throw new ContanRuntimeException("");
+    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
+        ContanRuntimeError.E0011.throwError("", null, functionName);
+        return null;
     }
     
     
     
     public static long asLong(String based) {
         if (!based.matches("[+-]?\\d+(?:\\.\\d+)?")) {
-            throw new ContanTypeConvertException("'" + based + "' is not numerical.");
+            return 0L;
         } else if (based.contains(".")) {
             return (long) Double.parseDouble(based);
         } else {
@@ -58,7 +57,7 @@ public class ContanString extends ContanPrimitiveVariable<String> {
     
     public static double asDouble(String based) {
         if (!based.matches("[+-]?\\d+(?:\\.\\d+)?")) {
-            throw new ContanTypeConvertException("'" + based + "' is not numerical.");
+            return 0.0;
         } else if (based.contains(".")) {
             return Double.parseDouble(based);
         } else {

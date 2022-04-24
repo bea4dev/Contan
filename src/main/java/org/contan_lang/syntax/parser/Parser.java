@@ -28,14 +28,14 @@ public class Parser {
     }
 
     
-    private List<PreLinkedFunctionEvaluator> preLinkedFunctions;
+    private List<PreLinkedFunctionOperator> preLinkedFunctions;
     private List<FunctionBlock> functions;
 
     private List<FunctionBlock> classFunctionBlocks;
 
     private List<Evaluator> classInitializers = new ArrayList<>();
 
-    private List<PreLinkedCreateClassInstanceEvaluator> preLinkedCreateClassInstanceEvaluators;
+    private List<PreLinkedCreateClassInstanceOperator> preLinkedCreateClassInstanceOperators;
 
     private Scope globalEnvironment;
 
@@ -51,15 +51,15 @@ public class Parser {
         classInitializers = new ArrayList<>();
         globalEnvironment = new Scope(rootName, null, ScopeType.MODULE);
 
-        preLinkedCreateClassInstanceEvaluators = new ArrayList<>();
+        preLinkedCreateClassInstanceOperators = new ArrayList<>();
 
         Evaluator globalEvaluator = parseBlock(globalEnvironment, tokens);
         
-        for (PreLinkedFunctionEvaluator functionEvaluator : preLinkedFunctions) {
+        for (PreLinkedFunctionOperator functionEvaluator : preLinkedFunctions) {
             functionEvaluator.link(functions);
         }
 
-        for (PreLinkedCreateClassInstanceEvaluator classInstanceEvaluator : preLinkedCreateClassInstanceEvaluators) {
+        for (PreLinkedCreateClassInstanceOperator classInstanceEvaluator : preLinkedCreateClassInstanceOperators) {
             contanEngine.linkClass(classInstanceEvaluator);
         }
         
@@ -216,7 +216,7 @@ public class Parser {
                         if (argLength + 3 < tokens.size()) {
                             List<Token> nextTokens = tokens.subList(argLength + 3, tokens.size());
         
-                            PreLinkedFunctionEvaluator functionEvaluator = new PreLinkedFunctionEvaluator(contanEngine, tokens.get(0), evaluators.toArray(new Evaluator[0]));
+                            PreLinkedFunctionOperator functionEvaluator = new PreLinkedFunctionOperator(contanEngine, tokens.get(0), evaluators.toArray(new Evaluator[0]));
                             preLinkedFunctions.add(functionEvaluator);
         
                             Expression create = new Expression(new CreateVariableOperator(contanEngine, "data"));
@@ -225,7 +225,7 @@ public class Parser {
                             return new Expressions(create, set, parseExpression(environment, nextTokens));
                         }
                         
-                        PreLinkedFunctionEvaluator functionEvaluator = new PreLinkedFunctionEvaluator(contanEngine, tokens.get(0), evaluators.toArray(new Evaluator[0]));
+                        PreLinkedFunctionOperator functionEvaluator = new PreLinkedFunctionOperator(contanEngine, tokens.get(0), evaluators.toArray(new Evaluator[0]));
                         preLinkedFunctions.add(functionEvaluator);
                         return functionEvaluator;
                     }
@@ -439,13 +439,13 @@ public class Parser {
                     }
                 }
 
-                PreLinkedCreateClassInstanceEvaluator classInstanceEvaluator;
+                PreLinkedCreateClassInstanceOperator classInstanceEvaluator;
                 if (nameToken.getText().contains(".")) {
-                    classInstanceEvaluator = new PreLinkedCreateClassInstanceEvaluator(nameToken.getText(), nameToken, evaluators.toArray(new Evaluator[0]));
+                    classInstanceEvaluator = new PreLinkedCreateClassInstanceOperator(nameToken.getText(), nameToken, evaluators.toArray(new Evaluator[0]));
                 } else {
-                    classInstanceEvaluator = new PreLinkedCreateClassInstanceEvaluator(null, nameToken, evaluators.toArray(new Evaluator[0]));
+                    classInstanceEvaluator = new PreLinkedCreateClassInstanceOperator(null, nameToken, evaluators.toArray(new Evaluator[0]));
                 }
-                preLinkedCreateClassInstanceEvaluators.add(classInstanceEvaluator);
+                preLinkedCreateClassInstanceOperators.add(classInstanceEvaluator);
 
                 if (args.size() + 3 < treeRTokens.size()) {
                     Evaluator createValue = new Expressions(new CreateVariableOperator(contanEngine, "data"));

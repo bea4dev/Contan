@@ -69,7 +69,7 @@ public class MultiplyOperator extends Operator {
         }
     
         ContanRuntimeError.E0002.throwError(System.lineSeparator() + "Left : " + first.toString()
-                                                + System.lineSeparator() + "Right : " + second.toString(), token);
+                                                + System.lineSeparator() + "Right : " + second.toString(), null, token);
         return null;
     }
 }

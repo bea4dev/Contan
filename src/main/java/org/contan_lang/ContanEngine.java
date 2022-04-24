@@ -1,7 +1,7 @@
 package org.contan_lang;
 
 import org.contan_lang.evaluators.ClassBlock;
-import org.contan_lang.evaluators.PreLinkedCreateClassInstanceEvaluator;
+import org.contan_lang.operators.primitives.PreLinkedCreateClassInstanceOperator;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +55,7 @@ public class ContanEngine {
         return javaClassMap.get(className);
     }
 
-    public void linkClass(PreLinkedCreateClassInstanceEvaluator classInstanceEvaluator) throws ContanParseException {
+    public void linkClass(PreLinkedCreateClassInstanceOperator classInstanceEvaluator) throws ContanParseException {
         classInstanceEvaluator.link(classBlocks, collidedClassNames, importedJavaClasses);
     }
 

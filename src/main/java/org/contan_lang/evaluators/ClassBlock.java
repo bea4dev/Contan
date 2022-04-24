@@ -2,6 +2,7 @@ package org.contan_lang.evaluators;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
+import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
@@ -47,7 +48,7 @@ public class ClassBlock implements FunctionInvokable {
     }
 
     public ContanClassInstance createInstance(Environment parentEnvironment, ContanVariable<?>... contanVariables) {
-        Environment environment = new Environment(parentEnvironment);
+        Environment environment = new Environment(contanEngine, parentEnvironment);
 
         for (int i = 0; i < initializeArgs.length; i++) {
             if (i < contanVariables.length) {
@@ -65,19 +66,21 @@ public class ClassBlock implements FunctionInvokable {
     }
 
     @Override
-    public ContanVariable<?> invokeFunction(String functionName, ContanVariable<?>... variables) {
-        List<FunctionBlock> functions = functionMap.get(functionName);
+    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
+        List<FunctionBlock> functions = functionMap.get(functionName.getText());
         if (functions == null) {
-            throw new ContanRuntimeException("NOT FOUND FUNCTION " + functionName);//TODO
+            ContanRuntimeError.E0011.throwError("", null, functionName);
+            return null;
         }
 
         for (FunctionBlock functionBlock : functions) {
             if (functionBlock.getArgs().length == variables.length) {
-                return functionBlock.eval(new Environment(null), variables);
+                return functionBlock.eval(new Environment(contanEngine, null), functionName, variables);
             }
         }
-
-        throw new ContanRuntimeException("NOT FOUND FUNCTION " + functionName);//TODO
+    
+        ContanRuntimeError.E0011.throwError("", null, functionName);
+        return null;
     }
 
 }

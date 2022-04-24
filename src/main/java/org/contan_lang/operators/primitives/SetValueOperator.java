@@ -21,11 +21,15 @@ public class SetValueOperator extends Operator {
         ContanVariable<?> variable = operators[0].eval(environment);
         
         if (!(variable instanceof ContanVariableReference)) {
-            ContanRuntimeError.E0003.throwError("", token);
+            ContanRuntimeError.E0003.throwError("", null, token);
             return null;
         }
         
-        ((ContanVariableReference) variable).setContanVariable(operators[1].eval(environment));
+        try {
+            ((ContanVariableReference) variable).setContanVariable(operators[1].eval(environment));
+        } catch (IllegalAccessException e) {
+            ContanRuntimeError.E0012.throwError("", e, token);
+        }
         
         return ContanVoid.INSTANCE;
     }

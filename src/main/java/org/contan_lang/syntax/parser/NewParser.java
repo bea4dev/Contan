@@ -1,6 +1,7 @@
 package org.contan_lang.syntax.parser;
 
 import org.contan_lang.ContanEngine;
+import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.*;
 import org.contan_lang.operators.primitives.*;
 import org.contan_lang.syntax.Identifier;
@@ -34,7 +35,7 @@ public class NewParser {
 
 
 
-    private List<PreLinkedFunctionEvaluator> preLinkedFunctions;
+    private List<PreLinkedFunctionOperator> preLinkedFunctions;
 
     private List<FunctionBlock> moduleFunctions;
 
@@ -42,9 +43,11 @@ public class NewParser {
 
     private List<Evaluator> classInitializers = new ArrayList<>();
 
-    private List<PreLinkedCreateClassInstanceEvaluator> preLinkedCreateClassInstanceEvaluators;
+    private List<PreLinkedCreateClassInstanceOperator> preLinkedCreateClassInstanceOperators;
 
     private Scope moduleScope;
+    
+    private Environment moduleEnvironment;
 
     public synchronized ContanModule compile() throws ContanParseException {
         List<Token> tokens = lexer.split();
@@ -54,20 +57,21 @@ public class NewParser {
         classFunctionBlocks = new ArrayList<>();
         classInitializers = new ArrayList<>();
         moduleScope = new Scope(moduleName, null, ScopeType.MODULE);
+        moduleEnvironment = new Environment(contanEngine, null);
 
-        preLinkedCreateClassInstanceEvaluators = new ArrayList<>();
+        preLinkedCreateClassInstanceOperators = new ArrayList<>();
 
         Evaluator globalEvaluator = parseBlock(moduleScope, null, tokens);
 
-        for (PreLinkedFunctionEvaluator functionEvaluator : preLinkedFunctions) {
-            functionEvaluator.link(moduleFunctions);
+        for (PreLinkedFunctionOperator functionEvaluator : preLinkedFunctions) {
+            functionEvaluator.link(moduleFunctions, moduleEnvironment);
         }
 
-        for (PreLinkedCreateClassInstanceEvaluator classInstanceEvaluator : preLinkedCreateClassInstanceEvaluators) {
+        for (PreLinkedCreateClassInstanceOperator classInstanceEvaluator : preLinkedCreateClassInstanceOperators) {
             contanEngine.linkClass(classInstanceEvaluator);
         }
 
-        return new ContanModule(moduleName, moduleFunctions, globalEvaluator);
+        return new ContanModule(contanEngine, moduleName, moduleFunctions, globalEvaluator, moduleEnvironment);
     }
     
     
@@ -157,7 +161,7 @@ public class NewParser {
 
                         Evaluator blockEval = parseBlock(functionScope, null, blockTokens);
 
-                        FunctionBlock functionBlock = new FunctionBlock(functionNameToken, blockEval, args.toArray(new Token[0]));
+                        FunctionBlock functionBlock = new FunctionBlock(contanEngine, functionNameToken, blockEval, args.toArray(new Token[0]));
 
                         if (scope.getScopeType() == ScopeType.MODULE) {
                             moduleFunctions.add(functionBlock);
@@ -421,6 +425,11 @@ public class NewParser {
             //null
             case NULL: {
                 return new NullValueOperator(contanEngine, highestIdentifierToken);
+            }
+            
+            //new
+            case NEW: {
+            
             }
         }
     }

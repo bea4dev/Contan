@@ -1,9 +1,12 @@
-package org.contan_lang.evaluators;
+package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
-import org.contan_lang.environment.expection.ContanRuntimeException;
+import org.contan_lang.environment.expection.ContanRuntimeError;
+import org.contan_lang.evaluators.ClassBlock;
+import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.syntax.exception.ContanParseException;
+import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.exception.UnexpectedSyntaxException;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanVariable;
@@ -13,15 +16,12 @@ import org.contan_lang.variables.primitive.JavaClassInstance;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
+public class PreLinkedCreateClassInstanceOperator implements Evaluator {
     
     private final ContanEngine contanEngine;
 
@@ -35,7 +35,7 @@ public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
     
     private Class<?> javaClass = null;
 
-    public PreLinkedCreateClassInstanceEvaluator(ContanEngine contanEngine, @Nullable String classPath, Token nameToken, Evaluator... args) {
+    public PreLinkedCreateClassInstanceOperator(ContanEngine contanEngine, @Nullable String classPath, Token nameToken, Evaluator... args) {
         this.contanEngine = contanEngine;
         this.classPath = classPath;
         this.nameToken = nameToken;
@@ -85,8 +85,9 @@ public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
                 e.printStackTrace();
             }
         }
-
-        throw new ContanParseException("ClassPath : " + classPath + "  ClassName : " + nameToken.getText());
+    
+        //If class not found
+        ParserError.E0013.throwError("", nameToken);
     }
 
     public void checkArgLength(ClassBlock classBlock) throws UnexpectedSyntaxException {
@@ -161,18 +162,19 @@ public class PreLinkedCreateClassInstanceEvaluator implements Evaluator {
                     return new JavaClassInstance(contanEngine, instance);
                 }
     
-                throw new ContanRuntimeException("Not fount java class constructor.");
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new ContanRuntimeException("A problem has occurred when executing a java method."
-                        + System.lineSeparator() + "ClassPath : " + classPath
+                ContanRuntimeError.E0006.throwError(System.lineSeparator() + "ClassPath : " + classPath
                         + System.lineSeparator() + "ClassName : " + nameToken.getText()
-                        + System.lineSeparator() + "Arguments : " + Arrays.toString(variables));
+                        + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), null, nameToken);
+            } catch (Exception e) {
+                ContanRuntimeError.E0005.throwError(System.lineSeparator() + "ClassPath : " + classPath
+                        + System.lineSeparator() + "ClassName : " + nameToken.getText()
+                        + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), e, nameToken);
             }
             
         }
         
-        throw new ContanRuntimeException("Internal error.");
+        ContanRuntimeError.E0001.throwError("", null, nameToken);
+        return null;
     }
 
 }

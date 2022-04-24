@@ -6,7 +6,8 @@ public enum ParserExceptions {
 
     INTERNAL_ERROR(ContanParseException::new),
     UNEXPECTED_SYNTAX(UnexpectedSyntaxException::new),
-    UNDEFINED_VARIABLE(UndefinedParseException::new);
+    UNDEFINED_VARIABLE(UndefinedParseException::new),
+    LINK_FAILURE(ContanParseException::new);
 
     private final CreateExceptionFunction createExceptionFunction;
 

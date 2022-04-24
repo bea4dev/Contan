@@ -24,7 +24,7 @@ public class GetValueOperator extends Operator {
         ContanVariableReference variable = environment.getVariable(targetVariableNameToken.getText());
         
         if (variable == null) {
-            ContanRuntimeError.E0001.throwError("", targetVariableNameToken);
+            ContanRuntimeError.E0001.throwError("", null, targetVariableNameToken);
             return null;
         }
         

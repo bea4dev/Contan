@@ -17,7 +17,9 @@ public enum ParserError {
     E0009(ParserExceptions.UNEXPECTED_SYNTAX, "Expressions cannot be written to the left of variable declarations."),
     E0010(ParserExceptions.UNEXPECTED_SYNTAX, "Reserved words are not allowed in variable names."),
     E0011(ParserExceptions.UNEXPECTED_SYNTAX, "It is an incomplete substitution expression."),
-    E0012(ParserExceptions.UNEXPECTED_SYNTAX, "The expression is required on both sides.");
+    E0012(ParserExceptions.UNEXPECTED_SYNTAX, "The expression is required on both sides."),
+    E0013(ParserExceptions.LINK_FAILURE, "Class not found."),
+    E0014(ParserExceptions.LINK_FAILURE, "Function not found.");
 
     private final ParserExceptions parserExceptions;
 
