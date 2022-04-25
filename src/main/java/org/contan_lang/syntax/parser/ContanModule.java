@@ -6,7 +6,7 @@ import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.evaluators.FunctionInvokable;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,8 +47,10 @@ public class ContanModule implements FunctionInvokable {
 
     public Evaluator getGlobalEvaluator() {return globalEvaluator;}
 
+    public Environment getModuleEnvironment() {return moduleEnvironment;}
+
     @Override
-    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
+    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName.getText());
         for (FunctionBlock functionBlock : functions) {
             if (functionBlock.getArgs().length == variables.length) {

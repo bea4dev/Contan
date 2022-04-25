@@ -2,7 +2,7 @@ package org.contan_lang.evaluators;
 
 import org.contan_lang.environment.Environment;
 import org.contan_lang.operators.Operator;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 
 public class Expression implements Evaluator {
     
@@ -13,7 +13,7 @@ public class Expression implements Evaluator {
     }
     
     @Override
-    public ContanVariable<?> eval(Environment environment) {
+    public ContanObject<?> eval(Environment environment) {
         return operator.eval(environment);
     }
     

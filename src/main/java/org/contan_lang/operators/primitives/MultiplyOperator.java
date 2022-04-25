@@ -6,7 +6,7 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanFloat;
 import org.contan_lang.variables.primitive.ContanInteger;
 
@@ -17,7 +17,7 @@ public class MultiplyOperator extends Operator {
     }
     
     @Override
-    public ContanVariable<?> eval(Environment environment) {
+    public ContanObject<?> eval(Environment environment) {
         Object first = operators[0].eval(environment).getBasedJavaObject();
         Object second = operators[0].eval(environment).getBasedJavaObject();
     

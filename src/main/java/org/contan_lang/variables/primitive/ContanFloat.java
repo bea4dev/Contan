@@ -1,20 +1,18 @@
 package org.contan_lang.variables.primitive;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
-import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 
-public class ContanFloat extends ContanPrimitiveVariable<Double> {
+public class ContanFloat extends ContanPrimitiveObject<Double> {
     
     public ContanFloat(ContanEngine contanEngine, Double based) {
         super(contanEngine, based);
     }
     
     @Override
-    public ContanVariable<Double> createClone() {
+    public ContanObject<Double> createClone() {
         return new ContanFloat(contanEngine, based);
     }
     
@@ -39,7 +37,7 @@ public class ContanFloat extends ContanPrimitiveVariable<Double> {
     }
     
     @Override
-    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
+    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;
     }

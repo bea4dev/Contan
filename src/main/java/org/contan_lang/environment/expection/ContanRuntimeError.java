@@ -17,7 +17,9 @@ public enum ContanRuntimeError {
     E0010(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "The number of arguments does not match."),
     E0011(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "Function not found."),
     E0012(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Failed to assign to a field in Java."),
-    E0013(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Failed to retrieve Java field object.");
+    E0013(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Failed to retrieve Java field object."),
+    E0014(ContanRuntimeExceptions.INVALID_TYPE, "Not class object.  Object : %s"),
+    E0015(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Field not found.");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

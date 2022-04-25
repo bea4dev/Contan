@@ -1,9 +1,9 @@
 package org.contan_lang.variables.primitive;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 
-public abstract class ContanPrimitiveVariable<T> implements ContanVariable<T> {
+public abstract class ContanPrimitiveObject<T> implements ContanObject<T> {
 
     protected final ContanEngine contanEngine;
     
@@ -12,7 +12,7 @@ public abstract class ContanPrimitiveVariable<T> implements ContanVariable<T> {
     @Override
     public ContanEngine getContanEngine() {return contanEngine;}
 
-    public ContanPrimitiveVariable(ContanEngine contanEngine, T based) {
+    public ContanPrimitiveObject(ContanEngine contanEngine, T based) {
         this.contanEngine = contanEngine;
         this.based = based;
     }

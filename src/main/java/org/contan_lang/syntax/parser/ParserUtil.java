@@ -133,4 +133,14 @@ public class ParserUtil {
     public static boolean isNumber(String text) {
         return text.matches("[+-]?\\d+(?:\\.\\d+)?");
     }
+
+    public static boolean containsIdentifier(List<Token> tokens, Identifier identifier) {
+        for (Token token : tokens) {
+            if (token.getIdentifier() == identifier) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

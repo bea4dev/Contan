@@ -2,7 +2,7 @@ package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.expection.ContanRuntimeException;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -16,9 +16,9 @@ public class Environment {
 
     protected final boolean canHasReturnValue;
     
-    protected final Map<String, ContanVariableReference> variableMap = new HashMap<>();
+    protected final Map<String, ContanObjectReference> variableMap = new HashMap<>();
     
-    protected ContanVariable<?> returnValue = null;
+    protected ContanObject<?> returnValue = null;
 
     public Environment(ContanEngine contanEngine, @Nullable Environment parent) {
         this.contanEngine = contanEngine;
@@ -34,7 +34,7 @@ public class Environment {
     
     public @Nullable Environment getParent() {return parent;}
     
-    public ContanVariable<?> getReturnValue() {return returnValue;}
+    public ContanObject<?> getReturnValue() {return returnValue;}
     
     public boolean hasReturnValue() {
         if (canHasReturnValue) {
@@ -48,31 +48,31 @@ public class Environment {
         return parent.hasReturnValue();
     }
     
-    public void setReturnValue(ContanVariable<?> returnValue) {
+    public void setReturnValue(ContanObject<?> returnValue) {
         if (canHasReturnValue) {
             this.returnValue = returnValue;
             return;
         }
 
         if (parent == null) {
-            throw new ContanRuntimeException("");
+            return;//TODO
         }
 
         parent.setReturnValue(returnValue);
     }
     
-    public @Nullable ContanVariableReference getVariable(String name) {
-        ContanVariableReference variable = variableMap.get(name);
+    public @Nullable ContanObjectReference getVariable(String name) {
+        ContanObjectReference variable = variableMap.get(name);
         if(variable != null) return variable;
         if(parent == null) return null;
         
         return parent.getVariable(name);
     }
     
-    public void createVariable(String name, ContanVariable<?> contanVariable) {
+    public void createVariable(String name, ContanObject<?> contanObject) {
         if (variableMap.containsKey(name)) return;
     
-        ContanVariableReference contanVariableReference = new ContanVariableReference(contanEngine, name, this, contanVariable);
+        ContanObjectReference contanVariableReference = new ContanObjectReference(contanEngine, name, this, contanObject);
         variableMap.put(name, contanVariableReference);
     }
 

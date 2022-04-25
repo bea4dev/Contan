@@ -1,11 +1,8 @@
 package org.contan_lang.evaluators;
 
 import org.contan_lang.environment.Environment;
-import org.contan_lang.environment.expection.ContanRuntimeException;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanVoid;
-
-import java.util.List;
 
 public class Expressions implements Evaluator {
     
@@ -16,7 +13,7 @@ public class Expressions implements Evaluator {
     }
     
     @Override
-    public ContanVariable<?> eval(Environment environment) {
+    public ContanObject<?> eval(Environment environment) {
         for (int i = 0; i < expressions.length; i ++) {
             Evaluator evaluator = expressions[i];
 

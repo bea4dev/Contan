@@ -1,10 +1,10 @@
 package org.contan_lang.evaluators;
 
 import org.contan_lang.environment.Environment;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 
 public interface Evaluator {
     
-    ContanVariable<?> eval(Environment environment);
+    ContanObject<?> eval(Environment environment);
     
 }

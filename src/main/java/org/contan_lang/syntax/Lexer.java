@@ -1,5 +1,6 @@
 package org.contan_lang.syntax;
 
+import org.contan_lang.syntax.parser.ParserUtil;
 import org.contan_lang.syntax.tokens.DefinedStringToken;
 import org.contan_lang.syntax.tokens.Token;
 
@@ -75,6 +76,15 @@ public class Lexer {
                     }
                     
                     if (is) {
+                        identifier = null;
+                    }
+                }
+            }
+
+
+            if (identifier == Identifier.DOT) {
+                if (i != length - 1) {
+                    if (ParserUtil.isNumber(String.valueOf(text.charAt(i + 1)))) {
                         identifier = null;
                     }
                 }

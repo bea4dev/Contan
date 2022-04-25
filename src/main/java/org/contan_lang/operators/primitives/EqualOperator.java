@@ -4,7 +4,7 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanBoolean;
 
 public class EqualOperator extends BooleanOperator {
@@ -14,7 +14,7 @@ public class EqualOperator extends BooleanOperator {
     }
     
     @Override
-    public ContanVariable<Boolean> eval(Environment environment) {
+    public ContanObject<Boolean> eval(Environment environment) {
         Object first = operators[0].eval(environment).getBasedJavaObject();
         Object second = operators[1].eval(environment).getBasedJavaObject();
         

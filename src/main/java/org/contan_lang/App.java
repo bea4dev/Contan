@@ -2,8 +2,8 @@ package org.contan_lang;
 
 import org.contan_lang.environment.Environment;
 import org.contan_lang.syntax.exception.ContanParseException;
-import org.contan_lang.syntax.parser.Parser;
 import org.contan_lang.syntax.parser.ContanModule;
+import org.contan_lang.syntax.parser.Parser;
 
 /**
  * Hello world!
@@ -24,16 +24,15 @@ public class App
         
         
         
-        String test = "import org.contan_lang.TestClass\n" +
-                "\n" +
-                "print(new TestClass(\"TEST!!\").test.text)";
+        String test = "data a = \"test\"\n" +
+                "print(a)\n";
 
         ContanEngine contanEngine = new ContanEngine();
-        Parser parser = new Parser(contanEngine);
+        Parser parser = new Parser("test", contanEngine, test);
+
         try {
-            Environment global = new Environment(null);
-            ContanModule contanModule = parser.parse("test", test);
-            contanModule.getGlobalEvaluator().eval(global);
+            ContanModule contanModule = parser.compile();
+            contanModule.getGlobalEvaluator().eval(contanModule.getModuleEnvironment());
             
         } catch (ContanParseException e) {
             e.printStackTrace();

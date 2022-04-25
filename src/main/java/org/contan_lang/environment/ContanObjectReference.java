@@ -1,33 +1,32 @@
 package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.Environment;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
-import org.contan_lang.variables.primitive.ContanPrimitiveVariable;
+import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanPrimitiveObject;
 
-public class ContanVariableReference extends ContanPrimitiveVariable<ContanVariable<?>> {
+public class ContanObjectReference extends ContanPrimitiveObject<ContanObject<?>> {
     
     protected final String name;
     
     protected final Environment environment;
     
-    protected ContanVariable<?> contanVariable;
+    protected ContanObject<?> contanObject;
     
-    public ContanVariableReference(ContanEngine contanEngine, String name, Environment environment, ContanVariable<?> contanVariable) {
-        super(contanEngine, contanVariable);
+    public ContanObjectReference(ContanEngine contanEngine, String name, Environment environment, ContanObject<?> contanObject) {
+        super(contanEngine, contanObject);
         this.name = name;
         this.environment = environment;
-        this.contanVariable = contanVariable;
+        this.contanObject = contanObject;
     }
     
     public String getName() {return name;}
     
     public Environment getEnvironment() {return environment;}
     
-    public ContanVariable<?> getContanVariable() throws IllegalAccessException {return contanVariable;}
+    public ContanObject<?> getContanVariable() throws IllegalAccessException {return contanObject;}
     
-    public void setContanVariable(ContanVariable<?> contanVariable) throws IllegalAccessException {this.contanVariable = contanVariable;}
+    public void setContanVariable(ContanObject<?> contanObject) throws IllegalAccessException {this.contanObject = contanObject;}
     
     @Override
     public Object getBasedJavaObject() {
@@ -35,12 +34,12 @@ public class ContanVariableReference extends ContanPrimitiveVariable<ContanVaria
     }
     
     @Override
-    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
+    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
         return based.invokeFunction(functionName, variables);
     }
     
     @Override
-    public ContanVariable<ContanVariable<?>> createClone() {
+    public ContanObject<ContanObject<?>> createClone() {
         return this;
     }
     

@@ -1,11 +1,10 @@
 package org.contan_lang.evaluators;
 
-import org.contan_lang.environment.Environment;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 
 public interface FunctionInvokable {
 
-    ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables);
+    ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables);
 
 }

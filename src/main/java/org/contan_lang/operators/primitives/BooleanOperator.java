@@ -5,7 +5,7 @@ import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 
 public abstract class BooleanOperator extends Operator {
     
@@ -14,6 +14,6 @@ public abstract class BooleanOperator extends Operator {
     }
     
     @Override
-    public abstract ContanVariable<Boolean> eval(Environment environment);
+    public abstract ContanObject<Boolean> eval(Environment environment);
     
 }

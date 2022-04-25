@@ -4,7 +4,7 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 import org.jetbrains.annotations.Nullable;
 
 public class FunctionBlock {
@@ -29,17 +29,17 @@ public class FunctionBlock {
     public Token[] getArgs() {return args;}
     
     
-    public ContanVariable<?> eval(@Nullable Environment parentEnvironment, Token token, ContanVariable<?>... contanVariables) {
+    public ContanObject<?> eval(@Nullable Environment parentEnvironment, Token token, ContanObject<?>... contanObjects) {
         Environment environment = new Environment(contanEngine, parentEnvironment, true);
-        if (args.length != contanVariables.length) {
+        if (args.length != contanObjects.length) {
             ContanRuntimeError.E0011.throwError("", null, token);
         }
         
         for (int i = 0; i < args.length; i++) {
-            environment.createVariable(args[i].getText(), contanVariables[i]);
+            environment.createVariable(args[i].getText(), contanObjects[i]);
         }
         
-        ContanVariable<?> variable = evaluator.eval(environment);
+        ContanObject<?> variable = evaluator.eval(environment);
         if (environment.hasReturnValue()) {
             return environment.getReturnValue();
         } else {

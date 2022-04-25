@@ -1,7 +1,7 @@
 package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.ContanVariableReference;
+import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.Evaluator;
@@ -11,7 +11,7 @@ import org.contan_lang.standard.functions.StandardFunctions;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -67,18 +67,18 @@ public class PreLinkedFunctionOperator extends Operator {
     }
     
     @Override
-    public ContanVariable<?> eval(Environment environment) {
+    public ContanObject<?> eval(Environment environment) {
 
-        ContanVariable<?>[] variables = new ContanVariable<?>[args.length];
+        ContanObject<?>[] variables = new ContanObject<?>[args.length];
         for (int i = 0; i < args.length; i++) {
             variables[i] = args[i].eval(environment).createClone();
         }
         
         if (functionBlock != null) {
-            ContanVariable<?> returned = functionBlock.eval(moduleEnvironment, functionName, variables);
-            if (returned instanceof ContanVariableReference) {
+            ContanObject<?> returned = functionBlock.eval(moduleEnvironment, functionName, variables);
+            if (returned instanceof ContanObjectReference) {
                 try {
-                    return ((ContanVariableReference) returned).getContanVariable();
+                    return ((ContanObjectReference) returned).getContanVariable();
                 } catch (IllegalAccessException e) {
                     ContanRuntimeError.E0013.throwError("", e, token);
                     return null;
@@ -93,7 +93,7 @@ public class PreLinkedFunctionOperator extends Operator {
             return null;
         }
         
-        ContanVariable<?> leftResult = left.eval(environment);
+        ContanObject<?> leftResult = left.eval(environment);
         return leftResult.invokeFunction(functionName, variables);
     }
     

@@ -1,12 +1,12 @@
 package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.ContanVariableReference;
+import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 
 public class GetValueOperator extends Operator {
     
@@ -20,8 +20,8 @@ public class GetValueOperator extends Operator {
     public Token getTargetVariableNameToken() {return targetVariableNameToken;}
     
     @Override
-    public ContanVariable<?> eval(Environment environment) {
-        ContanVariableReference variable = environment.getVariable(targetVariableNameToken.getText());
+    public ContanObject<?> eval(Environment environment) {
+        ContanObjectReference variable = environment.getVariable(targetVariableNameToken.getText());
         
         if (variable == null) {
             ContanRuntimeError.E0001.throwError("", null, targetVariableNameToken);

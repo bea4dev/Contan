@@ -3,15 +3,14 @@ package org.contan_lang.evaluators;
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
-import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanClassInstance;
 import org.contan_lang.variables.primitive.ContanVoid;
 
 import java.util.*;
 
-public class ClassBlock implements FunctionInvokable {
+public class ClassBlock {
 
     private final ContanEngine contanEngine;
 
@@ -25,12 +24,15 @@ public class ClassBlock implements FunctionInvokable {
 
     private final Token[] initializeArgs;
 
-    public ClassBlock(ContanEngine contanEngine, Token className, String classPath, Token... initializeArgs) {
+    private final Environment moduleEnvironment;
+
+    public ClassBlock(ContanEngine contanEngine, Token className, String classPath, Environment moduleEnvironment, Token... initializeArgs) {
         this.contanEngine = contanEngine;
         this.className = className;
         this.classPath = classPath;
         this.initializers = new ArrayList<>();
         this.initializeArgs = initializeArgs;
+        this.moduleEnvironment = moduleEnvironment;
         this.functionMap = new HashMap<>();
     }
 
@@ -47,12 +49,12 @@ public class ClassBlock implements FunctionInvokable {
         functions.add(functionBlock);
     }
 
-    public ContanClassInstance createInstance(Environment parentEnvironment, ContanVariable<?>... contanVariables) {
-        Environment environment = new Environment(contanEngine, parentEnvironment);
+    public ContanClassInstance createInstance(ContanObject<?>... contanObjects) {
+        Environment environment = new Environment(contanEngine, moduleEnvironment);
 
         for (int i = 0; i < initializeArgs.length; i++) {
-            if (i < contanVariables.length) {
-                environment.createVariable(initializeArgs[i].getText(), contanVariables[i]);
+            if (i < contanObjects.length) {
+                environment.createVariable(initializeArgs[i].getText(), contanObjects[i]);
             } else {
                 environment.createVariable(initializeArgs[i].getText(), ContanVoid.INSTANCE);
             }
@@ -65,8 +67,8 @@ public class ClassBlock implements FunctionInvokable {
         return new ContanClassInstance(contanEngine,this, environment);
     }
 
-    @Override
-    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
+
+    public ContanObject<?> invokeFunction(Environment classInstanceEnvironment, Token functionName, ContanObject<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName.getText());
         if (functions == null) {
             ContanRuntimeError.E0011.throwError("", null, functionName);
@@ -75,7 +77,7 @@ public class ClassBlock implements FunctionInvokable {
 
         for (FunctionBlock functionBlock : functions) {
             if (functionBlock.getArgs().length == variables.length) {
-                return functionBlock.eval(new Environment(contanEngine, null), functionName, variables);
+                return functionBlock.eval(classInstanceEnvironment, functionName, variables);
             }
         }
     

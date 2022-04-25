@@ -14,6 +14,6 @@ public class DefinedStringToken extends Token {
     }
 
     @Override
-    public String getText() {return super.getText();}
+    public String getText() {return definedText;}
 
 }

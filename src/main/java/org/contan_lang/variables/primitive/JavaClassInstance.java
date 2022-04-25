@@ -1,11 +1,9 @@
 package org.contan_lang.variables.primitive;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
-import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.ContanVariable;
+import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.NumberType;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,19 +11,19 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
-public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
+public class JavaClassInstance extends ContanPrimitiveObject<Object> {
     
     public JavaClassInstance(ContanEngine contanEngine, Object based) {
         super(contanEngine, based);
     }
     
     @Override
-    public ContanVariable<?> invokeFunction(Token functionName, ContanVariable<?>... variables) {
+    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
         return invokeJavaMethod(contanEngine, based.getClass(), based, functionName, variables);
     }
     
     @Override
-    public ContanVariable<Object> createClone() {
+    public ContanObject<Object> createClone() {
         return new JavaClassInstance(contanEngine, based);
     }
     
@@ -101,7 +99,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
     }
     
     
-    public static ContanVariable<?> invokeJavaMethod(ContanEngine contanEngine, Class<?> clazz, @Nullable Object based, Token functionName, ContanVariable<?>... variables) {
+    public static ContanObject<?> invokeJavaMethod(ContanEngine contanEngine, Class<?> clazz, @Nullable Object based, Token functionName, ContanObject<?>... variables) {
         try {
             methodLoop : for (Method method : clazz.getMethods()) {
                 if (method.getParameterCount() != variables.length) continue;
@@ -111,7 +109,7 @@ public class JavaClassInstance extends ContanPrimitiveVariable<Object> {
                 Parameter[] parameters = method.getParameters();
                 for (int i = 0; i < variables.length; i++) {
                     Parameter parameter = parameters[i];
-                    ContanVariable<?> variable = variables[i];
+                    ContanObject<?> variable = variables[i];
                     Class<?> parameterType = parameter.getType();
                     
                     if (variable.convertibleToDouble()) {
