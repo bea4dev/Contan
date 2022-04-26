@@ -9,6 +9,7 @@ import org.contan_lang.operators.Operator;
 import org.contan_lang.syntax.parser.ContanModule;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanClassInstance;
 import org.contan_lang.variables.primitive.ContanModuleObject;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 import org.contan_lang.variables.primitive.JavaClassObject;
@@ -55,6 +56,9 @@ public class GetFieldOperator extends Operator {
         } else if (leftResult instanceof ContanModuleObject) {
             ContanModule contanModule = (ContanModule) leftResult.getBasedJavaObject();
             return contanModule.getModuleEnvironment().getVariable(token.getText());
+        } else if (leftResult instanceof ContanClassInstance) {
+            Environment instanceEnvironment = ((ContanClassInstance) leftResult).getEnvironment();
+            return instanceEnvironment.getVariable(token.getText());
         }
 
         ContanRuntimeError.E0015.throwError("", null, token);

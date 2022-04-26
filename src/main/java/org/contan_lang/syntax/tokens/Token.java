@@ -9,14 +9,20 @@ public class Token {
     protected final Lexer lexer;
     protected final String text;
     protected final Identifier identifier;
+    public final int startColumnIndex;
+    public final int endColumnIndex;
+    public final LineToken lineToken;
     
     public Token left;
     public Token right;
     
-    public Token(Lexer lexer, String text, @Nullable Identifier identifier) {
+    public Token(Lexer lexer, String text, int endColumnIndex, LineToken lineToken, @Nullable Identifier identifier) {
         this.lexer = lexer;
         this.text = text;
         this.identifier = identifier;
+        this.startColumnIndex = Math.max(0, endColumnIndex - text.length());
+        this.endColumnIndex = endColumnIndex;
+        this.lineToken = lineToken;
     }
     
     public Lexer getLexer() {return lexer;}
@@ -24,10 +30,6 @@ public class Token {
     public String getText() {return text;}
 
     public @Nullable Identifier getIdentifier() {return identifier;}
-    
-    public Token marge(Token... tokens) {
-        return this;
-    }
     
     public Token getLeft(int shift) {
         Token current = this;
@@ -57,4 +59,8 @@ public class Token {
         return current;
     }
 
+    @Override
+    public String toString() {
+        return identifier == null ? text : identifier.toString();
+    }
 }

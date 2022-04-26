@@ -15,7 +15,6 @@ public enum Identifier {
     BLOCK_OPERATOR_END(0, true, false, null, ")"),
     DEFINE_VARIABLE(10, false, false, null, "data"),
     RETURN(11, false, false, null, "return"),
-    DEFINE_STRING_START_OR_END(2, true, true, null, "\""),
     DOT(3, true, false, null, "."),
     OPERATOR_EQUAL(6, true, false, null, "=="),
     OPERATOR_AND(9, true, false, null, "&&"),

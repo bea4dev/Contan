@@ -11,7 +11,7 @@ public class StandardFunctions {
     public static final Map<String, FunctionBlock> FUNCTIONS = new HashMap<>();
     
     static {
-        FUNCTIONS.put("print", new Print(null, new Token(null, "print", null), null));
+        FUNCTIONS.put("print", new Print(null, new Token(null, "print", 5, null, null), null));
     }
     
 }

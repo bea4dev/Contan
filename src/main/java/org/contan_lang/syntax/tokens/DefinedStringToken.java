@@ -6,14 +6,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class DefinedStringToken extends Token {
 
-    private final String definedText;
-
-    public DefinedStringToken(Lexer lexer, String text, @Nullable Identifier identifier) {
-        super(lexer, text, identifier);
-        this.definedText = text.substring(1, text.length() - 1);
+    public DefinedStringToken(Lexer lexer, String text, int endIndex, LineToken lineToken, @Nullable Identifier identifier) {
+        super(lexer, text, endIndex, lineToken, identifier);
     }
-
-    @Override
-    public String getText() {return definedText;}
 
 }

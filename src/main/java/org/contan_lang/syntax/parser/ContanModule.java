@@ -2,6 +2,7 @@ package org.contan_lang.syntax.parser;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
+import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.evaluators.FunctionInvokable;
@@ -23,21 +24,31 @@ public class ContanModule implements FunctionInvokable {
     
     private final List<FunctionBlock> functionBlocks;
 
+    private final Map<String, ClassBlock> classBlockMap;
+
+    private final List<ClassBlock> classBlocks;
+
     private final Evaluator globalEvaluator;
 
     private final Environment moduleEnvironment;
     
-    public ContanModule(ContanEngine contanEngine, String rootName, List<FunctionBlock> functionBlocks, Evaluator globalEvaluator, Environment moduleEnvironment) {
+    public ContanModule(ContanEngine contanEngine, String rootName, List<FunctionBlock> functionBlocks, List<ClassBlock> classBlocks, Evaluator globalEvaluator, Environment moduleEnvironment) {
         this.contanEngine = contanEngine;
         this.rootName = rootName;
         this.functionBlocks = functionBlocks;
+        this.classBlocks = classBlocks;
         this.globalEvaluator = globalEvaluator;
         this.functionMap = new HashMap<>();
+        this.classBlockMap = new HashMap<>();
         this.moduleEnvironment = moduleEnvironment;
         
         for (FunctionBlock functionBlock : functionBlocks) {
             List<FunctionBlock> functions = functionMap.computeIfAbsent(functionBlock.getFunctionName().getText(), k -> new ArrayList<>());
             functions.add(functionBlock);
+        }
+
+        for (ClassBlock classBlock : classBlocks) {
+            classBlockMap.put(classBlock.getClassName().getText(), classBlock);
         }
     }
 

@@ -6,6 +6,7 @@ import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
+import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanVoid;
@@ -19,13 +20,7 @@ public class SetReturnValueOperator extends Operator {
     @Override
     public ContanObject<?> eval(Environment environment) {
         ContanObject<?> variable = operators[0].eval(environment);
-        if (variable instanceof ContanObjectReference) {
-            try {
-                variable = ((ContanObjectReference) variable).getContanVariable();
-            } catch (IllegalAccessException e) {
-                ContanRuntimeError.E0013.throwError("", e, token);
-            }
-        }
+        variable = ContanRuntimeUtil.removeReference(token, variable);
         
         environment.setReturnValue(variable);
         return ContanVoid.INSTANCE;

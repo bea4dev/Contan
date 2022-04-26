@@ -19,7 +19,7 @@ public class AddOperator extends Operator {
     @Override
     public ContanObject<?> eval(Environment environment) {
         Object first = operators[0].eval(environment).getBasedJavaObject();
-        Object second = operators[0].eval(environment).getBasedJavaObject();
+        Object second = operators[1].eval(environment).getBasedJavaObject();
         
         if ((first instanceof Integer || first instanceof Long || first instanceof Float || first instanceof Double) &&
                 (second instanceof Integer || second instanceof Long || second instanceof Float || second instanceof Double)) {
@@ -67,7 +67,7 @@ public class AddOperator extends Operator {
             
             return new ContanInteger(contanEngine, sum);
         }
-    
+
         return new ContanString(contanEngine, first.toString() + second.toString());
     }
     

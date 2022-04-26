@@ -12,6 +12,7 @@ import org.contan_lang.syntax.parser.environment.Scope;
 import org.contan_lang.syntax.parser.environment.ScopeType;
 import org.contan_lang.syntax.tokens.DefinedStringToken;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.variables.primitive.ContanClassObject;
 import org.contan_lang.variables.primitive.ContanFloat;
 import org.contan_lang.variables.primitive.ContanInteger;
 import org.contan_lang.variables.primitive.ContanString;
@@ -32,7 +33,7 @@ public class Parser {
     public Parser(String moduleName, @NotNull ContanEngine contanEngine, @NotNull String text) {
         this.moduleName = moduleName;
         this.contanEngine = contanEngine;
-        this.lexer = new Lexer(text);
+        this.lexer = new Lexer(moduleName, text);
     }
 
 
@@ -45,7 +46,7 @@ public class Parser {
 
     private List<Evaluator> classInitializers = new ArrayList<>();
 
-    private List<CreateClassInstanceOperator> createClassInstanceOperators;
+    private List<ClassBlock> moduleClasses = new ArrayList<>();
 
     private Scope moduleScope;
     
@@ -60,8 +61,17 @@ public class Parser {
         classInitializers = new ArrayList<>();
         moduleScope = new Scope(moduleName, null, ScopeType.MODULE);
         moduleEnvironment = new Environment(contanEngine, null);
+        moduleClasses = new ArrayList<>();
 
-        createClassInstanceOperators = new ArrayList<>();
+        //Register the class name first.
+        boolean isClassDefine = false;
+        for (Token token : tokens) {
+            if (isClassDefine) {
+                moduleScope.addVariable(token.getText());
+            }
+
+            isClassDefine = token.getIdentifier() == Identifier.CLASS;
+        }
 
         Evaluator globalEvaluator = parseBlock(moduleScope, null, tokens);
 
@@ -69,7 +79,7 @@ public class Parser {
             functionEvaluator.link(moduleFunctions, moduleEnvironment);
         }
 
-        return new ContanModule(contanEngine, moduleName, moduleFunctions, globalEvaluator, moduleEnvironment);
+        return new ContanModule(contanEngine, moduleName, moduleFunctions, moduleClasses, globalEvaluator, moduleEnvironment);
     }
     
     
@@ -128,6 +138,9 @@ public class Parser {
                         contanEngine.addClassBlock(classBlock);
                         classFunctionBlocks.clear();
                         classInitializers.clear();
+                        moduleClasses.add(classBlock);
+                        moduleEnvironment.createVariable(classNameToken.getText(), new ContanClassObject(contanEngine, classBlock));
+                        moduleScope.addVariable(classNameToken.getText());
 
                         return null;
                     }
@@ -219,7 +232,7 @@ public class Parser {
                         i += first.size();
 
                         List<Token> block = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
-                        i += block.size() + 2;
+                        i += block.size() + 1;
 
                         parseBlock(scope, first, block);
                         continue;
@@ -230,8 +243,8 @@ public class Parser {
     
             //Skip over the contents of the parentheses.
             if (identifier == Identifier.BLOCK_OPERATOR_START) {
-                List<Token> nestedTokens = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
-                i += nestedTokens.size() + 2;
+                List<Token> nestedTokens = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, true, false);
+                i += nestedTokens.size() - 1;
     
                 //Ignore line breaks.
                 nestedTokens.removeIf(t -> t.getText().equals("\n"));
@@ -240,7 +253,7 @@ public class Parser {
             }
             
             //Parse expression
-            if (identifier != Identifier.EXPRESSION_SPLIT) {
+            if (identifier != Identifier.EXPRESSION_SPLIT && identifier != Identifier.BLOCK_OPERATOR_START) {
                 expressionTokens.add(token);
             }
 
@@ -261,14 +274,11 @@ public class Parser {
             return NullEvaluator.INSTANCE;
         }
 
-        System.out.println("EXPRESSION TEST!");
-        tokens.forEach(token -> System.out.println(token.getText()));
 
         //If there is only a portion enclosed in parentheses, remove the parentheses.
         if (tokens.get(0).getIdentifier() == Identifier.BLOCK_OPERATOR_START && tokens.get(tokenLength - 1).getIdentifier() == Identifier.BLOCK_OPERATOR_END) {
             return parseExpression(scope, tokens.subList(1, tokenLength - 1));
         }
-
         
         //Determine if it is a variable name or an integer definition.
         if (tokenLength == 1) {
@@ -296,7 +306,7 @@ public class Parser {
                 return new GetValueOperator(contanEngine, first);
             }
         }
-        
+
         
         //From right to left, it searches for the highest-priority Identifier and divides the surrounding sentence.
         //When scanning, skip over the contents of the parentheses.
@@ -306,7 +316,7 @@ public class Parser {
         int currentHighestPriority = 0;
         int highestIdentifierTokenIndex = 0;
         
-        for (int i = tokenLength - 1; i >= 0; i--) {
+        for (int i = 0; i < tokenLength; i++) {
             Token token = tokens.get(i);
             
             Identifier identifier = token.getIdentifier();
@@ -321,11 +331,11 @@ public class Parser {
             }
     
             //Skip over the contents of the parentheses.
-            if (identifier == Identifier.BLOCK_OPERATOR_END) {
-                i -= ParserUtil.getNestedTokenReverse(tokens, i, Identifier.BLOCK_OPERATOR_END, Identifier.BLOCK_OPERATOR_START, true, false).size();
+            if (identifier == Identifier.BLOCK_OPERATOR_START) {
+                i += ParserUtil.getNestedToken(tokens, i, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, true, false).size() - 1;
             }
             
-            if (identifier.priority > currentHighestPriority) {
+            if (identifier.priority >= currentHighestPriority && identifier.priority != 0) {
                 highestIdentifierToken = token;
                 highestIdentifier = identifier;
                 word = token.getText();
@@ -333,8 +343,23 @@ public class Parser {
                 highestIdentifierTokenIndex = i;
             }
         }
-        
+
         if (highestIdentifier == null) {
+
+            //If function invoke
+            if (tokens.get(1).getIdentifier() == Identifier.BLOCK_OPERATOR_START) {
+                List<Token> argumentTokenList = ParserUtil.getNestedToken(tokens, 1, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
+                Evaluator[] arguments = parseArgumentEvaluators(scope, argumentTokenList);
+
+                PreLinkedFunctionOperator operator = new PreLinkedFunctionOperator(contanEngine, tokens.get(0), null, arguments);
+                preLinkedFunctions.add(operator);
+
+                return operator;
+            }
+
+            System.out.println("!!!");
+            tokens.forEach(System.out::println);
+
             ParserError.E0008.throwError("", tokens.get(0));
             return null;
         }
@@ -431,7 +456,7 @@ public class Parser {
                 List<Token> classObjectTokenList = ParserUtil.getTokensUntilFoundIdentifier(rightTokenList, 0, Identifier.BLOCK_OPERATOR_START);
                 index += classObjectTokenList.size();
 
-                List<Token> argTokenList = ParserUtil.getNestedToken(rightTokenList, index + 1, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
+                List<Token> argTokenList = ParserUtil.getNestedToken(rightTokenList, index, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
 
                 Evaluator left = parseExpression(scope, classObjectTokenList);
                 Evaluator[] arguments = parseArgumentEvaluators(scope, argTokenList);
@@ -447,13 +472,16 @@ public class Parser {
                 Token nameToken = rightTokenList.get(0);
 
                 //If function
-                if (ParserUtil.containsIdentifier(rightTokenList, Identifier.BLOCK_START)) {
+                if (ParserUtil.containsIdentifier(rightTokenList, Identifier.BLOCK_OPERATOR_START)) {
                     List<Token> argumentTokenList = ParserUtil.getNestedToken(rightTokenList, 1, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
 
                     Evaluator left = parseExpression(scope, leftTokenList);
                     Evaluator[] arguments = parseArgumentEvaluators(scope, argumentTokenList);
 
-                    return new PreLinkedFunctionOperator(contanEngine, nameToken, left, arguments);
+                    PreLinkedFunctionOperator operator = new PreLinkedFunctionOperator(contanEngine, nameToken, left, arguments);
+                    preLinkedFunctions.add(operator);
+
+                    return operator;
                 } else {
                     Evaluator left = parseExpression(scope, leftTokenList);
                     return new GetFieldOperator(contanEngine, nameToken, left);
@@ -481,7 +509,8 @@ public class Parser {
             }
 
             if (identifier == Identifier.ARGUMENT_SPLIT || i == length - 1) {
-                evaluators.add(parseExpression(scope, evalTokens));
+                evaluators.add(new RemoveReferenceOperator(contanEngine, tokens.get(length - 1), parseExpression(scope, evalTokens)));
+                evalTokens.clear();
             }
         }
 

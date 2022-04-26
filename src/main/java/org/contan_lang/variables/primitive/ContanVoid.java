@@ -41,5 +41,9 @@ public class ContanVoid extends ContanPrimitiveObject<Boolean> {
     public boolean convertibleToDouble() {
         return false;
     }
-    
+
+    @Override
+    public Object getBasedJavaObject() {
+        return this;
+    }
 }

@@ -19,50 +19,50 @@ public class MultiplyOperator extends Operator {
     @Override
     public ContanObject<?> eval(Environment environment) {
         Object first = operators[0].eval(environment).getBasedJavaObject();
-        Object second = operators[0].eval(environment).getBasedJavaObject();
+        Object second = operators[1].eval(environment).getBasedJavaObject();
     
         if ((first instanceof Integer || first instanceof Long || first instanceof Float || first instanceof Double) &&
                 (second instanceof Integer || second instanceof Long || second instanceof Float || second instanceof Double)) {
         
             if (first instanceof Float || first instanceof Double || second instanceof Float || second instanceof Double) {
-                double sum = 0.0;
+                double sum;
             
                 if (first instanceof Integer) {
-                    sum += (Integer) first;
+                    sum = (Integer) first;
                 } else if (first instanceof Long) {
-                    sum += (Long) first;
+                    sum = (Long) first;
                 } else if (first instanceof Float) {
-                    sum += (Float) first;
+                    sum = (Float) first;
                 } else {
-                    sum += (Double) first;
+                    sum = (Double) first;
                 }
             
                 if (second instanceof Integer) {
-                    sum += (Integer) second;
+                    sum *= (Integer) second;
                 } else if (second instanceof Long) {
-                    sum += (Long) second;
+                    sum *= (Long) second;
                 } else if (second instanceof Float) {
-                    sum += (Float) second;
+                    sum *= (Float) second;
                 } else {
-                    sum += (Double) second;
+                    sum *= (Double) second;
                 }
             
                 return new ContanFloat(contanEngine, sum);
             }
         
         
-            long sum = 0L;
+            long sum;
         
             if (first instanceof Integer) {
-                sum += (Integer) first;
+                sum = (Integer) first;
             } else {
-                sum += (Long) first;
+                sum = (Long) first;
             }
         
             if (second instanceof Integer) {
-                sum += (Integer) second;
+                sum *= (Integer) second;
             } else {
-                sum += (Long) second;
+                sum *= (Long) second;
             }
         
             return new ContanInteger(contanEngine, sum);
