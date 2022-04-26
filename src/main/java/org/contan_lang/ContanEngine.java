@@ -22,6 +22,8 @@ public class ContanEngine {
     
     private final Map<String, Class<?>> javaClassMap;
     
+    public final Test test = new Test();
+    
     public ContanEngine() {
         this.classBlocks = new HashSet<>();
         this.classNames = new HashSet<>();
@@ -55,7 +57,18 @@ public class ContanEngine {
         return javaClassMap.get(className);
     }
 
-    public void test(){
-        System.out.println("Test from java!");
+    public static String test(double i){
+        return i == 1.0 ? "JAVA!" : "NO!!";
     }
+    
+    public static class Test {
+        
+        public final String test = "TEST!";
+        
+        public void test() {
+            System.out.println("TEST!!!!");
+        }
+        
+    }
+    
 }

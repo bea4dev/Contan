@@ -12,10 +12,7 @@ import org.contan_lang.syntax.parser.environment.Scope;
 import org.contan_lang.syntax.parser.environment.ScopeType;
 import org.contan_lang.syntax.tokens.DefinedStringToken;
 import org.contan_lang.syntax.tokens.Token;
-import org.contan_lang.variables.primitive.ContanClassObject;
-import org.contan_lang.variables.primitive.ContanFloat;
-import org.contan_lang.variables.primitive.ContanInteger;
-import org.contan_lang.variables.primitive.ContanString;
+import org.contan_lang.variables.primitive.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -225,16 +222,25 @@ public class Parser {
 
                     case INITIALIZE:
 
-                    case FUNCTION:
+                    case FUNCTION: {
+                        List<Token> first = ParserUtil.getTokensUntilFoundIdentifier(blockTokens, i, Identifier.BLOCK_START);
+                        i += first.size();
+    
+                        List<Token> block = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
+                        i += block.size() + 1;
+    
+                        parseBlock(scope, first, block);
+                        continue;
+                    }
 
                     case IF: {
                         List<Token> first = ParserUtil.getTokensUntilFoundIdentifier(blockTokens, i, Identifier.BLOCK_START);
                         i += first.size();
-
+    
                         List<Token> block = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
                         i += block.size() + 1;
-
-                        parseBlock(scope, first, block);
+    
+                        blockEvaluators.add(parseBlock(scope, first, block));
                         continue;
                     }
                 }
@@ -292,11 +298,13 @@ public class Parser {
             
             String name = first.getText();
             if (ParserUtil.isNumber(name)) {
-                //Integer
-                return new DefinedValueOperator(contanEngine, first, new ContanInteger(contanEngine, Long.parseLong(name)));
-            } else if (name.contains(".")) {
-                //Float
-                return new DefinedValueOperator(contanEngine, first, new ContanFloat(contanEngine, Double.parseDouble(name)));
+                if (name.contains(".")) {
+                    //Float
+                    return new DefinedValueOperator(contanEngine, first, new ContanFloat(contanEngine, Double.parseDouble(name)));
+                } else {
+                    //Integer
+                    return new DefinedValueOperator(contanEngine, first, new ContanInteger(contanEngine, Long.parseLong(name)));
+                }
             } else if (first instanceof DefinedStringToken) {
                 //String
                 return new DefinedValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
@@ -308,7 +316,7 @@ public class Parser {
         }
 
         
-        //From right to left, it searches for the highest-priority Identifier and divides the surrounding sentence.
+        //From left to right, it searches for the highest-priority Identifier and divides the surrounding sentence.
         //When scanning, skip over the contents of the parentheses.
         Token highestIdentifierToken = null;
         Identifier highestIdentifier = null;
@@ -433,7 +441,7 @@ public class Parser {
             }
             
             //value = 20
-            case SUBSTITUTION: {
+            case ASSIGNMENT: {
                 if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
                     ParserError.E0012.throwError("", highestIdentifierToken);
                 }
@@ -486,6 +494,35 @@ public class Parser {
                     Evaluator left = parseExpression(scope, leftTokenList);
                     return new GetFieldOperator(contanEngine, nameToken, left);
                 }
+            }
+            
+            case IMPORT: {
+                if (leftTokenList.size() != 0) {
+                    ParserError.E0015.throwError("", leftTokenList.toArray(new Token[0]));
+                }
+                
+                if (rightTokenList.size() != 3) {
+                    ParserError.E0015.throwError("", rightTokenList.toArray(new Token[0]));
+                }
+                
+                Token nameToken = rightTokenList.get(0);
+                Token assignment = rightTokenList.get(1);
+                Token source = rightTokenList.get(2);
+                
+                if (!(nameToken.getIdentifier() == null && assignment.getIdentifier() == Identifier.ASSIGNMENT && source instanceof DefinedStringToken)) {
+                    ParserError.E0015.throwError("", rightTokenList.toArray(new Token[0]));
+                }
+                
+                moduleScope.addVariable(nameToken.getText());
+                
+                try {
+                    Class<?> clazz = Class.forName(source.getText());
+                    moduleEnvironment.createVariable(nameToken.getText(), new JavaClassObject(contanEngine, clazz));
+                } catch (ClassNotFoundException e) {
+                    ParserError.E0013.throwError("", source);
+                }
+                
+                return NullEvaluator.INSTANCE;
             }
         }
 

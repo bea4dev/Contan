@@ -25,9 +25,10 @@ public class App
         
         
         
-        String test = "data b = 20\n" +
-                "data a = ((20 + 3) *b) + b\n" +
-                "print(((20 + 3) * b) + b)";
+        String test = "import ContanEngine = \"org.contan_lang.ContanEngine\"\n" +
+                "\n" +
+                "data instance = new ContanEngine()\n" +
+                "print(\"Hello world!! from \" + instance.test.test)\n";
 
 
         ContanEngine contanEngine = new ContanEngine();
@@ -35,7 +36,6 @@ public class App
 
         try {
             ContanModule contanModule = parser.compile();
-            System.out.println("RUN!");
             contanModule.getGlobalEvaluator().eval(contanModule.getModuleEnvironment());
             
         } catch (ContanParseException e) {

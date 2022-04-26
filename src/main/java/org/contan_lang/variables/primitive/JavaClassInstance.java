@@ -123,22 +123,18 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                             
                             convertedArgs[i] = (int) original;
                         } else if (parameterType == long.class || parameterType == Long.class) {
-                            if (numberType != NumberType.LONG) {
+                            if (numberType != NumberType.LONG && numberType != NumberType.INTEGER) {
                                 continue methodLoop;
                             }
                             
                             convertedArgs[i] = (long) original;
                         } else if (parameterType == float.class || parameterType == Float.class) {
-                            if (numberType != NumberType.FLOAT) {
+                            if (numberType != NumberType.FLOAT && numberType != NumberType.INTEGER) {
                                 continue methodLoop;
                             }
                             
                             convertedArgs[i] = (float) original;
                         } else if (parameterType == double.class || parameterType == Double.class) {
-                            if (numberType != NumberType.DOUBLE) {
-                                continue methodLoop;
-                            }
-                            
                             convertedArgs[i] = original;
                         } else {
                             convertedArgs[i] = variable.getBasedJavaObject();
@@ -156,18 +152,18 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                 if (returned == null) {
                     return ContanVoid.INSTANCE;
                 } else {
-                    return new JavaClassInstance(contanEngine, based);
+                    return new JavaClassInstance(contanEngine, returned);
                 }
             }
-            
-            ContanRuntimeError.E0007.throwError(System.lineSeparator() + "Method : " + functionName.getText()
-                    + (based == null ? "" : System.lineSeparator() + "Class : " + based.getClass().getName())
-                    + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), null, functionName);
         } catch (Exception e){
             ContanRuntimeError.E0007.throwError(System.lineSeparator() + "Method : " + functionName.getText()
                     + (based == null ? "" : System.lineSeparator() + "Class : " + based.getClass().getName())
                     + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), e, functionName);
         }
+    
+        ContanRuntimeError.E0007.throwError(System.lineSeparator() + "Method : " + functionName.getText()
+                + (based == null ? "" : System.lineSeparator() + "Class : " + based.getClass().getName())
+                + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), null, functionName);
         
         return null;
     }

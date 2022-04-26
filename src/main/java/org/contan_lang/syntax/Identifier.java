@@ -20,9 +20,9 @@ public enum Identifier {
     OPERATOR_AND(9, true, false, null, "&&"),
     OPERATOR_PLUS(5, true, false, null, "+"),
     OPERATOR_MULTIPLY(4, true, false, null, "*"),
-    SUBSTITUTION(8, true, false, null, "="),
+    ASSIGNMENT(8, true, false, null, "="),
     NEW(3, false, false, null, "new"),
-    IMPORT(7, false, false, null, "import"),
+    IMPORT(10, false, false, null, "import"),
     ARGUMENT_SPLIT(0, true, false, null, ","),
     NULL(1, false, false, null, "null", "NULL");
     

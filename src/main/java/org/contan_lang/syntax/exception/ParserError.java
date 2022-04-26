@@ -19,7 +19,11 @@ public enum ParserError {
     E0011(ParserExceptions.UNEXPECTED_SYNTAX, "It is an incomplete substitution expression."),
     E0012(ParserExceptions.UNEXPECTED_SYNTAX, "The expression is required on both sides."),
     E0013(ParserExceptions.LINK_FAILURE, "Class not found."),
-    E0014(ParserExceptions.LINK_FAILURE, "Function not found.");
+    E0014(ParserExceptions.LINK_FAILURE, "Function not found."),
+    E0015(ParserExceptions.UNEXPECTED_SYNTAX, "The import statement is invalid. " +
+            "It should be in the form  'import ClassName = \"org.example.ExampleClass\"'"),
+    E0016(ParserExceptions.UNEXPECTED_SYNTAX, "The module import statement is invalid. " +
+            "It should be in the form  'module ModuleName = \"ExampleModule.cntn\"'");
 
     private final ParserExceptions parserExceptions;
 

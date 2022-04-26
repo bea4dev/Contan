@@ -56,6 +56,15 @@ public class Lexer {
                 for (Identifier identifier : Identifier.values()) {
                     for (String word : identifier.words) {
                         if (after.startsWith(word)) {
+                            
+                            if (i != text.length() - 1 && identifier == Identifier.DOT) {
+                                //Determine if it is a float dot.
+                                if (ParserUtil.isNumber(keyWorld.toString()) && Character.isDigit(text.charAt(i + 1))) {
+                                    keyWorld.append(".");
+                                    continue loop;
+                                }
+                            }
+                            
                             i += word.length() - 1;
 
                             if (keyWorld.length() != 0) {

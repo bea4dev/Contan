@@ -1,5 +1,6 @@
 package org.contan_lang.environment.expection;
 
+import org.contan_lang.syntax.exception.ExceptionUtil;
 import org.contan_lang.syntax.tokens.Token;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +23,10 @@ public enum ContanRuntimeExceptions {
         for (int i = 0; i < tokens.length; i++) {
             reason = reason.replace("%" + i, tokens[i].getText());
         }
+    
+        //Visual error message
+        reason = ExceptionUtil.createVisualErrorMessage(reason, tokens);
+        
         throw createExceptionFunction.apply(reason, cause);
     }
     
