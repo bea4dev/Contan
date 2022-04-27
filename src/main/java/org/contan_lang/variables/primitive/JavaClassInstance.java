@@ -140,7 +140,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                             convertedArgs[i] = variable.getBasedJavaObject();
                         }
                     } else {
-                        if (variable == ContanVoid.INSTANCE) {
+                        if (variable == ContanNull.INSTANCE) {
                             convertedArgs[i] = null;
                         } else {
                             convertedArgs[i] = variable.getBasedJavaObject();
@@ -150,7 +150,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                 
                 Object returned = method.invoke(based, convertedArgs);
                 if (returned == null) {
-                    return ContanVoid.INSTANCE;
+                    return ContanNull.INSTANCE;
                 } else {
                     return new JavaClassInstance(contanEngine, returned);
                 }

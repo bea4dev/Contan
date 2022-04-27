@@ -4,11 +4,11 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 
-public class ContanVoid extends ContanPrimitiveObject<Boolean> {
+public class ContanNull extends ContanPrimitiveObject<Boolean> {
     
-    public static final ContanVoid INSTANCE = new ContanVoid();
+    public static final ContanNull INSTANCE = new ContanNull();
     
-    private ContanVoid() {super(null, false);}
+    private ContanNull() {super(null, false);}
     
     @Override
     public ContanObject<Boolean> createClone() {return INSTANCE;}

@@ -1,13 +1,16 @@
-package org.contan_lang.syntax.parser;
+package org.contan_lang;
 
-import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
+import org.contan_lang.environment.expection.ContanJavaRuntimeException;
+import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.evaluators.FunctionInvokable;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanNull;
+import org.contan_lang.variables.primitive.JavaClassInstance;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,17 +62,50 @@ public class ContanModule implements FunctionInvokable {
     public Evaluator getGlobalEvaluator() {return globalEvaluator;}
 
     public Environment getModuleEnvironment() {return moduleEnvironment;}
+    
+    public ContanObject<?> eval() {
+        return globalEvaluator.eval(moduleEnvironment);
+    }
 
     @Override
     public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName.getText());
-        for (FunctionBlock functionBlock : functions) {
-            if (functionBlock.getArgs().length == variables.length) {
-                return functionBlock.eval(new Environment(contanEngine, moduleEnvironment), null, variables);
+        if (functions != null) {
+            for (FunctionBlock functionBlock : functions) {
+                if (functionBlock.getArgs().length == variables.length) {
+                    return functionBlock.eval(new Environment(contanEngine, moduleEnvironment), null, variables);
+                }
+            }
+        }
+    
+        ContanRuntimeError.E0011.throwError("", null, functionName);
+        return ContanNull.INSTANCE;
+    }
+    
+    
+    public Object invokeFunction(String functionName, Object... arguments) {
+        //Convert all arguments to ContanObject.
+        ContanObject<?>[] variables = new ContanObject<?>[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            variables[i] = new JavaClassInstance(contanEngine, arguments[i]);
+        }
+        
+        //Invoke function
+        List<FunctionBlock> functions = functionMap.get(functionName);
+        if (functions != null) {
+            for (FunctionBlock functionBlock : functions) {
+                if (functionBlock.getArgs().length == variables.length) {
+                    ContanObject<?> result = functionBlock.eval(new Environment(contanEngine, moduleEnvironment), null, variables);
+                    if (result instanceof ContanNull) {
+                        return null;
+                    } else {
+                        return result.getBasedJavaObject();
+                    }
+                }
             }
         }
         
-        throw new IllegalStateException("NOT FOUND FUNCTION " + functionName);//TODO
+        throw new ContanJavaRuntimeException("Function not found : " + functionName, null);
     }
     
 }

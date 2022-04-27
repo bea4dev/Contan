@@ -1,8 +1,8 @@
 package org.contan_lang;
 
 import org.contan_lang.evaluators.ClassBlock;
-import org.contan_lang.operators.primitives.CreateClassInstanceOperator;
 import org.contan_lang.syntax.exception.ContanParseException;
+import org.contan_lang.syntax.parser.Parser;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class ContanEngine {
     
     private final Map<String, Class<?>> javaClassMap;
     
-    public final Test test = new Test();
+    private final Map<String, ContanModule> moduleMap;
     
     public ContanEngine() {
         this.classBlocks = new HashSet<>();
@@ -30,6 +30,7 @@ public class ContanEngine {
         this.collidedClassNames = new HashSet<>();
         this.importedJavaClasses = new HashSet<>();
         this.javaClassMap = new HashMap<>();
+        this.moduleMap = new HashMap<>();
     }
 
     public void addClassBlock(ClassBlock classBlock) {
@@ -56,19 +57,32 @@ public class ContanEngine {
     public @Nullable Class<?> getJavaClassFromName(String className) {
         return javaClassMap.get(className);
     }
-
-    public static String test(double i){
-        return i == 1.0 ? "JAVA!" : "NO!!";
+    
+    /**
+     * Compile an executable module from source code.
+     *
+     * @param moduleName Name of the module. The name specified here will be used for module imports, etc. in the code.
+     * @param sourceCode Source code of the string to be compiled.
+     * @return Compiled executable module.
+     * @throws ContanParseException Compile-time exception.
+     *                              Thrown when syntax or spelling errors exist.
+     */
+    public ContanModule compile(String moduleName, String sourceCode) throws ContanParseException {
+        Parser parser = new Parser(moduleName, this, sourceCode);
+        ContanModule contanModule = parser.compile();
+        moduleMap.put(moduleName, contanModule);
+        
+        return contanModule;
     }
     
-    public static class Test {
-        
-        public final String test = "TEST!";
-        
-        public void test() {
-            System.out.println("TEST!!!!");
-        }
-        
+    /**
+     * Retrieves compiled modules.
+     *
+     * @param moduleName Module name specified at compile time.
+     * @return {@link ContanModule}
+     */
+    public @Nullable ContanModule getModule(String moduleName) {
+        return moduleMap.get(moduleName);
     }
     
 }

@@ -6,7 +6,7 @@ import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanVoid;
+import org.contan_lang.variables.primitive.ContanNull;
 
 public class Print extends FunctionBlock {
     
@@ -17,14 +17,14 @@ public class Print extends FunctionBlock {
     @Override
     public ContanObject<?> eval(Environment environment, Token token, ContanObject<?>... contanObjects) {
         for (ContanObject<?> variable : contanObjects) {
-            if (variable instanceof ContanVoid) {
+            if (variable instanceof ContanNull) {
                 System.out.println("NULL");
                 continue;
             }
             
             System.out.println(variable.getBasedJavaObject());
         }
-        return ContanVoid.INSTANCE;
+        return ContanNull.INSTANCE;
     }
     
 }

@@ -1,9 +1,6 @@
 package org.contan_lang;
 
-import org.contan_lang.environment.Environment;
-import org.contan_lang.syntax.Lexer;
 import org.contan_lang.syntax.exception.ContanParseException;
-import org.contan_lang.syntax.parser.ContanModule;
 import org.contan_lang.syntax.parser.Parser;
 
 /**
@@ -36,7 +33,7 @@ public class App
 
         try {
             ContanModule contanModule = parser.compile();
-            contanModule.getGlobalEvaluator().eval(contanModule.getModuleEnvironment());
+            contanModule.eval();
             
         } catch (ContanParseException e) {
             e.printStackTrace();

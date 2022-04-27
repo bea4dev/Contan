@@ -3,7 +3,7 @@ package org.contan_lang.evaluators;
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanVoid;
+import org.contan_lang.variables.primitive.ContanNull;
 import org.jetbrains.annotations.Nullable;
 
 public class IfEvaluator implements Evaluator {
@@ -39,7 +39,7 @@ public class IfEvaluator implements Evaluator {
             }
         }
         
-        return ContanVoid.INSTANCE;
+        return ContanNull.INSTANCE;
     }
     
 }

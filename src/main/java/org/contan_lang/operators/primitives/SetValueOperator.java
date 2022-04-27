@@ -8,7 +8,7 @@ import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanVoid;
+import org.contan_lang.variables.primitive.ContanNull;
 
 public class SetValueOperator extends Operator {
     
@@ -39,6 +39,6 @@ public class SetValueOperator extends Operator {
             ContanRuntimeError.E0012.throwError("", e, token);
         }
         
-        return ContanVoid.INSTANCE;
+        return ContanNull.INSTANCE;
     }
 }

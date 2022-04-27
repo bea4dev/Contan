@@ -2,7 +2,7 @@ package org.contan_lang.evaluators;
 
 import org.contan_lang.environment.Environment;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanVoid;
+import org.contan_lang.variables.primitive.ContanNull;
 
 public class Expressions implements Evaluator {
     
@@ -24,11 +24,11 @@ public class Expressions implements Evaluator {
             }
 
             if (environment.hasReturnValue()) {
-                return ContanVoid.INSTANCE;
+                return ContanNull.INSTANCE;
             }
         }
 
-        return ContanVoid.INSTANCE;
+        return ContanNull.INSTANCE;
     }
     
 }

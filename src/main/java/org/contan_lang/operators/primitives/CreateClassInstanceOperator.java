@@ -10,7 +10,7 @@ import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.NumberType;
 import org.contan_lang.variables.primitive.ContanClassObject;
-import org.contan_lang.variables.primitive.ContanVoid;
+import org.contan_lang.variables.primitive.ContanNull;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 import org.contan_lang.variables.primitive.JavaClassObject;
 
@@ -106,7 +106,7 @@ public class CreateClassInstanceOperator implements Evaluator {
                                 convertedArgs[i] = variable.getBasedJavaObject();
                             }
                         } else {
-                            if (variable == ContanVoid.INSTANCE) {
+                            if (variable == ContanNull.INSTANCE) {
                                 convertedArgs[i] = null;
                             } else {
                                 convertedArgs[i] = variable.getBasedJavaObject();

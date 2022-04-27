@@ -6,7 +6,7 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanClassInstance;
-import org.contan_lang.variables.primitive.ContanVoid;
+import org.contan_lang.variables.primitive.ContanNull;
 
 import java.util.*;
 
@@ -56,7 +56,7 @@ public class ClassBlock {
             if (i < contanObjects.length) {
                 environment.createVariable(initializeArgs[i].getText(), contanObjects[i]);
             } else {
-                environment.createVariable(initializeArgs[i].getText(), ContanVoid.INSTANCE);
+                environment.createVariable(initializeArgs[i].getText(), ContanNull.INSTANCE);
             }
         }
 

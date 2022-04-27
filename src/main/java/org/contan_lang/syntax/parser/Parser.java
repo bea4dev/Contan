@@ -1,6 +1,7 @@
 package org.contan_lang.syntax.parser;
 
 import org.contan_lang.ContanEngine;
+import org.contan_lang.ContanModule;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.*;
 import org.contan_lang.operators.primitives.*;

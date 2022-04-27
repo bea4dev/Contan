@@ -1,7 +1,7 @@
 package org.contan_lang.variables.primitive;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.syntax.parser.ContanModule;
+import org.contan_lang.ContanModule;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 
