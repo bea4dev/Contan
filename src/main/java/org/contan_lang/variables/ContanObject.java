@@ -7,7 +7,7 @@ public interface ContanObject<T> extends FunctionInvokable {
 
     ContanEngine getContanEngine();
     
-    Object getBasedJavaObject();
+    T getBasedJavaObject();
     
     ContanObject<T> createClone();
     

@@ -1,8 +1,7 @@
 package org.contan_lang.syntax;
 
-import org.contan_lang.syntax.parser.ParserUtil;
-import org.contan_lang.syntax.tokens.DefinedStringToken;
 import org.contan_lang.syntax.tokens.LineToken;
+import org.contan_lang.syntax.tokens.StringToken;
 import org.contan_lang.syntax.tokens.Token;
 
 import java.util.ArrayList;
@@ -21,99 +20,116 @@ public class Lexer {
     
     public List<Token> split() {
         List<Token> tokens = new ArrayList<>();
-
-        StringBuilder keyWorld = new StringBuilder();
-        boolean escaped = false;
-        boolean isString = false;
-
+        
+        int textLength = text.length();
+        
         int currentLine = 1;
-        int columnIndex = 0;
-        LineToken currentLineToken = new LineToken(currentLine);
-
-        loop : for (int i = 0; i < text.length(); i++) {
-
-            String after = text.substring(i);
-            char chara = text.charAt(i);
-
-            if (chara == '\n') {
-                currentLineToken.build();
-
-                currentLine++;
-                currentLineToken = new LineToken(currentLine);
-                columnIndex = 0;
-            } else {
-                currentLineToken.append(chara);
-                columnIndex++;
+        int currentColumn = 0;
+        LineToken currentLineToken = new LineToken(1);
+        
+        StringBuilder keyWord = new StringBuilder();
+        
+        boolean isInString = false;
+        boolean escaped = false;
+        
+        loop : for (int i = 0; i < textLength; i++) {
+            char currentCharacter = text.charAt(i);
+            
+            if (currentCharacter == '"' && !escaped) {
+                isInString = !isInString;
             }
-
-            //Skip space
-            if (!isString && chara == ' ') {
-                continue;
-            }
-
-            //Check identifier
-            if (!isString) {
-                for (Identifier identifier : Identifier.values()) {
-                    for (String word : identifier.words) {
-                        if (after.startsWith(word)) {
-                            
-                            if (i != text.length() - 1 && identifier == Identifier.DOT) {
-                                //Determine if it is a float dot.
-                                if (ParserUtil.isNumber(keyWorld.toString()) && Character.isDigit(text.charAt(i + 1))) {
-                                    keyWorld.append(".");
-                                    continue loop;
-                                }
+            
+            if ((currentCharacter == ' ' || currentCharacter == '\n' || i == textLength - 1) && !isInString) {
+                if (keyWord.length() != 0) {
+                    String key = keyWord.toString();
+                    
+                    Token token = null;
+                    //Check identifier
+                    id : for (Identifier identifier : Identifier.values()) {
+                        for (String word : identifier.words) {
+                            if (word.equals(key)) {
+                                token = new Token(this, key, currentColumn, currentLineToken, identifier);
+                                break id;
                             }
-                            
-                            i += word.length() - 1;
-
-                            if (keyWorld.length() != 0) {
-                                tokens.add(new Token(this, keyWorld.toString(), columnIndex, currentLineToken, null));
-                            }
-                            tokens.add(new Token(this, word, columnIndex + word.length(), currentLineToken, identifier));
-                            keyWorld = new StringBuilder();
-
-                            String sub = word.substring(1);
-                            currentLineToken.append(sub);
-                            columnIndex += sub.length();
-
-                            continue loop;
                         }
                     }
+                    
+                    if (token == null) {
+                        if (text.charAt(i - 1) == '"') {
+                            token = new StringToken(this, keyWord.toString(), currentColumn, currentLineToken, null);
+                        } else {
+                            token = new Token(this, keyWord.toString(), currentColumn, currentLineToken, null);
+                        }
+                    }
+                    
+                    tokens.add(token);
+                    keyWord = new StringBuilder();
+                }
+            } else {
+                if (currentCharacter == '\\' || currentCharacter == '"') {
+                    if (escaped) {
+                        keyWord.append(currentCharacter);
+                    }
+                } else {
+                    keyWord.append(currentCharacter);
                 }
             }
-
-            if (chara != '\\' && chara != '\"') {
-                keyWorld.append(chara);
+    
+            if (currentCharacter == '\\' && isInString) {
+                escaped = true;
+            } else {
+                escaped = false;
             }
-
-            //String token
-            if (chara == '\"' && !escaped) {
-                if (isString) {
-                    tokens.add(new DefinedStringToken(this, keyWorld.toString(), columnIndex, currentLineToken, null));
-                    keyWorld = new StringBuilder();
+    
+            
+            currentColumn++;
+    
+            if (currentCharacter == '\n') {
+                currentLine++;
+                currentColumn = 0;
+        
+                currentLineToken.build();
+                currentLineToken = new LineToken(currentLine);
+            } else {
+                currentLineToken.append(currentCharacter);
+            }
+            
+            
+            if (isInString) {
+                continue;
+            }
+            
+            //Check identifier
+            for (Identifier identifier : Identifier.values()) {
+                if (!identifier.adjoinable) {
+                    continue;
                 }
-                isString = !isString;
-            }
-
-            if (isString) {
-                if (escaped) {
-                    if (chara == '\"' || chara == '\\') {
-                        keyWorld.append(chara);
+                
+                for (String word : identifier.words) {
+                    if (text.substring(i).startsWith(word)) {
+                        if (keyWord.length() > 1) {
+                            String key = keyWord.toString();
+                            if (text.charAt(i - 1) == '"') {
+                                tokens.add(new StringToken(this, key.substring(0, key.length() - 1), currentColumn - 1, currentLineToken, null));
+                            } else {
+                                tokens.add(new Token(this, key.substring(0, key.length() - 1), currentColumn - 1, currentLineToken, null));
+                            }
+                        }
+                        keyWord = new StringBuilder();
+                        
+                        i += word.length() - 1;
+                        currentColumn += word.length() - 1;
+                        currentLineToken.append(word.substring(1));
+                        tokens.add(new Token(this, word, currentColumn, currentLineToken, identifier));
+                        
+                        continue loop;
                     }
                 }
-
-                escaped = chara == '\\';
             }
         }
-
-
-        if (keyWorld.length() != 0) {
-            tokens.add(new Token(this, keyWorld.toString(), Math.max(0, columnIndex - keyWorld.length()), currentLineToken, null));
-        }
-
+    
         currentLineToken.build();
-
+        
         return tokens;
     }
     

@@ -32,7 +32,7 @@ public class FunctionBlock {
     public ContanObject<?> eval(@Nullable Environment parentEnvironment, Token token, ContanObject<?>... contanObjects) {
         Environment environment = new Environment(contanEngine, parentEnvironment, true);
         if (args.length != contanObjects.length) {
-            ContanRuntimeError.E0011.throwError("", null, token);
+            ContanRuntimeError.E0016.throwError("", null, token);
         }
         
         for (int i = 0; i < args.length; i++) {

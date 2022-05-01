@@ -23,7 +23,10 @@ public enum ParserError {
     E0015(ParserExceptions.UNEXPECTED_SYNTAX, "The import statement is invalid. " +
             "It should be in the form  'import ClassName = \"org.example.ExampleClass\"'"),
     E0016(ParserExceptions.UNEXPECTED_SYNTAX, "The module import statement is invalid. " +
-            "It should be in the form  'module ModuleName = \"ExampleModule.cntn\"'");
+            "It should be in the form  'module ModuleName = \"ExampleModule.cntn\"'"),
+    E0017(ParserExceptions.UNEXPECTED_SYNTAX, "The right side of the lambda expression must be an expression."),
+    E0018(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of return we need an expression."),
+    E0019(ParserExceptions.UNEXPECTED_SYNTAX, "Cannot write an expression on the left side of return.");
 
     private final ParserExceptions parserExceptions;
 

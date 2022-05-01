@@ -1,25 +1,34 @@
 package org.contan_lang.variables.primitive;
 
+import org.contan_lang.ContanEngine;
+import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
+import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 
-public class ContanNull extends ContanPrimitiveObject<Boolean> {
+public class ContanLambdaFunction extends ContanPrimitiveObject<FunctionBlock> {
     
-    public static final ContanNull INSTANCE = new ContanNull();
+    private final Environment lambdaEnvironment;
     
-    private ContanNull() {super(null, false);}
-    
-    @Override
-    public ContanObject<Boolean> createClone() {return INSTANCE;}
-    
-    @Override
-    public String toString() {return "NULL";}
+    public ContanLambdaFunction(ContanEngine contanEngine, FunctionBlock based, Environment lambdaEnvironment) {
+        super(contanEngine, based);
+        this.lambdaEnvironment = lambdaEnvironment;
+    }
     
     @Override
     public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;
+    }
+    
+    public ContanObject<?> eval(Token token, ContanObject<?>... variables){
+        return based.eval(lambdaEnvironment, token, variables);
+    }
+    
+    @Override
+    public ContanObject<FunctionBlock> createClone() {
+        return this;
     }
     
     @Override
@@ -41,9 +50,5 @@ public class ContanNull extends ContanPrimitiveObject<Boolean> {
     public boolean convertibleToDouble() {
         return false;
     }
-
-    @Override
-    public Boolean getBasedJavaObject() {
-        return based;
-    }
+    
 }

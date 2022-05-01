@@ -70,7 +70,7 @@ public class ExceptionUtil {
             line.append("| ");
         
             space = new StringBuilder();
-            for (int i = 0; i < start - lineStart - 1; i++) {
+            for (int i = 0; i < start - lineStart; i++) {
                 space.append(" ");
             }
         

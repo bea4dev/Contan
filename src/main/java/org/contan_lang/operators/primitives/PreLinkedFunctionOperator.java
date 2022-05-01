@@ -13,6 +13,7 @@ import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanLambdaFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -61,10 +62,10 @@ public class PreLinkedFunctionOperator extends Operator {
         }
         
         this.functionBlock = StandardFunctions.FUNCTIONS.get(this.functionName.getText());
-    
+        /*
         if (functionBlock == null) {
             ParserError.E0014.throwError("", functionName);
-        }
+        }*/
     }
     
     @Override
@@ -88,12 +89,26 @@ public class PreLinkedFunctionOperator extends Operator {
                 return returned;
             }
         }
+    
         
         if (left == null) {
-            ContanRuntimeError.E0000.throwError("", null, functionName);
-            return null;
+            ContanObjectReference resultReference = environment.getVariable(functionName.getText());
+            
+            if (resultReference == null) {
+                ContanRuntimeError.E0011.throwError("", null, functionName);
+                return null;
+            }
+            
+            ContanObject<?> result = ContanRuntimeUtil.removeReference(functionName, resultReference);
+            
+            if (result instanceof ContanLambdaFunction) {
+                return ((ContanLambdaFunction) result).eval(functionName, variables);
+            } else {
+                ContanRuntimeError.E0011.throwError("", null, functionName);
+                return null;
+            }
         }
-        
+    
         ContanObject<?> leftResult = left.eval(environment);
         return leftResult.invokeFunction(functionName, variables);
     }

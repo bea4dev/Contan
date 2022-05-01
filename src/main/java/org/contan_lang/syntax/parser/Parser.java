@@ -11,7 +11,8 @@ import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.parser.environment.Scope;
 import org.contan_lang.syntax.parser.environment.ScopeType;
-import org.contan_lang.syntax.tokens.DefinedStringToken;
+import org.contan_lang.syntax.tokens.BlockToken;
+import org.contan_lang.syntax.tokens.StringToken;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.primitive.*;
 import org.jetbrains.annotations.NotNull;
@@ -69,6 +70,16 @@ public class Parser {
             }
 
             isClassDefine = token.getIdentifier() == Identifier.CLASS;
+        }
+    
+        //Register the function name first.
+        boolean isFunctionDefine = false;
+        for (Token token : tokens) {
+            if (isFunctionDefine) {
+                moduleScope.addVariable(token.getText());
+            }
+        
+            isFunctionDefine = token.getIdentifier() == Identifier.FUNCTION;
         }
 
         Evaluator globalEvaluator = parseBlock(moduleScope, null, tokens);
@@ -177,6 +188,12 @@ public class Parser {
                         } else if (scope.getScopeType() == ScopeType.CLASS) {
                             classFunctionBlocks.add(functionBlock);
                         }
+                        
+                        
+                        //For lambda invoke
+                        if (scope.getScopeType() == ScopeType.MODULE) {
+                            moduleEnvironment.createVariable(functionNameToken.getText(), new ContanLambdaFunction(contanEngine, functionBlock, moduleEnvironment));
+                        }
 
                         return null;
                     }
@@ -254,7 +271,7 @@ public class Parser {
                 i += nestedTokens.size() - 1;
     
                 //Ignore line breaks.
-                nestedTokens.removeIf(t -> t.getText().equals("\n"));
+                nestedTokens = ParserUtil.removeLineBreaks(nestedTokens);
                 
                 expressionTokens.addAll(nestedTokens);
             }
@@ -262,6 +279,19 @@ public class Parser {
             //Parse expression
             if (identifier != Identifier.EXPRESSION_SPLIT && identifier != Identifier.BLOCK_OPERATOR_START) {
                 expressionTokens.add(token);
+            }
+            
+            //If the right side of the lambda expression is a block, put them together as a single token first.
+            if (identifier == Identifier.LAMBDA) {
+                if (i == blockTokenLength - 1) {
+                    ParserError.E0017.throwError("", token);
+                }
+                
+                if (blockTokens.get(i + 1).getIdentifier() == Identifier.BLOCK_START) {
+                    List<Token> nestedTokens = ParserUtil.getNestedToken(blockTokens, i + 1, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
+                    i += nestedTokens.size() + 2;
+                    expressionTokens.add(new BlockToken(lexer, nestedTokens));
+                }
             }
 
             if (identifier == Identifier.EXPRESSION_SPLIT || i == blockTokenLength - 1) {
@@ -280,11 +310,14 @@ public class Parser {
         if (tokenLength == 0) {
             return NullEvaluator.INSTANCE;
         }
-
+        
 
         //If there is only a portion enclosed in parentheses, remove the parentheses.
         if (tokens.get(0).getIdentifier() == Identifier.BLOCK_OPERATOR_START && tokens.get(tokenLength - 1).getIdentifier() == Identifier.BLOCK_OPERATOR_END) {
-            return parseExpression(scope, tokens.subList(1, tokenLength - 1));
+            List<Token> nested = ParserUtil.getNestedTokenIfEnclosed(tokens, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END);
+            if (nested.size() == tokenLength - 2) {
+                return parseExpression(scope, nested);
+            }
         }
         
         //Determine if it is a variable name or an integer definition.
@@ -301,14 +334,14 @@ public class Parser {
             if (ParserUtil.isNumber(name)) {
                 if (name.contains(".")) {
                     //Float
-                    return new DefinedValueOperator(contanEngine, first, new ContanFloat(contanEngine, Double.parseDouble(name)));
+                    return new DefineValueOperator(contanEngine, first, new ContanFloat(contanEngine, Double.parseDouble(name)));
                 } else {
                     //Integer
-                    return new DefinedValueOperator(contanEngine, first, new ContanInteger(contanEngine, Long.parseLong(name)));
+                    return new DefineValueOperator(contanEngine, first, new ContanInteger(contanEngine, Long.parseLong(name)));
                 }
-            } else if (first instanceof DefinedStringToken) {
+            } else if (first instanceof StringToken) {
                 //String
-                return new DefinedValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
+                return new DefineValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
             } else {
                 //Not number
                 scope.checkHasVariable(first);
@@ -335,7 +368,7 @@ public class Parser {
                 continue;
             }
             
-            if (identifier.priority >= Identifier.BLOCK_START.priority) {
+            if (identifier.priority >= Identifier.IF.priority) {
                 ParserError.E0000.throwError("", token);
             }
     
@@ -365,9 +398,6 @@ public class Parser {
 
                 return operator;
             }
-
-            System.out.println("!!!");
-            tokens.forEach(System.out::println);
 
             ParserError.E0008.throwError("", tokens.get(0));
             return null;
@@ -479,9 +509,9 @@ public class Parser {
                 }
 
                 Token nameToken = rightTokenList.get(0);
-
-                //If function
+                
                 if (ParserUtil.containsIdentifier(rightTokenList, Identifier.BLOCK_OPERATOR_START)) {
+                    //function
                     List<Token> argumentTokenList = ParserUtil.getNestedToken(rightTokenList, 1, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
 
                     Evaluator left = parseExpression(scope, leftTokenList);
@@ -492,6 +522,7 @@ public class Parser {
 
                     return operator;
                 } else {
+                    //field
                     Evaluator left = parseExpression(scope, leftTokenList);
                     return new GetFieldOperator(contanEngine, nameToken, left);
                 }
@@ -510,7 +541,7 @@ public class Parser {
                 Token assignment = rightTokenList.get(1);
                 Token source = rightTokenList.get(2);
                 
-                if (!(nameToken.getIdentifier() == null && assignment.getIdentifier() == Identifier.ASSIGNMENT && source instanceof DefinedStringToken)) {
+                if (!(nameToken.getIdentifier() == null && assignment.getIdentifier() == Identifier.ASSIGNMENT && source instanceof StringToken)) {
                     ParserError.E0015.throwError("", rightTokenList.toArray(new Token[0]));
                 }
                 
@@ -525,9 +556,54 @@ public class Parser {
                 
                 return NullEvaluator.INSTANCE;
             }
+            
+            case LAMBDA: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+                
+                List<Token> argTokens;
+                if (leftTokenList.get(0).getIdentifier() == Identifier.BLOCK_OPERATOR_START) {
+                    argTokens = ParserUtil.getNestedToken(leftTokenList, 0, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
+                } else {
+                    argTokens = leftTokenList;
+                }
+                
+                argTokens = ParserUtil.getDefinedArguments(argTokens);
+                
+                Scope newScope = new Scope(scope.getRootName() + ".lambda", scope, ScopeType.FUNCTION);
+                argTokens.forEach(token -> newScope.addVariable(token.getText()));
+                
+                Evaluator right;
+                
+                if (rightTokenList.get(0) instanceof BlockToken) {
+                    right = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(0)).tokens);
+                } else if (rightTokenList.get(0).getIdentifier() == Identifier.BLOCK_START) {
+                    right = parseBlock(newScope, null, ParserUtil.getNestedToken(rightTokenList, 0, Identifier.BLOCK_START, Identifier.BLOCK_END, false, true));
+                } else {
+                    right = parseExpression(newScope, rightTokenList);
+                }
+                
+                FunctionBlock functionBlock = new FunctionBlock(contanEngine, highestIdentifierToken, right, argTokens.toArray(new Token[0]));
+                
+                return new DefineLambdaFunctionOperator(contanEngine, highestIdentifierToken, functionBlock);
+            }
+            
+            case RETURN: {
+                if (leftTokenList.size() != 0) {
+                    ParserError.E0019.throwError("", highestIdentifierToken);
+                }
+                
+                if (rightTokenList.size() == 0) {
+                    ParserError.E0018.throwError("", highestIdentifierToken);
+                }
+                
+                Evaluator right = parseExpression(scope, rightTokenList);
+                return new SetReturnValueOperator(contanEngine, highestIdentifierToken, right);
+            }
         }
 
-        ParserError.E0000.throwError("");
+        ParserError.E0000.throwError(word, highestIdentifierToken);
         return null;
     }
 
@@ -541,13 +617,20 @@ public class Parser {
         for (int i = 0; i < length; i++) {
             Token token = tokens.get(i);
             Identifier identifier = token.getIdentifier();
+    
+            //Skip over the contents of the parentheses.
+            if (identifier == Identifier.BLOCK_OPERATOR_START) {
+                List<Token> nestedTokenList = ParserUtil.getNestedToken(tokens, i, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, true, false);
+                i += nestedTokenList.size() - 1;
+                evalTokens.addAll(nestedTokenList);
+            }
 
-            if (identifier != Identifier.ARGUMENT_SPLIT) {
+            if (identifier != Identifier.ARGUMENT_SPLIT && identifier != Identifier.BLOCK_OPERATOR_START && identifier != Identifier.BLOCK_OPERATOR_END) {
                 evalTokens.add(token);
             }
 
             if (identifier == Identifier.ARGUMENT_SPLIT || i == length - 1) {
-                evaluators.add(new RemoveReferenceOperator(contanEngine, tokens.get(length - 1), parseExpression(scope, evalTokens)));
+                evaluators.add(new RemoveReferenceOperator(contanEngine, tokens.get(length - 1), parseBlock(scope, null, evalTokens)));
                 evalTokens.clear();
             }
         }

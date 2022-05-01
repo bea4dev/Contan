@@ -1,7 +1,11 @@
 package org.contan_lang;
 
+import org.contan_lang.syntax.Lexer;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.parser.Parser;
+import org.contan_lang.syntax.tokens.Token;
+
+import java.util.List;
 
 /**
  * Hello world!
@@ -22,12 +26,17 @@ public class App
         
         
         
-        String test = "import ContanEngine = \"org.contan_lang.ContanEngine\"\n" +
+        String test = "invoke(test)\n" +
                 "\n" +
-                "data instance = new ContanEngine()\n" +
-                "print(\"Hello world!! from \" + instance.test.test)\n";
+                "function invoke(lambda){\n" +
+                "    lambda()\n" +
+                "}\n" +
+                "\n" +
+                "function test(){\n" +
+                "    print(\"Hello World!!\")\n" +
+                "}";
 
-
+        
         ContanEngine contanEngine = new ContanEngine();
         Parser parser = new Parser("test", contanEngine, test);
 

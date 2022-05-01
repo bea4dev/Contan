@@ -5,7 +5,7 @@ import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanPrimitiveObject;
 
-public class ContanObjectReference extends ContanPrimitiveObject<ContanObject<?>> {
+public class ContanObjectReference extends ContanPrimitiveObject<Object> {
     
     protected final String name;
     
@@ -21,43 +21,43 @@ public class ContanObjectReference extends ContanPrimitiveObject<ContanObject<?>
     
     public Environment getEnvironment() {return environment;}
     
-    public ContanObject<?> getContanVariable() throws IllegalAccessException {return based;}
+    public ContanObject<?> getContanVariable() throws IllegalAccessException {return (ContanObject<?>) based;}
     
     public void setContanVariable(ContanObject<?> contanObject) throws IllegalAccessException {this.based = contanObject;}
     
     @Override
     public Object getBasedJavaObject() {
-        return based.getBasedJavaObject();
+        return ((ContanObject<?>) based).getBasedJavaObject();
     }
     
     @Override
     public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
-        return based.invokeFunction(functionName, variables);
+        return ((ContanObject<?>) based).invokeFunction(functionName, variables);
     }
     
     @Override
-    public ContanObject<ContanObject<?>> createClone() {
+    public ContanObject<Object> createClone() {
         return this;
     }
     
     @Override
     public long asLong() {
-        return based.asLong();
+        return ((ContanObject<?>) based).asLong();
     }
     
     @Override
     public double asDouble() {
-        return based.asDouble();
+        return ((ContanObject<?>) based).asDouble();
     }
     
     @Override
     public boolean convertibleToLong() {
-        return based.convertibleToLong();
+        return ((ContanObject<?>) based).convertibleToLong();
     }
     
     @Override
     public boolean convertibleToDouble() {
-        return based.convertibleToDouble();
+        return ((ContanObject<?>) based).convertibleToDouble();
     }
     
 }

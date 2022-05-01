@@ -3,6 +3,7 @@ package org.contan_lang;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.parser.Parser;
+import org.contan_lang.thread.ContanThread;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -24,6 +25,18 @@ public class ContanEngine {
     
     private final Map<String, ContanModule> moduleMap;
     
+    private final ContanThread mainThread;
+    
+    public ContanEngine(ContanThread mainThread) {
+        this.classBlocks = new HashSet<>();
+        this.classNames = new HashSet<>();
+        this.collidedClassNames = new HashSet<>();
+        this.importedJavaClasses = new HashSet<>();
+        this.javaClassMap = new HashMap<>();
+        this.moduleMap = new HashMap<>();
+        this.mainThread = mainThread;
+    }
+    
     public ContanEngine() {
         this.classBlocks = new HashSet<>();
         this.classNames = new HashSet<>();
@@ -31,6 +44,7 @@ public class ContanEngine {
         this.importedJavaClasses = new HashSet<>();
         this.javaClassMap = new HashMap<>();
         this.moduleMap = new HashMap<>();
+        this.mainThread = new ContanThread(this);
     }
 
     public void addClassBlock(ClassBlock classBlock) {

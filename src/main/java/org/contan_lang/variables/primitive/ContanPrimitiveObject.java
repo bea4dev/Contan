@@ -18,7 +18,7 @@ public abstract class ContanPrimitiveObject<T> implements ContanObject<T> {
     }
     
     @Override
-    public Object getBasedJavaObject() { return based; }
+    public T getBasedJavaObject() { return based; }
     
     
     @Override

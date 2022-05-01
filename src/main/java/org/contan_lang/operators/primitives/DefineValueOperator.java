@@ -6,11 +6,11 @@ import org.contan_lang.operators.Operator;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 
-public class DefinedValueOperator extends Operator {
+public class DefineValueOperator extends Operator {
     
     private final ContanObject<?> value;
     
-    public DefinedValueOperator(ContanEngine contanEngine, Token token, ContanObject<?> value) {
+    public DefineValueOperator(ContanEngine contanEngine, Token token, ContanObject<?> value) {
         super(contanEngine, token);
         this.value = value;
     }
