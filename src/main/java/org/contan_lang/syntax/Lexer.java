@@ -56,9 +56,9 @@ public class Lexer {
                     
                     if (token == null) {
                         if (text.charAt(i - 1) == '"') {
-                            token = new StringToken(this, keyWord.toString(), currentColumn, currentLineToken, null);
+                            token = new StringToken(this, key, currentColumn, currentLineToken, null);
                         } else {
-                            token = new Token(this, keyWord.toString(), currentColumn, currentLineToken, null);
+                            token = new Token(this, key, currentColumn, currentLineToken, null);
                         }
                     }
                     
@@ -101,12 +101,22 @@ public class Lexer {
             
             //Check identifier
             for (Identifier identifier : Identifier.values()) {
-                if (!identifier.adjoinable) {
-                    continue;
-                }
-                
                 for (String word : identifier.words) {
                     if (text.substring(i).startsWith(word)) {
+                        if (!identifier.adjoinable) {
+                            if (i != 0) {
+                                if (String.valueOf(text.charAt(i - 1)).matches("^[0-9a-zA-Z]*$")) {
+                                    continue;
+                                }
+                            }
+                            
+                            if (i + word.length() != textLength - 1) {
+                                if (String.valueOf(text.charAt(i + word.length())).matches("^[0-9a-zA-Z]*$")) {
+                                    continue;
+                                }
+                            }
+                        }
+                        
                         if (keyWord.length() > 1) {
                             String key = keyWord.toString();
                             if (text.charAt(i - 1) == '"') {

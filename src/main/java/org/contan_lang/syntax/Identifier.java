@@ -5,25 +5,27 @@ import org.jetbrains.annotations.Nullable;
 
 public enum Identifier {
     EXPRESSION_SPLIT(1, true, false, null, "\n", ";"),
-    CLASS(14, false, true, ScopeType.CLASS, "class"),
-    INITIALIZE(13, false, true, ScopeType.INITIALIZE, "initialize"),
-    FUNCTION(13, false, true, ScopeType.FUNCTION, "function"),
-    IF(12, false, true, ScopeType.IF, "if"),
+    CLASS(13, false, true, ScopeType.CLASS, "class"),
+    INITIALIZE(14, false, true, ScopeType.INITIALIZE, "initialize"),
+    FUNCTION(8, false, true, ScopeType.FUNCTION, "function"),
+    IF(13, false, true, ScopeType.IF, "if"),
     BLOCK_START(0, true, true, null, "{"),
     BLOCK_END(0, true, false, null, "}"),
     BLOCK_OPERATOR_START(0, true, true, null, "("),
     BLOCK_OPERATOR_END(0, true, false, null, ")"),
-    DEFINE_VARIABLE(10, false, false, null, "data"),
-    RETURN(11, false, false, null, "return"),
+    DEFINE_VARIABLE(11, false, false, null, "data"),
+    RETURN(12, false, false, null, "return"),
+    ASYNC(9, false, false, null, "async"),
+    AWAIT(9, false, false, null, ".await()"),
     DOT(3, true, false, null, "."),
     OPERATOR_EQUAL(6, true, false, null, "=="),
     OPERATOR_AND(7, true, false, null, "&&"),
     OPERATOR_PLUS(5, true, false, null, "+"),
     OPERATOR_MULTIPLY(4, true, false, null, "*"),
     LAMBDA(8, true, false, ScopeType.FUNCTION, "=>"),
-    ASSIGNMENT(9, true, false, null, "="),
+    ASSIGNMENT(10, true, false, null, "="),
     NEW(3, false, false, null, "new"),
-    IMPORT(10, false, false, null, "import"),
+    IMPORT(11, false, false, null, "import"),
     ARGUMENT_SPLIT(0, true, false, null, ","),
     NULL(1, false, false, null, "null", "NULL");
     
@@ -41,4 +43,18 @@ public enum Identifier {
         this.blockHead = blockHead;
         this.scopeType = scopeType;
     }
+    
+    @Nullable
+    public static Identifier fromString(String keyWord) {
+        for (Identifier identifier : Identifier.values()) {
+            for (String word : identifier.words) {
+                if (keyWord.equals(word)) {
+                    return identifier;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
 }

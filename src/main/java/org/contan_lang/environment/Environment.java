@@ -2,6 +2,7 @@ package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.expection.ContanRuntimeException;
+import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.variables.ContanObject;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +20,10 @@ public class Environment {
     protected final Map<String, ContanObjectReference> variableMap = new HashMap<>();
     
     protected ContanObject<?> returnValue = null;
+    
+    protected Environment returnEnvironmentCache = null;
+    
+    protected Map<Evaluator, CoroutineStatus> coroutineStatusMap = new HashMap<>();
 
     public Environment(ContanEngine contanEngine, @Nullable Environment parent) {
         this.contanEngine = contanEngine;
@@ -36,29 +41,60 @@ public class Environment {
     
     public ContanObject<?> getReturnValue() {return returnValue;}
     
-    public boolean hasReturnValue() {
-        if (canHasReturnValue) {
-            return returnValue != null;
+    public ContanEngine getContanEngine() {return contanEngine;}
+    
+    private boolean returnEnvInitialize = false;
+    
+    public @Nullable Environment getReturnEnvironment() {
+        if (returnEnvInitialize) {
+            return returnEnvironmentCache;
         }
-
-        if (parent == null) {
+        
+        Environment currentEnvironment = this;
+        
+        while (true) {
+            if (currentEnvironment == null) {
+                break;
+            }
+            
+            if (!currentEnvironment.canHasReturnValue) {
+                break;
+            }
+            
+            currentEnvironment = currentEnvironment.parent;
+        }
+        
+        returnEnvironmentCache = currentEnvironment;
+        returnEnvInitialize = true;
+        
+        return returnEnvironmentCache;
+    }
+    
+    public @Nullable CoroutineStatus getCoroutineStatus(Evaluator evaluator) {
+        Environment returnEnvironmentCache = getReturnEnvironment();
+        if (returnEnvironmentCache == null) {
+            return null;
+        }
+        
+        return returnEnvironmentCache.coroutineStatusMap.get(evaluator);
+    }
+    
+    public boolean hasReturnValue() {
+        Environment returnEnvironmentCache = getReturnEnvironment();
+        if (returnEnvironmentCache == null) {
             return false;
         }
-
-        return parent.hasReturnValue();
+        
+        return returnEnvironmentCache.hasReturnValue();
     }
     
     public void setReturnValue(ContanObject<?> returnValue) {
-        if (canHasReturnValue) {
-            this.returnValue = returnValue;
+        Environment returnEnvironmentCache = getReturnEnvironment();
+        if (returnEnvironmentCache == null) {
             return;
         }
 
-        if (parent == null) {
-            return;//TODO
-        }
-
-        parent.setReturnValue(returnValue);
+        returnEnvironmentCache.setReturnValue(returnValue);
     }
     
     public @Nullable ContanObjectReference getVariable(String name) {

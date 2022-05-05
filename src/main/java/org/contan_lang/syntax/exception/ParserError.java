@@ -26,7 +26,9 @@ public enum ParserError {
             "It should be in the form  'module ModuleName = \"ExampleModule.cntn\"'"),
     E0017(ParserExceptions.UNEXPECTED_SYNTAX, "The right side of the lambda expression must be an expression."),
     E0018(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of return we need an expression."),
-    E0019(ParserExceptions.UNEXPECTED_SYNTAX, "Cannot write an expression on the left side of return.");
+    E0019(ParserExceptions.UNEXPECTED_SYNTAX, "Cannot write an expression on the left side of return."),
+    E0020(ParserExceptions.UNEXPECTED_SYNTAX, "The control expression or the expression around it is incorrect."),
+    E0021(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of the 'function' keyword must be an argument and an expression block.");
 
     private final ParserExceptions parserExceptions;
 

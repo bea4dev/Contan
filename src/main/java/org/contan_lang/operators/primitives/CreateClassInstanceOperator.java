@@ -57,7 +57,7 @@ public class CreateClassInstanceOperator implements Evaluator {
         if (leftResult instanceof ContanClassObject) {
 
             ClassBlock classBlock = (ClassBlock) leftResult.getBasedJavaObject();
-            return classBlock.createInstance(variables);
+            return classBlock.createInstance(contanEngine, variables);
 
         } else if (leftResult instanceof JavaClassObject) {
 
@@ -117,10 +117,6 @@ public class CreateClassInstanceOperator implements Evaluator {
                     Object instance = constructor.newInstance(convertedArgs);
                     return new JavaClassInstance(contanEngine, instance);
                 }
-
-                ContanRuntimeError.E0006.throwError(System.lineSeparator() + "ClassPath : " + javaClass.getName()
-                        + System.lineSeparator() + "ClassName : " + nameToken.getText()
-                        + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), null, nameToken);
             } catch (Exception e) {
                 ContanRuntimeError.E0005.throwError(System.lineSeparator() + "ClassPath : " + javaClass.getName()
                         + System.lineSeparator() + "ClassName : " + nameToken.getText()

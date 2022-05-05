@@ -20,7 +20,10 @@ public enum ContanRuntimeError {
     E0013(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Failed to retrieve Java field object."),
     E0014(ContanRuntimeExceptions.INVALID_TYPE, "Not class object.  Object : %s"),
     E0015(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Field not found."),
-    E0016(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "The arguments specified do not match the arguments of the function.");
+    E0016(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "The arguments specified do not match the arguments of the function."),
+    E0017(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Arguments were expected to be function or lambda expressions, but others were specified."),
+    E0018(ContanRuntimeExceptions.INVALID_TYPE, "The data is in an unexpected format." +
+                                                        System.lineSeparator() + "Expected : %s");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

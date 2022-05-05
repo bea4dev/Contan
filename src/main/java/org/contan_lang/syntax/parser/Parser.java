@@ -71,16 +71,6 @@ public class Parser {
 
             isClassDefine = token.getIdentifier() == Identifier.CLASS;
         }
-    
-        //Register the function name first.
-        boolean isFunctionDefine = false;
-        for (Token token : tokens) {
-            if (isFunctionDefine) {
-                moduleScope.addVariable(token.getText());
-            }
-        
-            isFunctionDefine = token.getIdentifier() == Identifier.FUNCTION;
-        }
 
         Evaluator globalEvaluator = parseBlock(moduleScope, null, tokens);
 
@@ -139,7 +129,7 @@ public class Parser {
 
                         Evaluator blockEval = parseBlock(classScope, null, blockTokens);
 
-                        ClassBlock classBlock = new ClassBlock(contanEngine, classNameToken, moduleName + "." + classNameToken.getText(), moduleEnvironment, args.toArray(new Token[0]));
+                        ClassBlock classBlock = new ClassBlock(classNameToken, moduleName + "." + classNameToken.getText(), moduleEnvironment, args.toArray(new Token[0]));
 
                         classFunctionBlocks.forEach(classBlock::addFunctionBlock);
                         classInitializers.forEach(classBlock::addInitializer);
@@ -188,12 +178,6 @@ public class Parser {
                         } else if (scope.getScopeType() == ScopeType.CLASS) {
                             classFunctionBlocks.add(functionBlock);
                         }
-                        
-                        
-                        //For lambda invoke
-                        if (scope.getScopeType() == ScopeType.MODULE) {
-                            moduleEnvironment.createVariable(functionNameToken.getText(), new ContanLambdaFunction(contanEngine, functionBlock, moduleEnvironment));
-                        }
 
                         return null;
                     }
@@ -238,10 +222,25 @@ public class Parser {
                 switch (identifier) {
                     case CLASS:
 
-                    case INITIALIZE:
+                    case INITIALIZE: {
+                        List<Token> first = ParserUtil.getTokensUntilFoundIdentifier(blockTokens, i, Identifier.BLOCK_START);
+                        i += first.size();
+    
+                        List<Token> block = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
+                        i += block.size() + 1;
+    
+                        parseBlock(scope, first, block);
+                        continue;
+                    }
 
                     case FUNCTION: {
                         List<Token> first = ParserUtil.getTokensUntilFoundIdentifier(blockTokens, i, Identifier.BLOCK_START);
+                        
+                        //Ignore case of "data func = function() {//do something}"
+                        if (first.get(1).getIdentifier() == Identifier.BLOCK_OPERATOR_START) {
+                            break;
+                        }
+                        
                         i += first.size();
     
                         List<Token> block = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
@@ -276,23 +275,19 @@ public class Parser {
                 expressionTokens.addAll(nestedTokens);
             }
             
+            //Combine the sequence of tokens within a block into one.
+            if (identifier == Identifier.BLOCK_START) {
+                List<Token> nestedTokens = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
+                i += nestedTokens.size() + 1;
+                
+                expressionTokens.add(new BlockToken(lexer, nestedTokens));
+            }
+            
             //Parse expression
             if (identifier != Identifier.EXPRESSION_SPLIT && identifier != Identifier.BLOCK_OPERATOR_START) {
                 expressionTokens.add(token);
             }
             
-            //If the right side of the lambda expression is a block, put them together as a single token first.
-            if (identifier == Identifier.LAMBDA) {
-                if (i == blockTokenLength - 1) {
-                    ParserError.E0017.throwError("", token);
-                }
-                
-                if (blockTokens.get(i + 1).getIdentifier() == Identifier.BLOCK_START) {
-                    List<Token> nestedTokens = ParserUtil.getNestedToken(blockTokens, i + 1, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
-                    i += nestedTokens.size() + 2;
-                    expressionTokens.add(new BlockToken(lexer, nestedTokens));
-                }
-            }
 
             if (identifier == Identifier.EXPRESSION_SPLIT || i == blockTokenLength - 1) {
                 blockEvaluators.add(parseExpression(scope, expressionTokens));
@@ -369,7 +364,7 @@ public class Parser {
             }
             
             if (identifier.priority >= Identifier.IF.priority) {
-                ParserError.E0000.throwError("", token);
+                ParserError.E0020.throwError("", token);
             }
     
             //Skip over the contents of the parentheses.
@@ -586,7 +581,42 @@ public class Parser {
                 
                 FunctionBlock functionBlock = new FunctionBlock(contanEngine, highestIdentifierToken, right, argTokens.toArray(new Token[0]));
                 
-                return new DefineLambdaFunctionOperator(contanEngine, highestIdentifierToken, functionBlock);
+                return new DefineFunctionExpressionOperator(contanEngine, highestIdentifierToken, functionBlock);
+            }
+            
+            //Pattern of "data func = function() {/*do something*/}"
+            case FUNCTION: {
+                if (rightTokenList.size() == 0) {
+                    ParserError.E0021.throwError("", highestIdentifierToken);
+                }
+                
+                if (rightTokenList.get(0).getIdentifier() != Identifier.BLOCK_OPERATOR_START) {
+                    ParserError.E0021.throwError("", highestIdentifierToken);
+                }
+                
+                List<Token> argTokens = ParserUtil.getNestedToken(rightTokenList, 0, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
+    
+                int index = argTokens.size() + 2;
+                
+                argTokens = ParserUtil.getDefinedArguments(argTokens);
+    
+                Scope newScope = new Scope(scope.getRootName() + ".function_expression", scope, ScopeType.FUNCTION);
+                argTokens.forEach(token -> newScope.addVariable(token.getText()));
+    
+                Evaluator blockEval;
+    
+                if (rightTokenList.get(index) instanceof BlockToken) {
+                    blockEval = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(index)).tokens);
+                } else if (rightTokenList.get(index).getIdentifier() == Identifier.BLOCK_START) {
+                    blockEval = parseBlock(newScope, null, ParserUtil.getNestedToken(rightTokenList, index, Identifier.BLOCK_START, Identifier.BLOCK_END, false, true));
+                } else {
+                    ParserError.E0021.throwError("", highestIdentifierToken);
+                    blockEval = null;
+                }
+    
+                FunctionBlock functionBlock = new FunctionBlock(contanEngine, highestIdentifierToken, blockEval, argTokens.toArray(new Token[0]));
+    
+                return new DefineFunctionExpressionOperator(contanEngine, highestIdentifierToken, functionBlock);
             }
             
             case RETURN: {

@@ -7,13 +7,13 @@ import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 
-public class ContanLambdaFunction extends ContanPrimitiveObject<FunctionBlock> {
+public class ContanFunctionExpression extends ContanPrimitiveObject<FunctionBlock> {
     
-    private final Environment lambdaEnvironment;
+    private final Environment expressionEnvironment;
     
-    public ContanLambdaFunction(ContanEngine contanEngine, FunctionBlock based, Environment lambdaEnvironment) {
+    public ContanFunctionExpression(ContanEngine contanEngine, FunctionBlock based, Environment expressionEnvironment) {
         super(contanEngine, based);
-        this.lambdaEnvironment = lambdaEnvironment;
+        this.expressionEnvironment = expressionEnvironment;
     }
     
     @Override
@@ -23,7 +23,7 @@ public class ContanLambdaFunction extends ContanPrimitiveObject<FunctionBlock> {
     }
     
     public ContanObject<?> eval(Token token, ContanObject<?>... variables){
-        return based.eval(lambdaEnvironment, token, variables);
+        return based.eval(expressionEnvironment, token, variables);
     }
     
     @Override

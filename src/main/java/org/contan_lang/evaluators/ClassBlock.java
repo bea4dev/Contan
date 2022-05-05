@@ -12,8 +12,6 @@ import java.util.*;
 
 public class ClassBlock {
 
-    private final ContanEngine contanEngine;
-
     private final Token className;
 
     private final String classPath;
@@ -26,8 +24,7 @@ public class ClassBlock {
 
     private final Environment moduleEnvironment;
 
-    public ClassBlock(ContanEngine contanEngine, Token className, String classPath, Environment moduleEnvironment, Token... initializeArgs) {
-        this.contanEngine = contanEngine;
+    public ClassBlock(Token className, String classPath, Environment moduleEnvironment, Token... initializeArgs) {
         this.className = className;
         this.classPath = classPath;
         this.initializers = new ArrayList<>();
@@ -49,7 +46,7 @@ public class ClassBlock {
         functions.add(functionBlock);
     }
 
-    public ContanClassInstance createInstance(ContanObject<?>... contanObjects) {
+    public ContanClassInstance createInstance(ContanEngine contanEngine, ContanObject<?>... contanObjects) {
         Environment environment = new Environment(contanEngine, moduleEnvironment);
 
         for (int i = 0; i < initializeArgs.length; i++) {

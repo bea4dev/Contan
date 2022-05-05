@@ -26,14 +26,12 @@ public class App
         
         
         
-        String test = "invoke(test)\n" +
+        String test = "test(function (i, j) {\n" +
+                "    i + j\n" +
+                "})\n" +
                 "\n" +
-                "function invoke(lambda){\n" +
-                "    lambda()\n" +
-                "}\n" +
-                "\n" +
-                "function test(){\n" +
-                "    print(\"Hello World!!\")\n" +
+                "function test(expr) {\n" +
+                "    print(expr(20, 50))\n" +
                 "}";
 
         

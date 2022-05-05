@@ -10,10 +10,9 @@ import org.contan_lang.operators.Operator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.standard.functions.StandardFunctions;
 import org.contan_lang.syntax.exception.ContanParseException;
-import org.contan_lang.syntax.exception.ParserError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanLambdaFunction;
+import org.contan_lang.variables.primitive.ContanFunctionExpression;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -101,8 +100,8 @@ public class PreLinkedFunctionOperator extends Operator {
             
             ContanObject<?> result = ContanRuntimeUtil.removeReference(functionName, resultReference);
             
-            if (result instanceof ContanLambdaFunction) {
-                return ((ContanLambdaFunction) result).eval(functionName, variables);
+            if (result instanceof ContanFunctionExpression) {
+                return ((ContanFunctionExpression) result).eval(functionName, variables);
             } else {
                 ContanRuntimeError.E0011.throwError("", null, functionName);
                 return null;

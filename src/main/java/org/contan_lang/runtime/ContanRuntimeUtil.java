@@ -6,6 +6,9 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 
+import java.util.List;
+import java.util.Map;
+
 public class ContanRuntimeUtil {
 
     public static ContanObject<?> removeReference(Token operationToken, ContanObject<?> contanObject) {
@@ -36,6 +39,16 @@ public class ContanRuntimeUtil {
         }
 
         return contanObjects;
+    }
+    
+    public static ContanObjectList getListInstance(Token operationToken, ContanObject<?> contanObject) {
+        Object based = contanObject.getBasedJavaObject();
+        if (based instanceof ContanObjectList) {
+            return (ContanObjectList) based;
+        }
+        
+        ContanRuntimeError.E0014.throwError("Java[ContanObjectList]", null, operationToken);
+        return null;
     }
 
 }
