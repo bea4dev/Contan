@@ -7,12 +7,10 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.ContanModule;
+import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanClassInstance;
-import org.contan_lang.variables.primitive.ContanModuleObject;
-import org.contan_lang.variables.primitive.JavaClassInstance;
-import org.contan_lang.variables.primitive.JavaClassObject;
+import org.contan_lang.variables.primitive.*;
 
 public class GetFieldOperator extends Operator {
 
@@ -27,13 +25,12 @@ public class GetFieldOperator extends Operator {
     public ContanObject<?> eval(Environment environment) {
 
         ContanObject<?> leftResult = left.eval(environment);
-        if (leftResult instanceof ContanObjectReference) {
-            try {
-                leftResult = ((ContanObjectReference) leftResult).getContanVariable();
-            } catch (IllegalAccessException e) {
-                ContanRuntimeError.E0012.throwError("", e, token);
-            }
+        leftResult = ContanRuntimeUtil.removeReference(token, leftResult);
+        
+        if (environment.hasYieldReturnValue() || leftResult == ContanYieldObject.INSTANCE) {
+            return ContanYieldObject.INSTANCE;
         }
+        
 
         if (leftResult instanceof JavaClassObject) {
             Class<?> clazz = (Class<?>) leftResult.getBasedJavaObject();

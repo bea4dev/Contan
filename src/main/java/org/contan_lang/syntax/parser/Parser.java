@@ -14,12 +14,14 @@ import org.contan_lang.syntax.parser.environment.ScopeType;
 import org.contan_lang.syntax.tokens.BlockToken;
 import org.contan_lang.syntax.tokens.StringToken;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Parser {
 
@@ -59,7 +61,7 @@ public class Parser {
         classFunctionBlocks = new ArrayList<>();
         classInitializers = new ArrayList<>();
         moduleScope = new Scope(moduleName, null, ScopeType.MODULE);
-        moduleEnvironment = new Environment(contanEngine, null);
+        moduleEnvironment = new Environment(contanEngine, null, contanEngine.getMainThread(), null, true);
         moduleClasses = new ArrayList<>();
 
         //Register the class name first.
@@ -77,6 +79,22 @@ public class Parser {
         for (PreLinkedFunctionOperator functionEvaluator : preLinkedFunctions) {
             functionEvaluator.link(moduleFunctions, moduleEnvironment);
         }
+    
+        Consumer<Environment> scheduleTask = env -> contanEngine.getMainThread().scheduleTask(() -> {
+            ContanObject<?> result = globalEvaluator.eval(env);
+        
+            if (env.hasReturnValue()) {
+                ContanObject<?> returnValue = env.getReturnValue();
+                if (!(returnValue instanceof ContanYieldObject)) {
+                    env.complete(returnValue);
+                }
+            } else {
+                env.complete(result);
+            }
+        
+            return null;
+        });
+        moduleEnvironment.setScheduleTask(scheduleTask);
 
         return new ContanModule(contanEngine, moduleName, moduleFunctions, moduleClasses, globalEvaluator, moduleEnvironment);
     }
@@ -582,6 +600,18 @@ public class Parser {
                 FunctionBlock functionBlock = new FunctionBlock(contanEngine, highestIdentifierToken, right, argTokens.toArray(new Token[0]));
                 
                 return new DefineFunctionExpressionOperator(contanEngine, highestIdentifierToken, functionBlock);
+            }
+            
+            case ASYNC: {
+                if (leftTokenList.size() != 0) {
+                    ParserError.E0022.throwError("", highestIdentifierToken);
+                }
+                
+                if (rightTokenList.size() == 0) {
+                    ParserError.E0023.throwError("", highestIdentifierToken);
+                }
+                
+                
             }
             
             //Pattern of "data func = function() {/*do something*/}"

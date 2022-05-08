@@ -3,6 +3,7 @@ package org.contan_lang.variables.primitive;
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.NumberType;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
     }
     
     @Override
-    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         return invokeJavaMethod(contanEngine, based.getClass(), based, functionName, variables);
     }
     
@@ -140,7 +141,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                             convertedArgs[i] = variable.getBasedJavaObject();
                         }
                     } else {
-                        if (variable == ContanNull.INSTANCE) {
+                        if (variable == ContanVoidObject.INSTANCE) {
                             convertedArgs[i] = null;
                         } else {
                             convertedArgs[i] = variable.getBasedJavaObject();
@@ -150,7 +151,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                 
                 Object returned = method.invoke(based, convertedArgs);
                 if (returned == null) {
-                    return ContanNull.INSTANCE;
+                    return ContanVoidObject.INSTANCE;
                 } else {
                     return new JavaClassInstance(contanEngine, returned);
                 }

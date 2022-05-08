@@ -28,7 +28,9 @@ public enum ParserError {
     E0018(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of return we need an expression."),
     E0019(ParserExceptions.UNEXPECTED_SYNTAX, "Cannot write an expression on the left side of return."),
     E0020(ParserExceptions.UNEXPECTED_SYNTAX, "The control expression or the expression around it is incorrect."),
-    E0021(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of the 'function' keyword must be an argument and an expression block.");
+    E0021(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of the 'function' keyword must be an argument and an expression block."),
+    E0022(ParserExceptions.UNEXPECTED_SYNTAX, "The expression cannot be written to the left of the 'async' keyword."),
+    E0023(ParserExceptions.UNEXPECTED_SYNTAX, "An expression or block is required to the right of the 'async' keyword.");
 
     private final ParserExceptions parserExceptions;
 

@@ -2,7 +2,7 @@ package org.contan_lang.evaluators;
 
 import org.contan_lang.environment.Environment;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanNull;
+import org.contan_lang.variables.primitive.ContanVoidObject;
 
 public class NullEvaluator implements Evaluator {
 
@@ -13,7 +13,7 @@ public class NullEvaluator implements Evaluator {
 
     @Override
     public ContanObject<?> eval(Environment environment) {
-        return ContanNull.INSTANCE;
+        return ContanVoidObject.INSTANCE;
     }
 
 }

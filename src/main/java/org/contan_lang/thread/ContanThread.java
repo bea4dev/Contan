@@ -2,6 +2,7 @@ package org.contan_lang.thread;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public interface ContanThread {
     
@@ -14,5 +15,7 @@ public interface ContanThread {
      * @throws InterruptedException
      */
     <T> T runTaskImmediately(Callable<T> task) throws ExecutionException, InterruptedException;
-
+    
+    <T> Future<T> scheduleTask(Callable<T> task);
+    
 }

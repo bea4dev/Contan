@@ -2,6 +2,7 @@ package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanPrimitiveObject;
 
@@ -21,9 +22,9 @@ public class ContanObjectReference extends ContanPrimitiveObject<Object> {
     
     public Environment getEnvironment() {return environment;}
     
-    public ContanObject<?> getContanVariable() throws IllegalAccessException {return (ContanObject<?>) based;}
+    public ContanObject<?> getContanObject() throws IllegalAccessException {return (ContanObject<?>) based;}
     
-    public void setContanVariable(ContanObject<?> contanObject) throws IllegalAccessException {this.based = contanObject;}
+    public void setContanObject(ContanObject<?> contanObject) throws IllegalAccessException {this.based = contanObject;}
     
     @Override
     public Object getBasedJavaObject() {
@@ -31,8 +32,8 @@ public class ContanObjectReference extends ContanPrimitiveObject<Object> {
     }
     
     @Override
-    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
-        return ((ContanObject<?>) based).invokeFunction(functionName, variables);
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+        return ((ContanObject<?>) based).invokeFunction(contanThread, functionName, variables);
     }
     
     @Override

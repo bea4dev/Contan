@@ -6,16 +6,19 @@ import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanVoidObject;
+import org.contan_lang.variables.primitive.ContanClassInstance;
 
-public class NullValueOperator extends Operator {
-
-    public NullValueOperator(ContanEngine contanEngine, Token token, Evaluator... operators) {
+public abstract class TaskOperator extends Operator {
+    
+    public TaskOperator(ContanEngine contanEngine, Token token, Evaluator... operators) {
         super(contanEngine, token, operators);
     }
-
+    
     @Override
     public ContanObject<?> eval(Environment environment) {
-        return ContanVoidObject.INSTANCE;
+        return runTask(environment, operators[0]);
     }
+    
+    public abstract ContanClassInstance runTask(Environment environment, Evaluator evaluator);
+    
 }

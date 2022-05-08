@@ -3,6 +3,7 @@ package org.contan_lang.variables.primitive;
 import org.contan_lang.ContanEngine;
 import org.contan_lang.ContanModule;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 
 public class ContanModuleObject extends ContanPrimitiveObject<ContanModule> {
@@ -12,8 +13,8 @@ public class ContanModuleObject extends ContanPrimitiveObject<ContanModule> {
     }
 
     @Override
-    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
-        return based.invokeFunction(functionName, variables);
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+        return based.invokeFunction(contanThread, functionName, variables);
     }
 
     @Override

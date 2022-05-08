@@ -4,6 +4,7 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 
 public class ContanClassObject extends ContanPrimitiveObject<ClassBlock> {
@@ -13,7 +14,7 @@ public class ContanClassObject extends ContanPrimitiveObject<ClassBlock> {
     }
 
     @Override
-    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;
     }

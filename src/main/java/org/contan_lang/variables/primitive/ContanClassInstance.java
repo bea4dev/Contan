@@ -4,6 +4,7 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 
 public class ContanClassInstance extends ContanPrimitiveObject<ClassBlock> {
@@ -43,8 +44,8 @@ public class ContanClassInstance extends ContanPrimitiveObject<ClassBlock> {
     public Environment getEnvironment() {return environment;}
     
     @Override
-    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
-        return based.invokeFunction(environment, functionName, variables);
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+        return based.invokeFunction(contanThread, environment, functionName, variables);
     }
 
 }

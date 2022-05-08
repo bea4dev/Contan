@@ -2,13 +2,14 @@ package org.contan_lang.variables.primitive;
 
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 
-public class ContanNull extends ContanPrimitiveObject<Boolean> {
+public class ContanVoidObject extends ContanPrimitiveObject<Boolean> {
     
-    public static final ContanNull INSTANCE = new ContanNull();
+    public static final ContanVoidObject INSTANCE = new ContanVoidObject();
     
-    private ContanNull() {super(null, false);}
+    private ContanVoidObject() {super(null, false);}
     
     @Override
     public ContanObject<Boolean> createClone() {return INSTANCE;}
@@ -17,7 +18,7 @@ public class ContanNull extends ContanPrimitiveObject<Boolean> {
     public String toString() {return "NULL";}
     
     @Override
-    public ContanObject<?> invokeFunction(Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;
     }

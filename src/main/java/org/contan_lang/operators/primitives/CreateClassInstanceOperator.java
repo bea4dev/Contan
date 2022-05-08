@@ -1,18 +1,16 @@
 package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.ContanObjectReference;
+import org.contan_lang.environment.CoroutineStatus;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
+import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.NumberType;
-import org.contan_lang.variables.primitive.ContanClassObject;
-import org.contan_lang.variables.primitive.ContanNull;
-import org.contan_lang.variables.primitive.JavaClassInstance;
-import org.contan_lang.variables.primitive.JavaClassObject;
+import org.contan_lang.variables.primitive.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
@@ -39,25 +37,42 @@ public class CreateClassInstanceOperator implements Evaluator {
 
     @Override
     public ContanObject<?> eval(Environment environment) {
+        int startIndex = 0;
+        CoroutineStatus coroutineStatus = environment.getCoroutineStatus(this);
         ContanObject<?>[] variables = new ContanObject<?>[args.length];
-        for (int i = 0; i < args.length; i++) {
-            variables[i] = args[i].eval(environment).createClone();
+        
+        if (coroutineStatus != null) {
+            startIndex = coroutineStatus.count;
+            System.arraycopy(coroutineStatus.results, 0, variables, 0, startIndex);
+        }
+        
+        for (int i = startIndex; i < args.length; i++) {
+            ContanObject<?> result = args[i].eval(environment).createClone();
+            
+            if (environment.hasYieldReturnValue() || result == ContanYieldObject.INSTANCE) {
+                ContanObject<?>[] results = new ContanObject<?>[i + 1];
+                System.arraycopy(variables, 0, results, 0, i);
+                
+                environment.setCoroutineStatus(this, i, results);
+                return ContanYieldObject.INSTANCE;
+            }
+            
+            variables[i] = result;
         }
 
 
         ContanObject<?> leftResult = left.eval(environment);
-        if (leftResult instanceof ContanObjectReference) {
-            try {
-                leftResult = ((ContanObjectReference) leftResult).getContanVariable();
-            } catch (IllegalAccessException e) {
-                ContanRuntimeError.E0012.throwError("", e, nameToken);
-            }
+        leftResult = ContanRuntimeUtil.removeReference(nameToken, leftResult);
+        
+        if (environment.hasYieldReturnValue()) {
+            environment.setCoroutineStatus(this, args.length, variables);
+            return ContanYieldObject.INSTANCE;
         }
 
         if (leftResult instanceof ContanClassObject) {
 
             ClassBlock classBlock = (ClassBlock) leftResult.getBasedJavaObject();
-            return classBlock.createInstance(contanEngine, variables);
+            return classBlock.createInstance(contanEngine, environment.getContanThread(), variables);
 
         } else if (leftResult instanceof JavaClassObject) {
 
@@ -106,7 +121,7 @@ public class CreateClassInstanceOperator implements Evaluator {
                                 convertedArgs[i] = variable.getBasedJavaObject();
                             }
                         } else {
-                            if (variable == ContanNull.INSTANCE) {
+                            if (variable == ContanVoidObject.INSTANCE) {
                                 convertedArgs[i] = null;
                             } else {
                                 convertedArgs[i] = variable.getBasedJavaObject();

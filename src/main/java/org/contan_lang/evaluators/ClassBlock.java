@@ -4,9 +4,10 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanClassInstance;
-import org.contan_lang.variables.primitive.ContanNull;
+import org.contan_lang.variables.primitive.ContanVoidObject;
 
 import java.util.*;
 
@@ -46,14 +47,14 @@ public class ClassBlock {
         functions.add(functionBlock);
     }
 
-    public ContanClassInstance createInstance(ContanEngine contanEngine, ContanObject<?>... contanObjects) {
-        Environment environment = new Environment(contanEngine, moduleEnvironment);
+    public ContanClassInstance createInstance(ContanEngine contanEngine, ContanThread contanThread, ContanObject<?>... contanObjects) {
+        Environment environment = new Environment(contanEngine, moduleEnvironment, contanThread);
 
         for (int i = 0; i < initializeArgs.length; i++) {
             if (i < contanObjects.length) {
                 environment.createVariable(initializeArgs[i].getText(), contanObjects[i]);
             } else {
-                environment.createVariable(initializeArgs[i].getText(), ContanNull.INSTANCE);
+                environment.createVariable(initializeArgs[i].getText(), ContanVoidObject.INSTANCE);
             }
         }
 
@@ -65,7 +66,7 @@ public class ClassBlock {
     }
 
 
-    public ContanObject<?> invokeFunction(Environment classInstanceEnvironment, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, Token functionName, ContanObject<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName.getText());
         if (functions == null) {
             ContanRuntimeError.E0011.throwError("", null, functionName);
@@ -74,7 +75,7 @@ public class ClassBlock {
 
         for (FunctionBlock functionBlock : functions) {
             if (functionBlock.getArgs().length == variables.length) {
-                return functionBlock.eval(classInstanceEnvironment, functionName, variables);
+                return functionBlock.eval(classInstanceEnvironment, functionName, contanThread, variables);
             }
         }
     

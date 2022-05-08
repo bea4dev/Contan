@@ -7,10 +7,8 @@ import org.contan_lang.thread.BasicContanThread;
 import org.contan_lang.thread.ContanThread;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ContanEngine {
 
@@ -28,7 +26,9 @@ public class ContanEngine {
     
     private final ContanThread mainThread;
     
-    public ContanEngine(ContanThread mainThread) {
+    private final List<ContanThread> asyncThreads;
+    
+    public ContanEngine(ContanThread mainThread, List<ContanThread> asyncThreads) {
         this.classBlocks = new HashSet<>();
         this.classNames = new HashSet<>();
         this.collidedClassNames = new HashSet<>();
@@ -36,6 +36,7 @@ public class ContanEngine {
         this.javaClassMap = new HashMap<>();
         this.moduleMap = new HashMap<>();
         this.mainThread = mainThread;
+        this.asyncThreads = asyncThreads;
     }
     
     public ContanEngine() {
@@ -46,6 +47,8 @@ public class ContanEngine {
         this.javaClassMap = new HashMap<>();
         this.moduleMap = new HashMap<>();
         this.mainThread = new BasicContanThread(this);
+        this.asyncThreads = new ArrayList<>();
+        asyncThreads.add(new BasicContanThread(this));
     }
 
     public void addClassBlock(ClassBlock classBlock) {
@@ -71,6 +74,15 @@ public class ContanEngine {
     
     public @Nullable Class<?> getJavaClassFromName(String className) {
         return javaClassMap.get(className);
+    }
+    
+    public ContanThread getMainThread() {return mainThread;}
+    
+    private final AtomicInteger nextCount = new AtomicInteger();
+    
+    public ContanThread getNextAsyncThread() {
+        int count = nextCount.getAndAdd(1);
+        return asyncThreads.get(count % asyncThreads.size());
     }
     
     /**

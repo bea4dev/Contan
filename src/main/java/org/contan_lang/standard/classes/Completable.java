@@ -6,7 +6,9 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.runtime.ContanObjectList;
 import org.contan_lang.runtime.ContanRuntimeUtil;
+import org.contan_lang.runtime.JavaCompletable;
 import org.contan_lang.syntax.tokens.Token;
+import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.*;
 
@@ -17,19 +19,17 @@ public class Completable extends ClassBlock {
     }
     
     @Override
-    public ContanClassInstance createInstance(ContanEngine contanEngine, ContanObject<?>... contanObjects) {
-        ContanClassInstance classInstance = super.createInstance(contanEngine, contanObjects);
+    public ContanClassInstance createInstance(ContanEngine contanEngine, ContanThread contanThread, ContanObject<?>... contanObjects) {
+        ContanClassInstance classInstance = super.createInstance(contanEngine, contanThread, contanObjects);
         
         Environment environment = classInstance.getEnvironment();
-        environment.createVariable("then", new JavaClassInstance(contanEngine, new ContanObjectList()));
-        environment.createVariable("catch", new JavaClassInstance(contanEngine, new ContanObjectList()));
-        environment.createVariable("isDone", new ContanBoolean(contanEngine, false));
+        environment.createVariable("javaCompletable", ContanVoidObject.INSTANCE);
         
         return classInstance;
     }
     
     @Override
-    public ContanObject<?> invokeFunction(Environment classInstanceEnvironment, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, Token functionName, ContanObject<?>... variables) {
         switch (functionName.getText()) {
             case "then" : {
                 if (variables.length != 1) {
@@ -44,18 +44,21 @@ public class Completable extends ClassBlock {
                     return null;
                 }
                 
-                ContanObject<?> contanObject = classInstanceEnvironment.getVariable("then");
+                ContanObject<?> contanObject = classInstanceEnvironment.getVariable("javaCompletable");
+                
                 if (contanObject == null) {
-                    ContanRuntimeError.E0000.throwError("'then' not found.", null, functionName);
                     return null;
                 }
                 
-                ContanObjectList contanObjectList = ContanRuntimeUtil.getListInstance(functionName, contanObject);
-                if (contanObjectList == null) return null;
+                if (!(contanObject.getBasedJavaObject() instanceof JavaCompletable)) {
+                    ContanRuntimeError.E0000.throwError("", null, functionName);
+                    return null;
+                }
                 
-                contanObjectList.add(functionExpression);
+                JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
+                javaCompletable.addThen(functionExpression);
                 
-                return ContanNull.INSTANCE;
+                return ContanVoidObject.INSTANCE;
             }
             
             case "catch" : {
@@ -70,19 +73,22 @@ public class Completable extends ClassBlock {
                     ContanRuntimeError.E0017.throwError("", null, functionName);
                     return null;
                 }
-                
-                ContanObject<?> contanObject = classInstanceEnvironment.getVariable("catch");
+    
+                ContanObject<?> contanObject = classInstanceEnvironment.getVariable("javaCompletable");
+    
                 if (contanObject == null) {
-                    ContanRuntimeError.E0000.throwError("'catch' not found.", null, functionName);
                     return null;
                 }
     
-                ContanObjectList contanObjectList = ContanRuntimeUtil.getListInstance(functionName, contanObject);
-                if (contanObjectList == null) return null;
+                if (!(contanObject.getBasedJavaObject() instanceof JavaCompletable)) {
+                    ContanRuntimeError.E0000.throwError("", null, functionName);
+                    return null;
+                }
     
-                contanObjectList.add(functionExpression);
+                JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
+                javaCompletable.addCatch(functionExpression);
                 
-                return ContanNull.INSTANCE;
+                return ContanVoidObject.INSTANCE;
             }
             
             case "isDone" : {
@@ -94,6 +100,29 @@ public class Completable extends ClassBlock {
                 
                 return contanObject;
             }
+            
+            /*
+            case "await" : {
+                ContanObject<?> contanObject = classInstanceEnvironment.getVariable("javaCompletable");
+    
+                if (contanObject == null) {
+                    return null;
+                }
+    
+                if (!(contanObject.getBasedJavaObject() instanceof JavaCompletable)) {
+                    ContanRuntimeError.E0000.throwError("", null, functionName);
+                    return null;
+                }
+    
+                JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
+                
+                if (javaCompletable.isDone()) {
+                    return javaCompletable.getResult();
+                } else {
+                    invokeEnvironment.setReturnValue(ContanYieldObject.INSTANCE);
+                    return ContanYieldObject.INSTANCE;
+                }
+            }*/
             
             default : {
                 ContanRuntimeError.E0011.throwError("", null, functionName);

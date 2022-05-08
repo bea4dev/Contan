@@ -1,13 +1,12 @@
 package org.contan_lang.runtime;
 
-import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.ContanObjectReference;
+import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
-
-import java.util.List;
-import java.util.Map;
+import org.contan_lang.variables.primitive.JavaClassInstance;
+import org.jetbrains.annotations.Nullable;
 
 public class ContanRuntimeUtil {
 
@@ -15,7 +14,7 @@ public class ContanRuntimeUtil {
 
         if (contanObject instanceof ContanObjectReference) {
             try {
-                contanObject = ((ContanObjectReference) contanObject).getContanVariable();
+                contanObject = ((ContanObjectReference) contanObject).getContanObject();
             } catch (IllegalAccessException e) {
                 ContanRuntimeError.E0015.throwError("", e, operationToken);
             }
@@ -31,7 +30,7 @@ public class ContanRuntimeUtil {
 
             if (contanObject instanceof ContanObjectReference) {
                 try {
-                    contanObjects[i] = ((ContanObjectReference) contanObject).getContanVariable();
+                    contanObjects[i] = ((ContanObjectReference) contanObject).getContanObject();
                 } catch (IllegalAccessException e) {
                     ContanRuntimeError.E0015.throwError("", e, operationToken);
                 }
@@ -49,6 +48,19 @@ public class ContanRuntimeUtil {
         
         ContanRuntimeError.E0014.throwError("Java[ContanObjectList]", null, operationToken);
         return null;
+    }
+    
+    public static @Nullable Object getJavaObjectFromEnvironment(Environment environment, String variableName) {
+        ContanObjectReference reference = environment.getVariable(variableName);
+        if (reference == null) {
+            return null;
+        }
+        
+        return reference.getBasedJavaObject();
+    }
+    
+    public static void setJavaObjectToEnvironment(Environment environment, Object object, String variableName) {
+        environment.createOrSetVariable(variableName, new JavaClassInstance(environment.getContanEngine(), object));
     }
 
 }

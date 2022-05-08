@@ -26,13 +26,11 @@ public class App
         
         
         
-        String test = "test(function (i, j) {\n" +
-                "    i + j\n" +
-                "})\n" +
+        String test = "data test1 = i => i\n" +
                 "\n" +
-                "function test(expr) {\n" +
-                "    print(expr(20, 50))\n" +
-                "}";
+                "data test2 = () => 40\n" +
+                "\n" +
+                "print(test1(50) * test2())";
 
         
         ContanEngine contanEngine = new ContanEngine();
