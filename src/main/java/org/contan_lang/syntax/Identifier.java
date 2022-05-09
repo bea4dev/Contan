@@ -16,6 +16,7 @@ public enum Identifier {
     DEFINE_VARIABLE(11, false, false, null, "data"),
     RETURN(12, false, false, null, "return"),
     ASYNC(3, false, false, null, "async"),
+    SYNC(3, false, false, null, "sync"),
     DOT(3, true, false, null, "."),
     OPERATOR_EQUAL(6, true, false, null, "=="),
     OPERATOR_AND(7, true, false, null, "&&"),

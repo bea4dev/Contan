@@ -23,7 +23,9 @@ public enum ContanRuntimeError {
     E0016(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "The arguments specified do not match the arguments of the function."),
     E0017(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Arguments were expected to be function or lambda expressions, but others were specified."),
     E0018(ContanRuntimeExceptions.INVALID_TYPE, "The data is in an unexpected format." +
-                                                        System.lineSeparator() + "Expected : %s");
+                                                        System.lineSeparator() + "Expected : %s"),
+    E0019(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "Lambda or function expression invoke is invalid."),
+    E0020(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

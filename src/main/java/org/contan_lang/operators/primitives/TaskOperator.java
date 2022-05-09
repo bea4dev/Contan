@@ -16,9 +16,9 @@ public abstract class TaskOperator extends Operator {
     
     @Override
     public ContanObject<?> eval(Environment environment) {
-        return runTask(environment, operators[0]);
+        return runTask(environment);
     }
     
-    public abstract ContanClassInstance runTask(Environment environment, Evaluator evaluator);
+    public abstract ContanClassInstance runTask(Environment environment);
     
 }

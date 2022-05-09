@@ -1,5 +1,6 @@
 package org.contan_lang.syntax.parser.environment;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.evaluators.IfEvaluator;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.exception.ParserError;
@@ -49,7 +50,11 @@ public class Scope {
     
     public void setPreviousIfEvaluator(IfEvaluator previousIfEvaluator) {this.previousIfEvaluator = previousIfEvaluator;}
     
-    public void checkHasVariable(Token token) throws ContanParseException {
+    public void checkHasVariable(ContanEngine contanEngine, Token token) throws ContanParseException {
+        if (contanEngine.getRuntimeVariable(token.getText()) != null) {
+            return;
+        }
+
         if (!hasVariable(token.getText())) {
             ParserError.E0001.throwError("", token);
         }

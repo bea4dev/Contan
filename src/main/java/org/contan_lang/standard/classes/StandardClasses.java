@@ -7,6 +7,7 @@ import org.contan_lang.thread.ContanThread;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class StandardClasses {
     
@@ -19,6 +20,11 @@ public class StandardClasses {
         @Override
         public <T> Future<T> scheduleTask(Callable<T> task) {
             return null;
+        }
+
+        @Override
+        public boolean shutdownWithAwait(long timeout, TimeUnit timeUnit) throws InterruptedException {
+            return true;
         }
     };
 

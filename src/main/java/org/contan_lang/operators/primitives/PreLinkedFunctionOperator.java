@@ -84,6 +84,11 @@ public class PreLinkedFunctionOperator extends Operator {
         ContanObject<?>[] variables = new ContanObject<?>[args.length];
     
         if (coroutineStatus != null) {
+            //Cached return value
+            if (startIndex == args.length) {
+                return coroutineStatus.results[0];
+            }
+
             startIndex = coroutineStatus.count;
             System.arraycopy(coroutineStatus.results, 0, variables, 0, startIndex);
         }
@@ -98,25 +103,23 @@ public class PreLinkedFunctionOperator extends Operator {
                 environment.setCoroutineStatus(this, i, results);
                 return ContanYieldObject.INSTANCE;
             }
-        
+
             variables[i] = result;
         }
         
         if (functionBlock != null) {
             ContanObject<?> returned = functionBlock.eval(moduleEnvironment, functionName, contanThread, variables);
-            if (returned instanceof ContanObjectReference) {
-                try {
-                    return ((ContanObjectReference) returned).getContanObject();
-                } catch (IllegalAccessException e) {
-                    ContanRuntimeError.E0013.throwError("", e, token);
-                    return null;
-                }
-            } else {
-                return returned;
+            returned = ContanRuntimeUtil.removeReference(token, returned);
+
+            //Cache returned Completable
+            if (returned.getBasedJavaObject() == StandardClasses.COMPLETABLE) {
+                environment.setCoroutineStatus(this, args.length, returned);
             }
+            return returned;
         }
     
-        
+
+        //For function or lambda expression
         if (left == null) {
             ContanObjectReference resultReference = environment.getVariable(functionName.getText());
             
@@ -128,7 +131,14 @@ public class PreLinkedFunctionOperator extends Operator {
             ContanObject<?> result = ContanRuntimeUtil.removeReference(functionName, resultReference);
             
             if (result instanceof ContanFunctionExpression) {
-                return ((ContanFunctionExpression) result).eval(contanThread, functionName, variables);
+                ContanObject<?> returned = ((ContanFunctionExpression) result).eval(contanThread, functionName, variables);
+
+                //Cache returned Completable
+                if (returned.getBasedJavaObject() == StandardClasses.COMPLETABLE) {
+                    environment.setCoroutineStatus(this, args.length, ContanRuntimeUtil.removeReference(functionName, returned));
+                }
+
+                return returned;
             } else {
                 ContanRuntimeError.E0011.throwError("", null, functionName);
                 return null;
@@ -157,6 +167,7 @@ public class PreLinkedFunctionOperator extends Operator {
                 if (javaCompletable.isDone()) {
                     return javaCompletable.getResult();
                 } else {
+                    javaCompletable.addAwaitEnvironment(environment);
                     environment.setReturnValue(ContanYieldObject.INSTANCE);
                     return ContanYieldObject.INSTANCE;
                 }

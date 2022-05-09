@@ -28,16 +28,17 @@ public class Expressions implements Evaluator {
     public ContanObject<?> eval(Environment environment, int start) {
         for (int i = start; i < expressions.length; i ++) {
             Evaluator evaluator = expressions[i];
-            
-            if (i == expressions.length - 1) {
-                return evaluator.eval(environment);
-            } else {
-                evaluator.eval(environment);
-            }
-            
+
+            ContanObject<?> result;
+            result = evaluator.eval(environment);
+
             if (environment.hasYieldReturnValue()) {
                 environment.setCoroutineStatus(this, i, ContanYieldObject.INSTANCE);
                 return ContanYieldObject.INSTANCE;
+            }
+
+            if (i == expressions.length - 1) {
+                return result;
             }
             
             if (environment.hasReturnValue()) {

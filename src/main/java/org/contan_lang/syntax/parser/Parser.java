@@ -357,8 +357,9 @@ public class Parser {
                 return new DefineValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
             } else {
                 //Not number
-                scope.checkHasVariable(first);
-                return new GetValueOperator(contanEngine, first);
+
+                scope.checkHasVariable(contanEngine, first);
+                return new GetVariableOperator(contanEngine, first);
             }
         }
 
@@ -610,8 +611,61 @@ public class Parser {
                 if (rightTokenList.size() == 0) {
                     ParserError.E0023.throwError("", highestIdentifierToken);
                 }
-                
-                
+
+                Scope newScope = new Scope(scope.getRootName() + ".async", scope, ScopeType.FUNCTION);
+
+                Evaluator right;
+
+                if (rightTokenList.get(0) instanceof BlockToken) {
+                    right = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(0)).tokens);
+                } else if (rightTokenList.get(0).getIdentifier() == Identifier.BLOCK_START) {
+                    right = parseBlock(newScope, null, ParserUtil.getNestedToken(rightTokenList, 0, Identifier.BLOCK_START, Identifier.BLOCK_END, false, true));
+                } else {
+                    ParserError.E0024.throwError("", highestIdentifierToken);
+                    return null;
+                }
+
+                return new AsyncTaskOperator(contanEngine, highestIdentifierToken, right);
+            }
+
+            case SYNC: {
+                if (leftTokenList.size() != 0) {
+                    ParserError.E0022.throwError("", highestIdentifierToken);
+                }
+
+                if (rightTokenList.size() < 2) {
+                    ParserError.E0023.throwError("", highestIdentifierToken);
+                }
+
+                Scope newScope = new Scope(scope.getRootName() + ".sync", scope, ScopeType.FUNCTION);
+
+                int index = 0;
+                for (Token token : rightTokenList) {
+                    if (token instanceof BlockToken || token.getIdentifier() == Identifier.BLOCK_START) {
+                        break;
+                    }
+
+                    if (index == rightTokenList.size() - 1) {
+                        ParserError.E0024.throwError("", highestIdentifierToken);
+                    }
+
+                    index++;
+                }
+
+                Evaluator thread = parseExpression(scope, rightTokenList.subList(0, index));
+
+                Evaluator right;
+
+                if (rightTokenList.get(index) instanceof BlockToken) {
+                    right = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(index)).tokens);
+                } else if (rightTokenList.get(index).getIdentifier() == Identifier.BLOCK_START) {
+                    right = parseBlock(newScope, null, ParserUtil.getNestedToken(rightTokenList, index, Identifier.BLOCK_START, Identifier.BLOCK_END, false, true));
+                } else {
+                    ParserError.E0024.throwError("", highestIdentifierToken);
+                    return null;
+                }
+
+                return new SyncTaskOperator(contanEngine, highestIdentifierToken, thread, right);
             }
             
             //Pattern of "data func = function() {/*do something*/}"

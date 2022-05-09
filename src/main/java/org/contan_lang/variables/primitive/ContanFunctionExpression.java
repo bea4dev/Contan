@@ -21,7 +21,7 @@ public class ContanFunctionExpression extends ContanPrimitiveObject<FunctionBloc
     
     @Override
     public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
-        ContanRuntimeError.E0011.throwError("", null, functionName);
+        ContanRuntimeError.E0019.throwError("", null, functionName);
         return null;
     }
     

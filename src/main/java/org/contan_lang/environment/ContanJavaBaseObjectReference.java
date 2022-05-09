@@ -12,8 +12,8 @@ public class ContanJavaBaseObjectReference extends ContanObjectReference {
 
     private final Object javaObject;
 
-    public ContanJavaBaseObjectReference(ContanEngine contanEngine, String name, Environment environment, ContanObject<?> contanObject, Field field, Object javaObject) {
-        super(contanEngine, name, environment, contanObject);
+    public ContanJavaBaseObjectReference(ContanEngine contanEngine, String name, ContanObject<?> contanObject, Field field, Object javaObject) {
+        super(contanEngine, name, contanObject);
         this.field = field;
         this.javaObject = javaObject;
     }

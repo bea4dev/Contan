@@ -26,5 +26,11 @@ public class BasicContanThread implements ContanThread {
     public <T> Future<T> scheduleTask(Callable<T> task) {
         return javaThread.submit(task);
     }
+
+    @Override
+    public boolean shutdownWithAwait(long timeout, TimeUnit timeUnit) throws InterruptedException {
+        javaThread.shutdown();
+        return javaThread.awaitTermination(timeout, timeUnit);
+    }
     
 }

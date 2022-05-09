@@ -30,6 +30,8 @@ public class JavaCompletable {
     public void addThen(ContanFunctionExpression functionExpression) {this.thenList.add(functionExpression);}
     
     public void addCatch(ContanFunctionExpression functionExpression) {this.catchList.add(functionExpression);}
+
+    public void addAwaitEnvironment(Environment environment) {this.awaitEnvironmentList.add(environment);}
     
     public ContanObject<?> getResult() {return result;}
     
@@ -50,7 +52,8 @@ public class JavaCompletable {
             if (returnEnv == null) {
                 continue;
             }
-            
+
+            environment.setReturnValue(null);
             returnEnv.reRun();
         }
     }

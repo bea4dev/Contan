@@ -1,13 +1,20 @@
 package org.contan_lang;
 
+import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.evaluators.ClassBlock;
+import org.contan_lang.standard.classes.StandardClasses;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.parser.Parser;
 import org.contan_lang.thread.BasicContanThread;
 import org.contan_lang.thread.ContanThread;
+import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanClassObject;
+import org.contan_lang.variables.primitive.ContanVoidObject;
+import org.contan_lang.variables.primitive.JavaClassInstance;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ContanEngine {
@@ -27,6 +34,9 @@ public class ContanEngine {
     private final ContanThread mainThread;
     
     private final List<ContanThread> asyncThreads;
+
+    private final Map<String, ContanObjectReference> runtimeVariableMap = new ConcurrentHashMap<>();
+
     
     public ContanEngine(ContanThread mainThread, List<ContanThread> asyncThreads) {
         this.classBlocks = new HashSet<>();
@@ -37,6 +47,7 @@ public class ContanEngine {
         this.moduleMap = new HashMap<>();
         this.mainThread = mainThread;
         this.asyncThreads = asyncThreads;
+        initialize();
     }
     
     public ContanEngine() {
@@ -49,6 +60,14 @@ public class ContanEngine {
         this.mainThread = new BasicContanThread(this);
         this.asyncThreads = new ArrayList<>();
         asyncThreads.add(new BasicContanThread(this));
+        asyncThreads.add(new BasicContanThread(this));
+        initialize();
+    }
+
+    private void initialize() {
+        setRuntimeVariable("@THREAD", ContanVoidObject.INSTANCE);
+        setRuntimeVariable("@MAIN_THREAD", mainThread);
+        setRuntimeVariable("Completable", new ContanClassObject(this, StandardClasses.COMPLETABLE));
     }
 
     public void addClassBlock(ClassBlock classBlock) {
@@ -77,12 +96,32 @@ public class ContanEngine {
     }
     
     public ContanThread getMainThread() {return mainThread;}
+
+    public List<ContanThread> getAsyncThreads() {return asyncThreads;}
     
     private final AtomicInteger nextCount = new AtomicInteger();
     
     public ContanThread getNextAsyncThread() {
         int count = nextCount.getAndAdd(1);
         return asyncThreads.get(count % asyncThreads.size());
+    }
+
+    public boolean setRuntimeVariable(String variableName, ContanObject<?> contanObject) {
+        boolean[] is = new boolean[]{false};
+        runtimeVariableMap.computeIfAbsent(variableName, k -> {
+            is[0] = true;
+            return new ContanObjectReference(this, variableName, contanObject);
+        });
+
+        return is[0];
+    }
+
+    public boolean setRuntimeVariable(String variableName, Object javaObject) {
+        return setRuntimeVariable(variableName, new JavaClassInstance(this, javaObject));
+    }
+
+    public @Nullable ContanObjectReference getRuntimeVariable(String variableName) {
+        return runtimeVariableMap.get(variableName);
     }
     
     /**
@@ -111,5 +150,5 @@ public class ContanEngine {
     public @Nullable ContanModule getModule(String moduleName) {
         return moduleMap.get(moduleName);
     }
-    
+
 }

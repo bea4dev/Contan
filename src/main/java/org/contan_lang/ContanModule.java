@@ -65,14 +65,16 @@ public class ContanModule implements FunctionInvokable {
 
     public Environment getModuleEnvironment() {return moduleEnvironment;}
     
-    public ContanObject<?> eval() {
-        ContanObject<?> result = globalEvaluator.eval(moduleEnvironment);
-        
-        if (moduleEnvironment.hasReturnValue()) {
-            return moduleEnvironment.getReturnValue();
-        } else {
-            return result;
-        }
+    public ContanObject<?> eval() throws ExecutionException, InterruptedException {
+        return contanEngine.getMainThread().runTaskImmediately(() -> {
+            ContanObject<?> result = globalEvaluator.eval(moduleEnvironment);
+
+            if (moduleEnvironment.hasReturnValue()) {
+                return moduleEnvironment.getReturnValue();
+            } else {
+                return result;
+            }
+        });
     }
 
     @Override

@@ -10,17 +10,12 @@ public class ContanObjectReference extends ContanPrimitiveObject<Object> {
     
     protected final String name;
     
-    protected final Environment environment;
-    
-    public ContanObjectReference(ContanEngine contanEngine, String name, Environment environment, ContanObject<?> contanObject) {
+    public ContanObjectReference(ContanEngine contanEngine, String name, ContanObject<?> contanObject) {
         super(contanEngine, contanObject);
         this.name = name;
-        this.environment = environment;
     }
     
     public String getName() {return name;}
-    
-    public Environment getEnvironment() {return environment;}
     
     public ContanObject<?> getContanObject() throws IllegalAccessException {return (ContanObject<?>) based;}
     

@@ -101,28 +101,28 @@ public class Completable extends ClassBlock {
                 return contanObject;
             }
             
-            /*
-            case "await" : {
+            case "complete" : {
+                if (variables.length != 1) {
+                    ContanRuntimeError.E0010.throwError("", null, functionName);
+                    return null;
+                }
+
                 ContanObject<?> contanObject = classInstanceEnvironment.getVariable("javaCompletable");
-    
+
                 if (contanObject == null) {
                     return null;
                 }
-    
+
                 if (!(contanObject.getBasedJavaObject() instanceof JavaCompletable)) {
                     ContanRuntimeError.E0000.throwError("", null, functionName);
                     return null;
                 }
-    
+
                 JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
-                
-                if (javaCompletable.isDone()) {
-                    return javaCompletable.getResult();
-                } else {
-                    invokeEnvironment.setReturnValue(ContanYieldObject.INSTANCE);
-                    return ContanYieldObject.INSTANCE;
-                }
-            }*/
+
+                javaCompletable.complete(contanThread, variables[0]);
+                return ContanVoidObject.INSTANCE;
+            }
             
             default : {
                 ContanRuntimeError.E0011.throwError("", null, functionName);

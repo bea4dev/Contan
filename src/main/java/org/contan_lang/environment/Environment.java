@@ -192,16 +192,13 @@ public class Environment {
     public void setReturnValue(ContanObject<?> returnValue) {
         if (canHasReturnValue) {
             this.returnValue = returnValue;
+            this.isCoroutineEnvironment = true;
             return;
         }
         
         Environment returnEnvironment = getReturnEnvironment();
         if (returnEnvironment == null) {
             return;
-        }
-        
-        if (returnValue == ContanYieldObject.INSTANCE) {
-            returnEnvironment.isCoroutineEnvironment = true;
         }
 
         returnEnvironment.setReturnValue(returnValue);
@@ -218,12 +215,12 @@ public class Environment {
     public void createVariable(String name, ContanObject<?> contanObject) {
         if (variableMap.containsKey(name)) return;
     
-        ContanObjectReference contanVariableReference = new ContanObjectReference(contanEngine, name, this, contanObject);
+        ContanObjectReference contanVariableReference = new ContanObjectReference(contanEngine, name, contanObject);
         variableMap.put(name, contanVariableReference);
     }
     
     public void createOrSetVariable(String name, ContanObject<?> contanObject) {
-        ContanObjectReference reference = variableMap.computeIfAbsent(name, k -> new ContanObjectReference(contanEngine, name, this, contanObject));
+        ContanObjectReference reference = variableMap.computeIfAbsent(name, k -> new ContanObjectReference(contanEngine, name, contanObject));
         try {
             reference.setContanObject(contanObject);
         } catch (Exception e) {/**/}

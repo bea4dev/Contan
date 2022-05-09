@@ -7,6 +7,8 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
+import org.contan_lang.runtime.JavaCompletable;
+import org.contan_lang.standard.classes.StandardClasses;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.NumberType;
@@ -72,7 +74,14 @@ public class CreateClassInstanceOperator implements Evaluator {
         if (leftResult instanceof ContanClassObject) {
 
             ClassBlock classBlock = (ClassBlock) leftResult.getBasedJavaObject();
-            return classBlock.createInstance(contanEngine, environment.getContanThread(), variables);
+            ContanClassInstance instance = classBlock.createInstance(contanEngine, environment.getContanThread(), variables);
+
+            if (classBlock == StandardClasses.COMPLETABLE) {
+                Environment instanceEnv = instance.getEnvironment();
+                instanceEnv.createOrSetVariable("javaCompletable", new JavaClassInstance(contanEngine, new JavaCompletable(instance)));
+            }
+
+            return instance;
 
         } else if (leftResult instanceof JavaClassObject) {
 
