@@ -12,6 +12,7 @@ public class StandardFunctions {
     
     static {
         FUNCTIONS.put("print", new Print(null, new Token(null, "print", 5, null, null), null));
+        FUNCTIONS.put("importJava", new ImportJava(null, new Token(null, "importJava", 10, null, null), null));
     }
     
 }

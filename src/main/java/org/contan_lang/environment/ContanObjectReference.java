@@ -9,14 +9,25 @@ import org.contan_lang.variables.primitive.ContanPrimitiveObject;
 public class ContanObjectReference extends ContanPrimitiveObject<Object> {
     
     protected final String name;
+
+    protected final boolean constant;
     
     public ContanObjectReference(ContanEngine contanEngine, String name, ContanObject<?> contanObject) {
         super(contanEngine, contanObject);
         this.name = name;
+        this.constant = false;
+    }
+
+    public ContanObjectReference(ContanEngine contanEngine, String name, ContanObject<?> contanObject, boolean constant) {
+        super(contanEngine, contanObject);
+        this.name = name;
+        this.constant = constant;
     }
     
     public String getName() {return name;}
-    
+
+    public boolean isConst() {return constant;}
+
     public ContanObject<?> getContanObject() throws IllegalAccessException {return (ContanObject<?>) based;}
     
     public void setContanObject(ContanObject<?> contanObject) throws IllegalAccessException {this.based = contanObject;}

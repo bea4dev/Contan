@@ -35,23 +35,8 @@ public class SyncTaskOperator extends TaskOperator {
                 return null;
             }
 
-            Consumer<Environment> scheduleTask = env -> contanThread.scheduleTask(() -> {
-                ContanObject<?> result = operators[1].eval(env);
-
-                if (env.hasReturnValue()) {
-                    ContanObject<?> returnValue = env.getReturnValue();
-                    if (!(returnValue instanceof ContanYieldObject)) {
-                        env.complete(returnValue);
-                    }
-                } else {
-                    env.complete(result);
-                }
-
-                return null;
-            });
-
-            newEnvironment = new Environment(contanEngine, environment, contanThread, scheduleTask, true);
-            scheduleTask.accept(newEnvironment);
+            newEnvironment = new Environment(contanEngine, environment, contanThread, operators[1], true);
+            newEnvironment.reRun();
             environment.setCoroutineStatus(this, 0, newEnvironment.getCompletable().getContanInstance());
         } else {
             return (ContanClassInstance) coroutineStatus.results[0];

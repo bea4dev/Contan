@@ -24,8 +24,12 @@ public enum ContanRuntimeError {
     E0017(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Arguments were expected to be function or lambda expressions, but others were specified."),
     E0018(ContanRuntimeExceptions.INVALID_TYPE, "The data is in an unexpected format." +
                                                         System.lineSeparator() + "Expected : %s"),
-    E0019(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "Lambda or function expression invoke is invalid."),
-    E0020(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "");
+    E0019(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "You tried to call an internal function of a lambda or function expression. Are you sure you are describing it correctly?"),
+    E0020(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Right next to the sync keyword, an expression representing the thread must be written."),
+    E0021(ContanRuntimeExceptions.INVALID_TYPE, "Non-numeric values cannot be sign-reversed."),
+    E0022(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Java class not found."),
+    E0023(ContanRuntimeExceptions.ACCESS_ERROR, "Variables defined as const cannot be reassigned."),
+    E0024(ContanRuntimeExceptions.INVALID_TYPE, "Conditional expressions of if or while must return a boolean type.");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

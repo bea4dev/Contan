@@ -20,10 +20,7 @@ public enum ParserError {
     E0012(ParserExceptions.UNEXPECTED_SYNTAX, "The expression is required on both sides."),
     E0013(ParserExceptions.LINK_FAILURE, "Class not found."),
     E0014(ParserExceptions.LINK_FAILURE, "Function not found."),
-    E0015(ParserExceptions.UNEXPECTED_SYNTAX, "The import statement is invalid. " +
-            "It should be in the form  'import ClassName = \"org.example.ExampleClass\"'"),
-    E0016(ParserExceptions.UNEXPECTED_SYNTAX, "The module import statement is invalid. " +
-            "It should be in the form  'module ModuleName = \"ExampleModule.cntn\"'"),
+    E0015(ParserExceptions.UNEXPECTED_SYNTAX, "The 'import' or 'const' statement is invalid. "),
     E0017(ParserExceptions.UNEXPECTED_SYNTAX, "The right side of the lambda expression must be an expression."),
     E0018(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of return we need an expression."),
     E0019(ParserExceptions.UNEXPECTED_SYNTAX, "Cannot write an expression on the left side of return."),
@@ -31,7 +28,8 @@ public enum ParserError {
     E0021(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of the 'function' keyword must be an argument and an expression block."),
     E0022(ParserExceptions.UNEXPECTED_SYNTAX, "The expression cannot be written to the left of the 'async' or 'sync' keyword."),
     E0023(ParserExceptions.UNEXPECTED_SYNTAX, "An expression or block is required to the right of the 'async' or 'sync' keyword."),
-    E0024(ParserExceptions.UNEXPECTED_SYNTAX, "The execution part of the async or sync expressions must be enclosed in a block.");
+    E0024(ParserExceptions.UNEXPECTED_SYNTAX, "The execution part of the async or sync expressions must be enclosed in a block."),
+    E0025(ParserExceptions.UNEXPECTED_SYNTAX, "On the right side, an expression is needed.");
 
     private final ParserExceptions parserExceptions;
 

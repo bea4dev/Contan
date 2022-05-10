@@ -29,20 +29,21 @@ public class App
         
         
         
-        String test = "import Thread = \"java.lang.Thread\"\n" +
+        String test = "import Thread = importJava(\"java.lang.Thread\")\n" +
                 "\n" +
-                "data completable = new Completable()\n" +
-                "\n" +
-                "async {\n" +
-                "    print(\"ASYNC THREAD!!\")\n" +
+                "data text = async {\n" +
                 "    \n" +
                 "    Thread.sleep(1000)\n" +
                 "    \n" +
-                "    completable.complete(\"Hello world from async thread!\")\n" +
-                "}\n" +
+                "    return sync (@MAIN_THREAD) {\n" +
+                "        if (@THREAD == @MAIN_THREAD) { return \"MAIN THREAD!\" }\n" +
+                "        \n" +
+                "        return \"ASYNC!!\"\n" +
+                "    }.await()\n" +
+                "    \n" +
+                "}.await()\n" +
                 "\n" +
-                "print(\"AWAIT!\")\n" +
-                "print(completable.await())";
+                "print(text)";
 
 
         ContanEngine contanEngine = new ContanEngine();

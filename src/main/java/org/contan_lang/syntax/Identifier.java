@@ -21,11 +21,13 @@ public enum Identifier {
     OPERATOR_EQUAL(6, true, false, null, "=="),
     OPERATOR_AND(7, true, false, null, "&&"),
     OPERATOR_PLUS(5, true, false, null, "+"),
+    OPERATOR_MINUS(5, true, false, null, "-"),
     OPERATOR_MULTIPLY(4, true, false, null, "*"),
+    OPERATOR_DIVISION(4, true, false, null, "/"),
     LAMBDA(8, true, false, ScopeType.FUNCTION, "=>"),
     ASSIGNMENT(10, true, false, null, "="),
     NEW(3, false, false, null, "new"),
-    IMPORT(11, false, false, null, "import"),
+    CONSTANT_VARIABLE(11, false, false, null, "import", "const"),
     ARGUMENT_SPLIT(0, true, false, null, ","),
     NULL(1, false, false, null, "null", "NULL");
     

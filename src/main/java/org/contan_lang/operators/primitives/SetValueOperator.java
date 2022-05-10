@@ -36,7 +36,13 @@ public class SetValueOperator extends Operator {
             }
 
             ContanObject<?> resultClone = rightResult.createClone();
-            ((ContanObjectReference) variable).setContanObject(resultClone);
+
+            ContanObjectReference reference = (ContanObjectReference) variable;
+            if (reference.isConst()) {
+                ContanRuntimeError.E0023.throwError("", null, token);
+            }
+
+            reference.setContanObject(resultClone);
             
             return resultClone;
         } catch (IllegalAccessException e) {

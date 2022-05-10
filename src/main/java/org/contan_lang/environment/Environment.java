@@ -31,11 +31,9 @@ public class Environment {
     protected final Map<String, ContanObjectReference> variableMap = new HashMap<>();
     
     
-    protected ContanThread callBackThread = null;
+    protected Evaluator reEval;
     
     protected JavaCompletable completable = null;
-    
-    protected Consumer<Environment> scheduleTask = null;
     
     protected ContanObject<?> returnValue = null;
     
@@ -52,7 +50,7 @@ public class Environment {
         this.canHasReturnValue = false;
     }
 
-    public Environment(ContanEngine contanEngine, @Nullable Environment parent, @NotNull ContanThread contanThread, Consumer<Environment> scheduleTask, boolean canHasReturnValue) {
+    public Environment(ContanEngine contanEngine, @Nullable Environment parent, @NotNull ContanThread contanThread, Evaluator reEval, boolean canHasReturnValue) {
         this.contanEngine = contanEngine;
         this.parent = parent;
         this.contanThread = contanThread;
@@ -60,14 +58,8 @@ public class Environment {
         if (canHasReturnValue) {
             this.completable = new JavaCompletable(StandardClasses.COMPLETABLE.createInstance(contanEngine, contanThread));
             completable.getContanInstance().getEnvironment().createOrSetVariable("javaCompletable", new JavaClassInstance(contanEngine, completable));
-            
-            if (parent == null) {
-                callBackThread = contanEngine.getMainThread();
-            } else {
-                callBackThread = parent.getContanThread();
-            }
-            
-            this.scheduleTask = scheduleTask;
+
+            this.reEval = reEval;
         }
     }
     
@@ -80,9 +72,9 @@ public class Environment {
     public ContanThread getContanThread() {return contanThread;}
     
     public JavaCompletable getCompletable() {return completable;}
-    
-    public void setScheduleTask(Consumer<Environment> scheduleTask) {this.scheduleTask = scheduleTask;}
-    
+
+    public void setReEval(Evaluator reEval) {this.reEval = reEval;}
+
     private boolean returnEnvInitialize = false;
     
     public void complete(ContanObject<?> result) {
@@ -100,11 +92,24 @@ public class Environment {
     }
     
     public void reRun() {
-        if (scheduleTask == null) {
+        if (reEval == null) {
             return;
         }
-        
-        scheduleTask.accept(this);
+
+        contanThread.scheduleTask(() -> {
+            ContanObject<?> result = reEval.eval(this);
+
+            if (hasReturnValue()) {
+                ContanObject<?> returnValue = getReturnValue();
+                if (!(returnValue instanceof ContanYieldObject)) {
+                    complete(returnValue);
+                }
+            } else {
+                complete(result);
+            }
+
+            return result;
+        });
     }
     
     public @Nullable Environment getReturnEnvironment() {
@@ -216,6 +221,13 @@ public class Environment {
         if (variableMap.containsKey(name)) return;
     
         ContanObjectReference contanVariableReference = new ContanObjectReference(contanEngine, name, contanObject);
+        variableMap.put(name, contanVariableReference);
+    }
+
+    public void createConstVariable(String name, ContanObject<?> contanObject) {
+        if (variableMap.containsKey(name)) return;
+
+        ContanObjectReference contanVariableReference = new ContanObjectReference(contanEngine, name, contanObject, true);
         variableMap.put(name, contanVariableReference);
     }
     

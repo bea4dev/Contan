@@ -27,23 +27,9 @@ public class AsyncTaskOperator extends TaskOperator {
         if (coroutineStatus == null) {
             ContanThread asyncThread = contanEngine.getNextAsyncThread();
 
-            Consumer<Environment> scheduleTask = env -> asyncThread.scheduleTask(() -> {
-                ContanObject<?> result = operators[0].eval(env);
+            newEnvironment = new Environment(contanEngine, environment, asyncThread, operators[0], true);
+            newEnvironment.reRun();
 
-                if (env.hasReturnValue()) {
-                    ContanObject<?> returnValue = env.getReturnValue();
-                    if (!(returnValue instanceof ContanYieldObject)) {
-                        env.complete(returnValue);
-                    }
-                } else {
-                    env.complete(result);
-                }
-
-                return null;
-            });
-
-            newEnvironment = new Environment(contanEngine, environment, asyncThread, scheduleTask, true);
-            scheduleTask.accept(newEnvironment);
             environment.setCoroutineStatus(this, 0, newEnvironment.getCompletable().getContanInstance());
         } else {
             return (ContanClassInstance) coroutineStatus.results[0];

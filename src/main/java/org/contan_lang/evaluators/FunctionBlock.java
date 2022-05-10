@@ -34,22 +34,8 @@ public class FunctionBlock {
     
     
     public ContanObject<?> eval(@Nullable Environment parentEnvironment, Token token, ContanThread contanThread, ContanObject<?>... contanObjects) {
-        Consumer<Environment> scheduleTask = env -> contanThread.scheduleTask(() -> {
-            ContanObject<?> result = evaluator.eval(env);
-            
-            if (env.hasReturnValue()) {
-                ContanObject<?> returnValue = env.getReturnValue();
-                if (!(returnValue instanceof ContanYieldObject)) {
-                    env.complete(returnValue);
-                }
-            } else {
-                env.complete(result);
-            }
-            
-            return null;
-        });
-        
-        Environment environment = new Environment(contanEngine, parentEnvironment, contanThread, scheduleTask, true);
+
+        Environment environment = new Environment(contanEngine, parentEnvironment, contanThread, evaluator, true);
         if (args.length != contanObjects.length) {
             ContanRuntimeError.E0016.throwError("", null, token);
         }
