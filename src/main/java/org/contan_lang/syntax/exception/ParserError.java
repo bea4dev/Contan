@@ -29,7 +29,8 @@ public enum ParserError {
     E0022(ParserExceptions.UNEXPECTED_SYNTAX, "The expression cannot be written to the left of the 'async' or 'sync' keyword."),
     E0023(ParserExceptions.UNEXPECTED_SYNTAX, "An expression or block is required to the right of the 'async' or 'sync' keyword."),
     E0024(ParserExceptions.UNEXPECTED_SYNTAX, "The execution part of the async or sync expressions must be enclosed in a block."),
-    E0025(ParserExceptions.UNEXPECTED_SYNTAX, "On the right side, an expression is needed.");
+    E0025(ParserExceptions.UNEXPECTED_SYNTAX, "On the right side, an expression is needed."),
+    E0026(ParserExceptions.UNEXPECTED_SYNTAX, "Variable names cannot contain '#'.");
 
     private final ParserExceptions parserExceptions;
 

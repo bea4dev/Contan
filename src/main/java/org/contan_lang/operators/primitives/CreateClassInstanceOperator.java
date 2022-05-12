@@ -44,7 +44,7 @@ public class CreateClassInstanceOperator implements Evaluator {
         ContanObject<?>[] variables = new ContanObject<?>[args.length];
         
         if (coroutineStatus != null) {
-            startIndex = coroutineStatus.count;
+            startIndex = (int) coroutineStatus.count;
             System.arraycopy(coroutineStatus.results, 0, variables, 0, startIndex);
         }
         

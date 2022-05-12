@@ -63,4 +63,7 @@ public class Token {
     public String toString() {
         return identifier == null ? text : identifier.toString();
     }
+
+    public boolean isLabelToken() {return text.charAt(0) == '#';}
+
 }

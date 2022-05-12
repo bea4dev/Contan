@@ -4,46 +4,44 @@ import org.contan_lang.syntax.parser.environment.ScopeType;
 import org.jetbrains.annotations.Nullable;
 
 public enum Identifier {
-    EXPRESSION_SPLIT(1, true, false, null, "\n", ";"),
-    CLASS(13, false, true, ScopeType.CLASS, "class"),
-    INITIALIZE(14, false, true, ScopeType.INITIALIZE, "initialize"),
-    FUNCTION(8, false, true, ScopeType.FUNCTION, "function"),
-    IF(13, false, true, ScopeType.IF, "if"),
-    BLOCK_START(0, true, true, null, "{"),
-    BLOCK_END(0, true, false, null, "}"),
-    BLOCK_OPERATOR_START(0, true, true, null, "("),
-    BLOCK_OPERATOR_END(0, true, false, null, ")"),
-    DEFINE_VARIABLE(11, false, false, null, "data"),
-    RETURN(12, false, false, null, "return"),
-    ASYNC(3, false, false, null, "async"),
-    SYNC(3, false, false, null, "sync"),
-    DOT(3, true, false, null, "."),
-    OPERATOR_EQUAL(6, true, false, null, "=="),
-    OPERATOR_AND(7, true, false, null, "&&"),
-    OPERATOR_PLUS(5, true, false, null, "+"),
-    OPERATOR_MINUS(5, true, false, null, "-"),
-    OPERATOR_MULTIPLY(4, true, false, null, "*"),
-    OPERATOR_DIVISION(4, true, false, null, "/"),
-    LAMBDA(8, true, false, ScopeType.FUNCTION, "=>"),
-    ASSIGNMENT(10, true, false, null, "="),
-    NEW(3, false, false, null, "new"),
-    CONSTANT_VARIABLE(11, false, false, null, "import", "const"),
-    ARGUMENT_SPLIT(0, true, false, null, ","),
-    NULL(1, false, false, null, "null", "NULL");
+    EXPRESSION_SPLIT(1, true, "\n", ";"),
+    CLASS(13, false, "class"),
+    INITIALIZE(14, false, "initialize"),
+    FUNCTION(8, false, "function"),
+    IF(13, false, "if"),
+    LABEL(13, true, ":"),
+    REPEAT(13, false, "repeat"),
+    BLOCK_START(0, true, "{"),
+    BLOCK_END(0, true, "}"),
+    BLOCK_OPERATOR_START(0, true, "("),
+    BLOCK_OPERATOR_END(0, true, ")"),
+    DEFINE_VARIABLE(11, false, "data"),
+    RETURN(12, false, "return"),
+    ASYNC(3, false, "async"),
+    SYNC(3, false, "sync"),
+    DOT(3, true, "."),
+    OPERATOR_EQUAL(6, true, "=="),
+    OPERATOR_AND(7, true, "&&"),
+    OPERATOR_PLUS(5, true, "+"),
+    OPERATOR_MINUS(5, true, "-"),
+    OPERATOR_MULTIPLY(4, true, "*"),
+    OPERATOR_DIVISION(4, true, "/"),
+    LAMBDA(8, true, "=>"),
+    ASSIGNMENT(10, true, "="),
+    NEW(3, false, "new"),
+    CONSTANT_VARIABLE(11, false, "import", "const"),
+    ARGUMENT_SPLIT(0, true, ","),
+    NULL(1, false, "null", "NULL");
     
     
     public final int priority;
     public final String[] words;
     public final boolean adjoinable;
-    public final boolean blockHead;
-    public final @Nullable ScopeType scopeType;
     
-    Identifier(int priority, boolean adjoinable, boolean blockHead, @Nullable ScopeType scopeType, String... words){
+    Identifier(int priority, boolean adjoinable, String... words){
         this.priority = priority;
         this.words = words;
         this.adjoinable = adjoinable;
-        this.blockHead = blockHead;
-        this.scopeType = scopeType;
     }
     
     @Nullable

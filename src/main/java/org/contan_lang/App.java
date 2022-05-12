@@ -33,17 +33,21 @@ public class App
                 "\n" +
                 "data text = async {\n" +
                 "    \n" +
+                "    print(\"SLEEP!\")\n" +
+                "    \n" +
                 "    Thread.sleep(1000)\n" +
                 "    \n" +
-                "    return sync (@MAIN_THREAD) {\n" +
-                "        if (@THREAD == @MAIN_THREAD) { return \"MAIN THREAD!\" }\n" +
-                "        \n" +
-                "        return \"ASYNC!!\"\n" +
-                "    }.await()\n" +
+                "    return sync @MAIN_THREAD { \"Hello world from main thread!\" }.await()\n" +
                 "    \n" +
-                "}.await()\n" +
+                "}\n" +
                 "\n" +
-                "print(text)";
+                "print(\"CHECK!\")\n" +
+                "\n" +
+                "if (text.await() == \"Hello world from main thread!\") {\n" +
+                "    print(text.await())\n" +
+                "}\n" +
+                "\n" +
+                "print(\"COMPLETE!\")";
 
 
         ContanEngine contanEngine = new ContanEngine();

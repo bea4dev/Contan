@@ -29,7 +29,8 @@ public enum ContanRuntimeError {
     E0021(ContanRuntimeExceptions.INVALID_TYPE, "Non-numeric values cannot be sign-reversed."),
     E0022(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Java class not found."),
     E0023(ContanRuntimeExceptions.ACCESS_ERROR, "Variables defined as const cannot be reassigned."),
-    E0024(ContanRuntimeExceptions.INVALID_TYPE, "Conditional expressions of if or while must return a boolean type.");
+    E0024(ContanRuntimeExceptions.INVALID_TYPE, "Conditional expressions of if must return a boolean type."),
+    E0025(ContanRuntimeExceptions.INVALID_TYPE, "");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

@@ -89,7 +89,7 @@ public class PreLinkedFunctionOperator extends Operator {
                 return coroutineStatus.results[0];
             }
 
-            startIndex = coroutineStatus.count;
+            startIndex = (int) coroutineStatus.count;
             System.arraycopy(coroutineStatus.results, 0, variables, 0, startIndex);
         }
     

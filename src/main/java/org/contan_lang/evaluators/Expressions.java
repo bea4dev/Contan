@@ -1,5 +1,6 @@
 package org.contan_lang.evaluators;
 
+import org.contan_lang.environment.CancelStatus;
 import org.contan_lang.environment.CoroutineStatus;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.variables.ContanObject;
@@ -19,7 +20,7 @@ public class Expressions implements Evaluator {
         if (environment.isCoroutineEnvironment()) {
             CoroutineStatus coroutineStatus = environment.getCoroutineStatus(this);
             if (coroutineStatus != null) {
-                return eval(environment, coroutineStatus.count);
+                return eval(environment, (int) coroutineStatus.count);
             }
         }
         return eval(environment, 0);
@@ -35,6 +36,10 @@ public class Expressions implements Evaluator {
             if (environment.hasYieldReturnValue()) {
                 environment.setCoroutineStatus(this, i, ContanYieldObject.INSTANCE);
                 return ContanYieldObject.INSTANCE;
+            }
+
+            if (environment.getCancelStatus() != CancelStatus.NONE) {
+                return ContanVoidObject.INSTANCE;
             }
 
             if (i == expressions.length - 1) {

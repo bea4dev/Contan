@@ -43,6 +43,10 @@ public class Environment {
     
     protected boolean isCoroutineEnvironment = false;
 
+    protected String name = null;
+
+    protected CancelStatus cancelStatus = CancelStatus.NONE;
+
     public Environment(ContanEngine contanEngine, @Nullable Environment parent, @NotNull ContanThread contanThread) {
         this.contanEngine = contanEngine;
         this.parent = parent;
@@ -74,6 +78,15 @@ public class Environment {
     public JavaCompletable getCompletable() {return completable;}
 
     public void setReEval(Evaluator reEval) {this.reEval = reEval;}
+
+    public String getName() {return name;}
+
+    public void setName(String name) {this.name = name;}
+
+    public CancelStatus getCancelStatus() {return cancelStatus;}
+
+    public void setCancelStatus(CancelStatus cancelStatus) {this.cancelStatus = cancelStatus;}
+
 
     private boolean returnEnvInitialize = false;
     
@@ -159,7 +172,7 @@ public class Environment {
         return returnEnvironment.coroutineStatusMap.get(evaluator);
     }
     
-    public void setCoroutineStatus(Evaluator evaluator, int count, ContanObject<?>... results) {
+    public void setCoroutineStatus(Evaluator evaluator, long count, ContanObject<?>... results) {
         Environment returnEnvironment = getReturnEnvironment();
         if (returnEnvironment == null) {
             return;

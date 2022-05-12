@@ -195,6 +195,12 @@ public class Parser {
                         
                         return ifEvaluator;
                     }
+
+                    case REPEAT: {
+                        Scope repeatScope = new Scope(scope.getRootName() + ".repeat", scope, ScopeType.FUNCTION);
+
+
+                    }
                     
                     default: {
                         ParserError.E0000.throwError("", first);
@@ -341,6 +347,10 @@ public class Parser {
                 return new DefineValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
             } else {
                 //Not number
+
+                if (name.contains("#")) {
+                    ParserError.E0026.throwError("", first);
+                }
 
                 scope.checkHasVariable(contanEngine, first);
                 return new GetVariableOperator(contanEngine, first);
@@ -727,11 +737,13 @@ public class Parser {
                     ParserError.E0019.throwError("", highestIdentifierToken);
                 }
                 
+                Evaluator right;
                 if (rightTokenList.size() == 0) {
-                    ParserError.E0018.throwError("", highestIdentifierToken);
+                    right = NullEvaluator.INSTANCE;
+                } else {
+                    right = parseExpression(scope, rightTokenList);
                 }
-                
-                Evaluator right = parseExpression(scope, rightTokenList);
+
                 return new SetReturnValueOperator(contanEngine, highestIdentifierToken, right);
             }
         }
