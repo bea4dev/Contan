@@ -29,25 +29,9 @@ public class App
         
         
         
-        String test = "import Thread = importJava(\"java.lang.Thread\")\n" +
-                "\n" +
-                "data text = async {\n" +
-                "    \n" +
-                "    print(\"SLEEP!\")\n" +
-                "    \n" +
-                "    Thread.sleep(1000)\n" +
-                "    \n" +
-                "    return sync @MAIN_THREAD { \"Hello world from main thread!\" }.await()\n" +
-                "    \n" +
-                "}\n" +
-                "\n" +
-                "print(\"CHECK!\")\n" +
-                "\n" +
-                "if (text.await() == \"Hello world from main thread!\") {\n" +
-                "    print(text.await())\n" +
-                "}\n" +
-                "\n" +
-                "print(\"COMPLETE!\")";
+        String test = "repeat 5 {\n" +
+                "    print(\"hey!\")\n" +
+                "}";
 
 
         ContanEngine contanEngine = new ContanEngine();

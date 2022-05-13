@@ -17,6 +17,8 @@ public enum Identifier {
     BLOCK_OPERATOR_END(0, true, ")"),
     DEFINE_VARIABLE(11, false, "data"),
     RETURN(12, false, "return"),
+    STOP(12, false, "stop", "break"),
+    SKIP(12, false, "skip", "continue"),
     ASYNC(3, false, "async"),
     SYNC(3, false, "sync"),
     DOT(3, true, "."),

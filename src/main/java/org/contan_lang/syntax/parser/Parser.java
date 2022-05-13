@@ -199,7 +199,25 @@ public class Parser {
                     case REPEAT: {
                         Scope repeatScope = new Scope(scope.getRootName() + ".repeat", scope, ScopeType.FUNCTION);
 
+                        String name = "";
+                        Evaluator termsEval = null;
 
+                        Token lastToken = firstTokens.get(firstTokens.size() - 1);
+                        if (lastToken.isLabelToken()) {
+                            name = lastToken.getText();
+
+                            if (firstTokens.size() >= 3) {
+                                termsEval = parseExpression(scope, firstTokens.subList(1, firstTokens.size() - 1));
+                            }
+                        } else {
+                            if (firstTokens.size() >= 2) {
+                                termsEval = parseExpression(scope, firstTokens.subList(1, firstTokens.size()));
+                            }
+                        }
+
+                        Evaluator blockEval = parseBlock(repeatScope, null, blockTokens);
+
+                        return new RepeatEvaluator(contanEngine, first, termsEval, blockEval, name);
                     }
                     
                     default: {
@@ -258,7 +276,9 @@ public class Parser {
                         continue;
                     }
 
-                    case IF: {
+                    case IF:
+
+                    case REPEAT: {
                         List<Token> first = ParserUtil.getTokensUntilFoundIdentifier(blockTokens, i, Identifier.BLOCK_START);
                         i += first.size();
     
@@ -745,6 +765,17 @@ public class Parser {
                 }
 
                 return new SetReturnValueOperator(contanEngine, highestIdentifierToken, right);
+            }
+
+            case STOP: {
+                if (leftTokenList.size() != 0) {
+                    ParserError.E0019.throwError("", highestIdentifierToken);
+                }
+
+                String name = "";
+                if (rightTokenList.size() == 1) {
+
+                }
             }
         }
 
