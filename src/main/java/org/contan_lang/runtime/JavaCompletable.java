@@ -13,23 +13,23 @@ public class JavaCompletable {
     
     private final ContanClassInstance completable;
     
-    private final List<ContanFunctionExpression> thenList = new ArrayList<>();
+    private final List<FunctionExpressionWithThread> thenList = new ArrayList<>();
     
-    private final List<ContanFunctionExpression> catchList = new ArrayList<>();
+    private final List<FunctionExpressionWithThread> catchList = new ArrayList<>();
     
     private boolean isDone = false;
     
     private ContanObject<?> result = null;
     
-    private List<Environment> awaitEnvironmentList = new ArrayList<>();
+    private final List<Environment> awaitEnvironmentList = new ArrayList<>();
     
     public JavaCompletable(ContanClassInstance completable) {
         this.completable = completable;
     }
     
-    public void addThen(ContanFunctionExpression functionExpression) {this.thenList.add(functionExpression);}
+    public void addThen(FunctionExpressionWithThread functionExpression) {this.thenList.add(functionExpression);}
     
-    public void addCatch(ContanFunctionExpression functionExpression) {this.catchList.add(functionExpression);}
+    public void addCatch(FunctionExpressionWithThread functionExpression) {this.catchList.add(functionExpression);}
 
     public void addAwaitEnvironment(Environment environment) {this.awaitEnvironmentList.add(environment);}
     
@@ -43,8 +43,10 @@ public class JavaCompletable {
         this.result = result;
         isDone = true;
         
-        for (ContanFunctionExpression functionExpression : thenList) {
-            functionExpression.eval(contanThread, null, result);
+        for (FunctionExpressionWithThread functionExpression : thenList) {
+            functionExpression.contanThread.scheduleTask(() ->
+                functionExpression.functionExpression.eval(functionExpression.contanThread, null, result)
+            );
         }
         
         for (Environment environment : awaitEnvironmentList) {
@@ -57,5 +59,15 @@ public class JavaCompletable {
             returnEnv.reRun();
         }
     }
-    
+
+
+    public static class FunctionExpressionWithThread {
+        public final ContanThread contanThread;
+        public final ContanFunctionExpression functionExpression;
+
+        public FunctionExpressionWithThread(ContanThread contanThread, ContanFunctionExpression functionExpression) {
+            this.contanThread = contanThread;
+            this.functionExpression = functionExpression;
+        }
+    }
 }

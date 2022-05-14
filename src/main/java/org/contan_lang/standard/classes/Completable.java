@@ -43,6 +43,10 @@ public class Completable extends ClassBlock {
                     ContanRuntimeError.E0017.throwError("", null, functionName);
                     return null;
                 }
+
+                if (functionExpression.getBasedJavaObject().getArgs().length != 1) {
+                    ContanRuntimeError.E0010.throwError("", null, functionName);
+                }
                 
                 ContanObject<?> contanObject = classInstanceEnvironment.getVariable("javaCompletable");
                 
@@ -56,7 +60,7 @@ public class Completable extends ClassBlock {
                 }
                 
                 JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
-                javaCompletable.addThen(functionExpression);
+                javaCompletable.addThen(new JavaCompletable.FunctionExpressionWithThread(contanThread, functionExpression));
                 
                 return ContanVoidObject.INSTANCE;
             }
@@ -73,6 +77,10 @@ public class Completable extends ClassBlock {
                     ContanRuntimeError.E0017.throwError("", null, functionName);
                     return null;
                 }
+
+                if (functionExpression.getBasedJavaObject().getArgs().length != 1) {
+                    ContanRuntimeError.E0010.throwError("", null, functionName);
+                }
     
                 ContanObject<?> contanObject = classInstanceEnvironment.getVariable("javaCompletable");
     
@@ -86,7 +94,7 @@ public class Completable extends ClassBlock {
                 }
     
                 JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
-                javaCompletable.addCatch(functionExpression);
+                javaCompletable.addCatch(new JavaCompletable.FunctionExpressionWithThread(contanThread, functionExpression));
                 
                 return ContanVoidObject.INSTANCE;
             }

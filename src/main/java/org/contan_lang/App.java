@@ -31,17 +31,20 @@ public class App
         
         
         String test = "\n" +
-                "data fib = list(1, 1)\n" +
-                "data i = 2\n" +
+                "import Thread = importJava(\"java.lang.Thread\")\n" +
                 "\n" +
-                "repeat 50 {\n" +
+                "async {\n" +
+                "    Thread.sleep(1000)\n" +
                 "    \n" +
-                "    fib.add(fib[i - 2] + fib[i - 1])\n" +
-                "    i = i + 1\n" +
+                "    return \"TEST!!\"\n" +
+                "}.then(result => {\n" +
                 "    \n" +
-                "}\n" +
-                "\n" +
-                "print(fib)";
+                "    if (@CURRENT_THREAD == @MAIN_THREAD) {\n" +
+                "        print(\"MAIN THREAD!!\")\n" +
+                "    }\n" +
+                "    \n" +
+                "    print(result)\n" +
+                "})";
 
 
         ContanEngine contanEngine = new ContanEngine();
