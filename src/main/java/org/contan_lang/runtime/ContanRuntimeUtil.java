@@ -15,7 +15,7 @@ public class ContanRuntimeUtil {
         if (contanObject instanceof ContanObjectReference) {
             try {
                 contanObject = ((ContanObjectReference) contanObject).getContanObject();
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 ContanRuntimeError.E0015.throwError("", e, operationToken);
             }
         }
@@ -31,7 +31,7 @@ public class ContanRuntimeUtil {
             if (contanObject instanceof ContanObjectReference) {
                 try {
                     contanObjects[i] = ((ContanObjectReference) contanObject).getContanObject();
-                } catch (IllegalAccessException e) {
+                } catch (Exception e) {
                     ContanRuntimeError.E0015.throwError("", e, operationToken);
                 }
             }

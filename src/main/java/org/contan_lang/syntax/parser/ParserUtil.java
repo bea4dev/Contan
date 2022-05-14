@@ -3,7 +3,6 @@ package org.contan_lang.syntax.parser;
 import org.contan_lang.syntax.Identifier;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.syntax.exception.ParserError;
-import org.contan_lang.syntax.tokens.BlockToken;
 import org.contan_lang.syntax.tokens.Token;
 
 import java.util.ArrayList;
@@ -164,6 +163,38 @@ public class ParserUtil {
 
         ParserError.E0002.throwError(end.words[0], tokens.get(startIndex));
         return new ArrayList<>();
+    }
+    
+    public static MatchIdentifierResult getTokensUntilFoundIdentifiers(List<Token> tokens, int startIndex, Identifier... ends) throws ContanParseException {
+        int length = tokens.size();
+        List<Token> nestedToken = new ArrayList<>();
+        for (int i = startIndex; i < length; i++) {
+            Token token = tokens.get(i);
+            
+            Identifier identifier = token.getIdentifier();
+            
+            for (Identifier end : ends) {
+                if (identifier == end) {
+                    return new MatchIdentifierResult(nestedToken, end);
+                }
+            }
+            
+            nestedToken.add(token);
+        }
+        
+        ParserError.E0002.throwError(ends[0].words[0], tokens.get(startIndex));
+        return new MatchIdentifierResult(new ArrayList<>(), Identifier.NULL);
+    }
+    
+    
+    public static class MatchIdentifierResult {
+        public final List<Token> tokens;
+        public final Identifier identifier;
+    
+        public MatchIdentifierResult(List<Token> tokens, Identifier identifier) {
+            this.tokens = tokens;
+            this.identifier = identifier;
+        }
     }
 
 

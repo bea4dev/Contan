@@ -1,6 +1,7 @@
 package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
+import org.contan_lang.environment.ContanJavaBaseObjectReference;
 import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
@@ -11,6 +12,8 @@ import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.*;
+
+import java.lang.reflect.Field;
 
 public class GetFieldOperator extends Operator {
 
@@ -36,18 +39,18 @@ public class GetFieldOperator extends Operator {
             Class<?> clazz = (Class<?>) leftResult.getBasedJavaObject();
             //Get static field
             try {
-                Object object = clazz.getField(token.getText()).get(null);
-                return new JavaClassInstance(contanEngine, object);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
+                Field field = clazz.getField(token.getText());
+                return new ContanJavaBaseObjectReference(contanEngine, token.getText(), ContanVoidObject.INSTANCE, field, null);
+            } catch (NoSuchFieldException e) {
                 ContanRuntimeError.E0015.throwError("", e, token);
             }
         } else if (leftResult instanceof JavaClassInstance) {
             Class<?> clazz = leftResult.getBasedJavaObject().getClass();
             //Get instance field
             try {
-                Object object = clazz.getField(token.getText()).get(leftResult.getBasedJavaObject());
-                return new JavaClassInstance(contanEngine, object);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
+                Field field = clazz.getField(token.getText());
+                return new ContanJavaBaseObjectReference(contanEngine, token.getText(), ContanVoidObject.INSTANCE, field, leftResult.getBasedJavaObject());
+            } catch (NoSuchFieldException e) {
                 ContanRuntimeError.E0015.throwError("", e, token);
             }
         } else if (leftResult instanceof ContanModuleObject) {

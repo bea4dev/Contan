@@ -1,5 +1,6 @@
 package org.contan_lang.standard.classes;
 
+import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.thread.ContanThread;
@@ -25,6 +26,11 @@ public class StandardClasses {
         @Override
         public boolean shutdownWithAwait(long timeout, TimeUnit timeUnit) throws InterruptedException {
             return true;
+        }
+    
+        @Override
+        public ContanEngine getContanEngine() {
+            return null;
         }
     };
 

@@ -14,6 +14,7 @@ public class BasicContanThread implements ContanThread {
         this.contanEngine = contanEngine;
     }
     
+    @Override
     public ContanEngine getContanEngine() {return contanEngine;}
     
     @Override

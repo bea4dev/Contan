@@ -6,6 +6,7 @@ import org.contan_lang.syntax.parser.Parser;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -29,9 +30,18 @@ public class App
         
         
         
-        String test = "repeat 5 {\n" +
-                "    print(\"hey!\")\n" +
-                "}";
+        String test = "\n" +
+                "data fib = list(1, 1)\n" +
+                "data i = 2\n" +
+                "\n" +
+                "repeat 50 {\n" +
+                "    \n" +
+                "    fib.add(fib[i - 2] + fib[i - 1])\n" +
+                "    i = i + 1\n" +
+                "    \n" +
+                "}\n" +
+                "\n" +
+                "print(fib)";
 
 
         ContanEngine contanEngine = new ContanEngine();

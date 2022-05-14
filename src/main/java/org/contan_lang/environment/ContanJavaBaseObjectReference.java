@@ -19,14 +19,14 @@ public class ContanJavaBaseObjectReference extends ContanObjectReference {
     }
 
     @Override
-    public void setContanObject(ContanObject<?> contanObject) throws IllegalAccessException {
+    public void setContanObject(ContanObject<?> contanObject) throws Exception {
         super.setContanObject(contanObject);
         field.set(javaObject, contanObject.getBasedJavaObject());
         super.based = contanObject;
     }
 
     @Override
-    public ContanObject<?> getContanObject() throws IllegalAccessException {
+    public ContanObject<?> getContanObject() throws Exception {
         return new JavaClassInstance(contanEngine, field.get(javaObject));
     }
 }

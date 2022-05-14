@@ -25,7 +25,7 @@ public class GetVariableOperator extends Operator {
         ContanObjectReference variable = environment.getVariable(targetVariableNameToken.getText());
 
         if (variable == null) {
-            if (targetVariableNameToken.getText().equals("@THREAD")) {
+            if (targetVariableNameToken.getText().equals("@CURRENT_THREAD")) {
                 return new JavaClassInstance(contanEngine, environment.getContanThread());
             }
 

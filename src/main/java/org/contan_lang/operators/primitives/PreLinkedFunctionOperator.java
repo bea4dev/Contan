@@ -95,6 +95,7 @@ public class PreLinkedFunctionOperator extends Operator {
     
         for (int i = startIndex; i < args.length; i++) {
             ContanObject<?> result = args[i].eval(environment).createClone();
+            result = ContanRuntimeUtil.removeReference(token, result);
         
             if (environment.hasYieldReturnValue() || result == ContanYieldObject.INSTANCE) {
                 ContanObject<?>[] results = new ContanObject<?>[i + 1];

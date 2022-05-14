@@ -27,8 +27,12 @@ public class RepeatStopOrSkipOperator extends Operator {
         while (true) {
             String name = current.getName();
             if (name != null) {
-                if (name.equals(labelName)) {
+                if (labelName.equals("")) {
                     break;
+                } else {
+                    if (name.equals(labelName)) {
+                        break;
+                    }
                 }
             }
 

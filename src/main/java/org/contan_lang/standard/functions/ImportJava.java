@@ -32,7 +32,7 @@ public class ImportJava extends FunctionBlock {
 
         try {
             Class<?> clazz = Class.forName((String) contanObjects[0].getBasedJavaObject());
-            return new JavaClassObject(contanObjects[0].getContanEngine(), clazz);
+            return new JavaClassObject(contanThread.getContanEngine(), clazz);
         } catch (ClassNotFoundException e) {
             ContanRuntimeError.E0022.throwError("", e, token);
             return null;

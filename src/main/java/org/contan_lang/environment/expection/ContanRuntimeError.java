@@ -30,7 +30,12 @@ public enum ContanRuntimeError {
     E0022(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Java class not found."),
     E0023(ContanRuntimeExceptions.ACCESS_ERROR, "Variables defined as const cannot be reassigned."),
     E0024(ContanRuntimeExceptions.INVALID_TYPE, "Conditional expressions of if must return a boolean type."),
-    E0025(ContanRuntimeExceptions.INVALID_TYPE, "");
+    E0025(ContanRuntimeExceptions.INVALID_TYPE, "No other number than an integer may be specified for the number of repeats."),
+    E0026(ContanRuntimeExceptions.INVALID_TYPE, "Cannot specify a non-Java class."),
+    E0027(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Failed to insert into java array.%s"),
+    E0028(ContanRuntimeExceptions.INVALID_TYPE, "Cannot use anything other than an integer to specify the array index."),
+    E0029(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Array length cannot have negative values."),
+    E0030(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "The index must be less than or equal to '" + Integer.MAX_VALUE + "'.");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

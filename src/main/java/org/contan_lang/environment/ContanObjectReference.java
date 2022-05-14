@@ -28,9 +28,9 @@ public class ContanObjectReference extends ContanPrimitiveObject<Object> {
 
     public boolean isConst() {return constant;}
 
-    public ContanObject<?> getContanObject() throws IllegalAccessException {return (ContanObject<?>) based;}
+    public ContanObject<?> getContanObject() throws Exception {return (ContanObject<?>) based;}
     
-    public void setContanObject(ContanObject<?> contanObject) throws IllegalAccessException {this.based = contanObject;}
+    public void setContanObject(ContanObject<?> contanObject) throws Exception {this.based = contanObject;}
     
     @Override
     public Object getBasedJavaObject() {

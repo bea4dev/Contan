@@ -5,10 +5,11 @@ import org.contan_lang.environment.CoroutineStatus;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
+import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanFloat;
-import org.contan_lang.variables.primitive.ContanInteger;
+import org.contan_lang.variables.primitive.ContanF64;
+import org.contan_lang.variables.primitive.ContanI64;
 import org.contan_lang.variables.primitive.ContanString;
 import org.contan_lang.variables.primitive.ContanYieldObject;
 
@@ -47,6 +48,9 @@ public class AddOperator extends Operator {
             contanObject1 = operators[1].eval(environment);
         }
         
+        contanObject0 = ContanRuntimeUtil.removeReference(token, contanObject0);
+        contanObject1 = ContanRuntimeUtil.removeReference(token, contanObject1);
+        
         Object first = contanObject0.getBasedJavaObject();
         Object second = contanObject1.getBasedJavaObject();
         
@@ -76,7 +80,7 @@ public class AddOperator extends Operator {
                     sum += (Double) second;
                 }
                 
-                return new ContanFloat(contanEngine, sum);
+                return new ContanF64(contanEngine, sum);
             }
             
             
@@ -94,7 +98,7 @@ public class AddOperator extends Operator {
                 sum += (Long) second;
             }
             
-            return new ContanInteger(contanEngine, sum);
+            return new ContanI64(contanEngine, sum);
         }
 
         return new ContanString(contanEngine, first.toString() + second.toString());

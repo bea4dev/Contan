@@ -45,7 +45,7 @@ public class SetValueOperator extends Operator {
             reference.setContanObject(resultClone);
             
             return resultClone;
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             ContanRuntimeError.E0012.throwError("", e, token);
         }
         

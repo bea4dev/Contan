@@ -8,9 +8,7 @@ import org.contan_lang.syntax.parser.Parser;
 import org.contan_lang.thread.BasicContanThread;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanClassObject;
-import org.contan_lang.variables.primitive.ContanVoidObject;
-import org.contan_lang.variables.primitive.JavaClassInstance;
+import org.contan_lang.variables.primitive.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -65,9 +63,13 @@ public class ContanEngine {
     }
 
     private void initialize() {
-        setRuntimeVariable("@THREAD", ContanVoidObject.INSTANCE);
+        setRuntimeVariable("@CURRENT_THREAD", ContanVoidObject.INSTANCE);
         setRuntimeVariable("@MAIN_THREAD", mainThread);
         setRuntimeVariable("Completable", new ContanClassObject(this, StandardClasses.COMPLETABLE));
+        setRuntimeVariable("int", new JavaClassObject(this, Integer.class));
+        setRuntimeVariable("long", new JavaClassObject(this, Long.class));
+        setRuntimeVariable("float", new JavaClassObject(this, Float.class));
+        setRuntimeVariable("double", new JavaClassObject(this, Double.class));
     }
 
     public void addClassBlock(ClassBlock classBlock) {

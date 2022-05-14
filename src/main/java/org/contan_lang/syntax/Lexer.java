@@ -12,6 +12,8 @@ public class Lexer {
     public final String text;
 
     public final String rootName;
+    
+    public final List<Token> tokens = new ArrayList<>();
 
     public Lexer(String rootName, String text) {
         this.rootName = rootName;
@@ -153,6 +155,8 @@ public class Lexer {
         }
     
         currentLineToken.build();
+        
+        this.tokens.addAll(tokens);
         
         return tokens;
     }

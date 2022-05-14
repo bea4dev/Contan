@@ -2,6 +2,7 @@ package org.contan_lang.syntax.parser;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.ContanModule;
+import org.contan_lang.environment.CancelStatus;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.*;
 import org.contan_lang.operators.primitives.*;
@@ -205,6 +206,7 @@ public class Parser {
                         Token lastToken = firstTokens.get(firstTokens.size() - 1);
                         if (lastToken.isLabelToken()) {
                             name = lastToken.getText();
+                            repeatScope.addVariable(name);
 
                             if (firstTokens.size() >= 3) {
                                 termsEval = parseExpression(scope, firstTokens.subList(1, firstTokens.size() - 1));
@@ -308,11 +310,17 @@ public class Parser {
                 List<Token> nestedTokens = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_START, Identifier.BLOCK_END, false, false);
                 i += nestedTokens.size() + 1;
                 
-                expressionTokens.add(new BlockToken(lexer, nestedTokens));
+                expressionTokens.add(new BlockToken(lexer, nestedTokens, token));
+            }
+            if (identifier == Identifier.BLOCK_GET_START) {
+                List<Token> nestedTokens = ParserUtil.getNestedToken(blockTokens, i, Identifier.BLOCK_GET_START, Identifier.BLOCK_GET_END, false, false);
+                i += nestedTokens.size() + 1;
+    
+                expressionTokens.add(new BlockToken(lexer, nestedTokens, Identifier.DOT, token));
             }
             
             //Parse expression
-            if (identifier != Identifier.EXPRESSION_SPLIT && identifier != Identifier.BLOCK_OPERATOR_START) {
+            if (identifier != Identifier.EXPRESSION_SPLIT && identifier != Identifier.BLOCK_OPERATOR_START && identifier != Identifier.BLOCK_GET_START) {
                 expressionTokens.add(token);
             }
             
@@ -348,32 +356,30 @@ public class Parser {
             Token first = tokens.get(0);
 
             //Checks if a variable name is specified.
-            if (first.getIdentifier() != null) {
-                ParserError.E0006.throwError("", first);
-            }
+            if (first.getIdentifier() == null) {
     
-            
-            String name = first.getText();
-            if (ParserUtil.isNumber(name)) {
-                if (name.contains(".")) {
-                    //Float
-                    return new DefineValueOperator(contanEngine, first, new ContanFloat(contanEngine, Double.parseDouble(name)));
+                String name = first.getText();
+                if (ParserUtil.isNumber(name)) {
+                    if (name.contains(".")) {
+                        //Float
+                        return new DefineValueOperator(contanEngine, first, new ContanF64(contanEngine, Double.parseDouble(name)));
+                    } else {
+                        //Integer
+                        return new DefineValueOperator(contanEngine, first, new ContanI64(contanEngine, Long.parseLong(name)));
+                    }
+                } else if (first instanceof StringToken) {
+                    //String
+                    return new DefineValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
                 } else {
-                    //Integer
-                    return new DefineValueOperator(contanEngine, first, new ContanInteger(contanEngine, Long.parseLong(name)));
+                    //Not number
+        
+                    if (name.contains("#")) {
+                        ParserError.E0026.throwError("", first);
+                    }
+        
+                    scope.checkHasVariable(contanEngine, first);
+                    return new GetVariableOperator(contanEngine, first);
                 }
-            } else if (first instanceof StringToken) {
-                //String
-                return new DefineValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
-            } else {
-                //Not number
-
-                if (name.contains("#")) {
-                    ParserError.E0026.throwError("", first);
-                }
-
-                scope.checkHasVariable(contanEngine, first);
-                return new GetVariableOperator(contanEngine, first);
             }
         }
 
@@ -560,40 +566,69 @@ public class Parser {
             //new
             case NEW: {
                 int index = 0;
-
+    
                 List<Token> classObjectTokenList = ParserUtil.getTokensUntilFoundIdentifier(rightTokenList, 0, Identifier.BLOCK_OPERATOR_START);
                 index += classObjectTokenList.size();
-
+    
                 List<Token> argTokenList = ParserUtil.getNestedToken(rightTokenList, index, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
-
+    
                 Evaluator left = parseExpression(scope, classObjectTokenList);
                 Evaluator[] arguments = parseArgumentEvaluators(scope, argTokenList);
-
+    
                 return new CreateClassInstanceOperator(contanEngine, classObjectTokenList.get(classObjectTokenList.size() - 1), left, arguments);
             }
 
             case DOT: {
-                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                if (leftTokenList.size() == 0) {
                     ParserError.E0012.throwError("", highestIdentifierToken);
                 }
-
-                Token nameToken = rightTokenList.get(0);
                 
-                if (ParserUtil.containsIdentifier(rightTokenList, Identifier.BLOCK_OPERATOR_START)) {
-                    //function
-                    List<Token> argumentTokenList = ParserUtil.getNestedToken(rightTokenList, 1, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
-
+                if (highestIdentifierToken instanceof BlockToken) {
+                    //For [] operator
+                    
+                    Token originalToken = ((BlockToken) highestIdentifierToken).originalToken;
+                    
+                    if (rightTokenList.size() != 0) {
+                        ParserError.E0030.throwError("", rightTokenList.get(0));
+                        return null;
+                    }
+                    
                     Evaluator left = parseExpression(scope, leftTokenList);
-                    Evaluator[] arguments = parseArgumentEvaluators(scope, argumentTokenList);
-
-                    PreLinkedFunctionOperator operator = new PreLinkedFunctionOperator(contanEngine, nameToken, left, arguments);
-                    preLinkedFunctions.add(operator);
-
-                    return operator;
+                    
+                    List<Token> keyTokens = ((BlockToken) highestIdentifierToken).tokens;
+                    if (keyTokens.size() == 0) {
+                        ParserError.E0029.throwError("", originalToken);
+                        return null;
+                    }
+                    
+                    Evaluator keyEval = parseExpression(scope, keyTokens);
+                    
+                    return new GetLinkedValueOperator(contanEngine, keyTokens.toArray(new Token[0]), left, keyEval);
                 } else {
-                    //field
-                    Evaluator left = parseExpression(scope, leftTokenList);
-                    return new GetFieldOperator(contanEngine, nameToken, left);
+                    //For . operator
+                    
+                    if (rightTokenList.size() == 0) {
+                        ParserError.E0012.throwError("", highestIdentifierToken);
+                    }
+                    
+                    Token nameToken = rightTokenList.get(0);
+                    
+                    if (ParserUtil.containsIdentifier(rightTokenList, Identifier.BLOCK_OPERATOR_START)) {
+                        //function
+                        List<Token> argumentTokenList = ParserUtil.getNestedToken(rightTokenList, 1, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, false, false);
+        
+                        Evaluator left = parseExpression(scope, leftTokenList);
+                        Evaluator[] arguments = parseArgumentEvaluators(scope, argumentTokenList);
+        
+                        PreLinkedFunctionOperator operator = new PreLinkedFunctionOperator(contanEngine, nameToken, left, arguments);
+                        preLinkedFunctions.add(operator);
+        
+                        return operator;
+                    } else {
+                        //field
+                        Evaluator left = parseExpression(scope, leftTokenList);
+                        return new GetFieldOperator(contanEngine, nameToken, left);
+                    }
                 }
             }
             
@@ -641,8 +676,6 @@ public class Parser {
                 
                 if (rightTokenList.get(0) instanceof BlockToken) {
                     right = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(0)).tokens);
-                } else if (rightTokenList.get(0).getIdentifier() == Identifier.BLOCK_START) {
-                    right = parseBlock(newScope, null, ParserUtil.getNestedToken(rightTokenList, 0, Identifier.BLOCK_START, Identifier.BLOCK_END, false, true));
                 } else {
                     right = parseExpression(newScope, rightTokenList);
                 }
@@ -740,8 +773,6 @@ public class Parser {
     
                 if (rightTokenList.get(index) instanceof BlockToken) {
                     blockEval = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(index)).tokens);
-                } else if (rightTokenList.get(index).getIdentifier() == Identifier.BLOCK_START) {
-                    blockEval = parseBlock(newScope, null, ParserUtil.getNestedToken(rightTokenList, index, Identifier.BLOCK_START, Identifier.BLOCK_END, false, true));
                 } else {
                     ParserError.E0021.throwError("", highestIdentifierToken);
                     blockEval = null;
@@ -767,6 +798,8 @@ public class Parser {
                 return new SetReturnValueOperator(contanEngine, highestIdentifierToken, right);
             }
 
+            case SKIP:
+            
             case STOP: {
                 if (leftTokenList.size() != 0) {
                     ParserError.E0019.throwError("", highestIdentifierToken);
@@ -774,8 +807,23 @@ public class Parser {
 
                 String name = "";
                 if (rightTokenList.size() == 1) {
-
+                    Token rightFirst = rightTokenList.get(0);
+                    
+                    if (rightFirst.getIdentifier() == null) {
+                        name = rightFirst.getText();
+                        
+                        if (!scope.hasVariable(name)) {
+                            ParserError.E0028.throwError("", rightFirst);
+                        }
+                    } else {
+                        ParserError.E0028.throwError("", highestIdentifierToken);
+                        return null;
+                    }
                 }
+    
+                CancelStatus cancelStatus = highestIdentifier == Identifier.STOP ? CancelStatus.STOP : CancelStatus.SKIP;
+                
+                return new RepeatStopOrSkipOperator(contanEngine, highestIdentifierToken, name, cancelStatus);
             }
         }
 

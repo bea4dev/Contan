@@ -1,6 +1,5 @@
 package org.contan_lang.syntax;
 
-import org.contan_lang.syntax.parser.environment.ScopeType;
 import org.jetbrains.annotations.Nullable;
 
 public enum Identifier {
@@ -15,6 +14,8 @@ public enum Identifier {
     BLOCK_END(0, true, "}"),
     BLOCK_OPERATOR_START(0, true, "("),
     BLOCK_OPERATOR_END(0, true, ")"),
+    BLOCK_GET_START(0, true, "["),
+    BLOCK_GET_END(0, true, "]"),
     DEFINE_VARIABLE(11, false, "data"),
     RETURN(12, false, "return"),
     STOP(12, false, "stop", "break"),

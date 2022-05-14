@@ -1,5 +1,7 @@
 package org.contan_lang.thread;
 
+import org.contan_lang.ContanEngine;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -20,5 +22,7 @@ public interface ContanThread {
     <T> Future<T> scheduleTask(Callable<T> task);
 
     boolean shutdownWithAwait(long timeout, TimeUnit timeUnit) throws InterruptedException;
+    
+    ContanEngine getContanEngine();
     
 }

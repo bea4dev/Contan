@@ -13,7 +13,7 @@ public enum ParserError {
     E0005(ParserExceptions.UNEXPECTED_SYNTAX, "Functions can only be defined within the module or class scope."),
     E0006(ParserExceptions.UNEXPECTED_SYNTAX, "Initializers can only be defined within the module or class scope."),
     E0007(ParserExceptions.UNEXPECTED_SYNTAX, "A variable name was expected, but a reserved word was specified."),
-    E0008(ParserExceptions.UNEXPECTED_SYNTAX, "Invalid syntax. Variable names are contiguous."),
+    E0008(ParserExceptions.UNEXPECTED_SYNTAX, "Invalid expression syntax."),
     E0009(ParserExceptions.UNEXPECTED_SYNTAX, "Expressions cannot be written to the left of variable declarations."),
     E0010(ParserExceptions.UNEXPECTED_SYNTAX, "Reserved words are not allowed in variable names."),
     E0011(ParserExceptions.UNEXPECTED_SYNTAX, "It is an incomplete substitution expression."),
@@ -30,7 +30,11 @@ public enum ParserError {
     E0023(ParserExceptions.UNEXPECTED_SYNTAX, "An expression or block is required to the right of the 'async' or 'sync' keyword."),
     E0024(ParserExceptions.UNEXPECTED_SYNTAX, "The execution part of the async or sync expressions must be enclosed in a block."),
     E0025(ParserExceptions.UNEXPECTED_SYNTAX, "On the right side, an expression is needed."),
-    E0026(ParserExceptions.UNEXPECTED_SYNTAX, "Variable names cannot contain '#'.");
+    E0026(ParserExceptions.UNEXPECTED_SYNTAX, "Variable names cannot contain '#'."),
+    E0027(ParserExceptions.UNEXPECTED_SYNTAX, "Only the label name can be written to the right of the loop control keyword."),
+    E0028(ParserExceptions.UNEXPECTED_SYNTAX, "The specified label name cannot be found."),
+    E0029(ParserExceptions.UNEXPECTED_SYNTAX, "A key is required in the '[]' operator."),
+    E0030(ParserExceptions.UNEXPECTED_SYNTAX, "Expressions cannot be written on the right side of the '[]' operator.");
 
     private final ParserExceptions parserExceptions;
 

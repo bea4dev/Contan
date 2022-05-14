@@ -6,15 +6,15 @@ import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 
-public class ContanInteger extends ContanPrimitiveObject<Long> {
+public class ContanI64 extends ContanPrimitiveObject<Long> {
     
-    public ContanInteger(ContanEngine contanEngine, Long based) {
+    public ContanI64(ContanEngine contanEngine, Long based) {
         super(contanEngine, based);
     }
     
     @Override
     public ContanObject<Long> createClone() {
-        return new ContanInteger(contanEngine, based);
+        return new ContanI64(contanEngine, based);
     }
     
     @Override
