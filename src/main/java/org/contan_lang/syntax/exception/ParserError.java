@@ -26,15 +26,16 @@ public enum ParserError {
     E0019(ParserExceptions.UNEXPECTED_SYNTAX, "Cannot write an expression on the left side of return."),
     E0020(ParserExceptions.UNEXPECTED_SYNTAX, "The control expression or the expression around it is incorrect."),
     E0021(ParserExceptions.UNEXPECTED_SYNTAX, "To the right of the 'function' keyword must be an argument and an expression block."),
-    E0022(ParserExceptions.UNEXPECTED_SYNTAX, "The expression cannot be written to the left of the 'async' or 'sync' keyword."),
-    E0023(ParserExceptions.UNEXPECTED_SYNTAX, "An expression or block is required to the right of the 'async' or 'sync' keyword."),
-    E0024(ParserExceptions.UNEXPECTED_SYNTAX, "The execution part of the async or sync expressions must be enclosed in a block."),
+    E0022(ParserExceptions.UNEXPECTED_SYNTAX, "The expression cannot be written to the left of the 'async', 'sync' or 'delay' keyword."),
+    E0023(ParserExceptions.UNEXPECTED_SYNTAX, "An expression or block is required to the right of the 'async', 'sync' or 'delay' keyword."),
+    E0024(ParserExceptions.UNEXPECTED_SYNTAX, "The execution part of the 'async', 'sync' or 'delay' expressions must be enclosed in a block."),
     E0025(ParserExceptions.UNEXPECTED_SYNTAX, "On the right side, an expression is needed."),
     E0026(ParserExceptions.UNEXPECTED_SYNTAX, "Variable names cannot contain '#'."),
     E0027(ParserExceptions.UNEXPECTED_SYNTAX, "Only the label name can be written to the right of the loop control keyword."),
     E0028(ParserExceptions.UNEXPECTED_SYNTAX, "The specified label name cannot be found."),
     E0029(ParserExceptions.UNEXPECTED_SYNTAX, "A key is required in the '[]' operator."),
-    E0030(ParserExceptions.UNEXPECTED_SYNTAX, "Expressions cannot be written on the right side of the '[]' operator.");
+    E0030(ParserExceptions.UNEXPECTED_SYNTAX, "Expressions cannot be written on the right side of the '[]' operator."),
+    E0031(ParserExceptions.UNEXPECTED_SYNTAX, "The number of ticks to delay must be specified to the right of the 'delay' keyword.");
 
     private final ParserExceptions parserExceptions;
 

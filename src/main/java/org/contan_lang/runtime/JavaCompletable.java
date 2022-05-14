@@ -56,7 +56,7 @@ public class JavaCompletable {
             }
 
             environment.setReturnValue(null);
-            returnEnv.reRun();
+            returnEnv.rerun();
         }
     }
 

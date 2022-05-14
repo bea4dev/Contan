@@ -7,10 +7,6 @@ import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanClassInstance;
-import org.contan_lang.variables.primitive.ContanYieldObject;
-
-import java.util.function.Consumer;
 
 public class AsyncTaskOperator extends TaskOperator {
     
@@ -19,7 +15,7 @@ public class AsyncTaskOperator extends TaskOperator {
     }
     
     @Override
-    public ContanClassInstance runTask(Environment environment) {
+    public ContanObject<?> runTask(Environment environment) {
         CoroutineStatus coroutineStatus = environment.getCoroutineStatus(this);
 
         Environment newEnvironment;
@@ -28,11 +24,11 @@ public class AsyncTaskOperator extends TaskOperator {
             ContanThread asyncThread = contanEngine.getNextAsyncThread();
 
             newEnvironment = new Environment(contanEngine, environment, asyncThread, operators[0], true);
-            newEnvironment.reRun();
+            newEnvironment.rerun();
 
             environment.setCoroutineStatus(this, 0, newEnvironment.getCompletable().getContanInstance());
         } else {
-            return (ContanClassInstance) coroutineStatus.results[0];
+            return coroutineStatus.results[0];
         }
         
         return newEnvironment.getCompletable().getContanInstance();

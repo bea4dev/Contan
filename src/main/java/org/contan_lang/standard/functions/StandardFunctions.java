@@ -14,6 +14,7 @@ public class StandardFunctions {
         FUNCTIONS.put("print", new Print(null, new Token(null, "print", 5, null, null), null));
         FUNCTIONS.put("importJava", new ImportJava(null, new Token(null, "importJava", 10, null, null), null));
         FUNCTIONS.put("list", new List(null, new Token(null, "list", 4, null, null), null));
+        FUNCTIONS.put("importModule", new ImportModule(null, new Token(null, "importModule", 12, null, null), null));
     }
     
 }

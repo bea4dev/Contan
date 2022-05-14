@@ -135,8 +135,8 @@ public class Parser {
                         ClassBlock classBlock = new ClassBlock(classNameToken, moduleName + "." + classNameToken.getText(), moduleEnvironment, args.toArray(new Token[0]));
 
                         classFunctionBlocks.forEach(classBlock::addFunctionBlock);
-                        classInitializers.forEach(classBlock::addInitializer);
                         classBlock.addInitializer(blockEval);
+                        classInitializers.forEach(classBlock::addInitializer);
                         contanEngine.addClassBlock(classBlock);
                         classFunctionBlocks.clear();
                         classInitializers.clear();
@@ -477,6 +477,8 @@ public class Parser {
                     Evaluator set = parseExpression(scope, rightTokenList);
                     
                     return new Expressions(define, set);
+                } else {
+                    return new CreateVariableOperator(contanEngine, rightTokenList.get(0));
                 }
             }
             
@@ -700,8 +702,6 @@ public class Parser {
 
                 if (rightTokenList.get(0) instanceof BlockToken) {
                     right = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(0)).tokens);
-                } else if (rightTokenList.get(0).getIdentifier() == Identifier.BLOCK_START) {
-                    right = parseBlock(newScope, null, ParserUtil.getNestedToken(rightTokenList, 0, Identifier.BLOCK_START, Identifier.BLOCK_END, false, true));
                 } else {
                     ParserError.E0024.throwError("", highestIdentifierToken);
                     return null;
@@ -740,14 +740,57 @@ public class Parser {
 
                 if (rightTokenList.get(index) instanceof BlockToken) {
                     right = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(index)).tokens);
-                } else if (rightTokenList.get(index).getIdentifier() == Identifier.BLOCK_START) {
-                    right = parseBlock(newScope, null, ParserUtil.getNestedToken(rightTokenList, index, Identifier.BLOCK_START, Identifier.BLOCK_END, false, true));
                 } else {
                     ParserError.E0024.throwError("", highestIdentifierToken);
                     return null;
                 }
 
                 return new SyncTaskOperator(contanEngine, highestIdentifierToken, thread, right);
+            }
+            
+            case DELAY: {
+                if (leftTokenList.size() != 0) {
+                    ParserError.E0022.throwError("", highestIdentifierToken);
+                }
+    
+                if (rightTokenList.size() == 0) {
+                    ParserError.E0031.throwError("", highestIdentifierToken);
+                }
+    
+                Scope newScope = new Scope(scope.getRootName() + ".sync", scope, ScopeType.FUNCTION);
+    
+                int index = 0;
+                boolean hasBlock = false;
+                for (Token token : rightTokenList) {
+                    if (token instanceof BlockToken || token.getIdentifier() == Identifier.BLOCK_START) {
+                        hasBlock = true;
+                        break;
+                    }
+        
+                    index++;
+                }
+    
+                List<Token> delayTicksToken = rightTokenList.subList(0, index);
+                if (delayTicksToken.size() == 0) {
+                    ParserError.E0031.throwError("", highestIdentifierToken);
+                }
+                
+                Evaluator delayTicks = parseExpression(scope, delayTicksToken);
+    
+                if (hasBlock) {
+                    Evaluator right;
+    
+                    if (rightTokenList.get(index) instanceof BlockToken) {
+                        right = parseBlock(newScope, null, ((BlockToken) rightTokenList.get(index)).tokens);
+                    } else {
+                        ParserError.E0024.throwError("", highestIdentifierToken);
+                        return null;
+                    }
+    
+                    return new DelayTaskOperator(contanEngine, highestIdentifierToken, delayTicks, right);
+                } else {
+                    return new DelayOperator(contanEngine, highestIdentifierToken, delayTicks);
+                }
             }
             
             //Pattern of "data func = function() {/*do something*/}"

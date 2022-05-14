@@ -35,7 +35,9 @@ public enum ContanRuntimeError {
     E0027(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Failed to insert into java array.%s"),
     E0028(ContanRuntimeExceptions.INVALID_TYPE, "Cannot use anything other than an integer to specify the array index."),
     E0029(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Array length cannot have negative values."),
-    E0030(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "The index must be less than or equal to '" + Integer.MAX_VALUE + "'.");
+    E0030(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "The index must be less than or equal to '" + Integer.MAX_VALUE + "'."),
+    E0031(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "The task delay time must be specified as an integer."),
+    E0032(ContanRuntimeExceptions.CONTAN_RUNTIME_EXCEPTION, "Task delay is valid only for tick-based threads.");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

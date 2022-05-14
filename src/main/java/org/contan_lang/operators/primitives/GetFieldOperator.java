@@ -34,8 +34,9 @@ public class GetFieldOperator extends Operator {
             return ContanYieldObject.INSTANCE;
         }
         
+        Object left = leftResult.getBasedJavaObject();
 
-        if (leftResult instanceof JavaClassObject) {
+        if (left instanceof JavaClassObject) {
             Class<?> clazz = (Class<?>) leftResult.getBasedJavaObject();
             //Get static field
             try {

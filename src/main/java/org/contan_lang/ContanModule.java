@@ -10,6 +10,7 @@ import org.contan_lang.evaluators.FunctionInvokable;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanClassObject;
 import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 
@@ -54,6 +55,7 @@ public class ContanModule implements FunctionInvokable {
 
         for (ClassBlock classBlock : classBlocks) {
             classBlockMap.put(classBlock.getClassName().getText(), classBlock);
+            moduleEnvironment.createVariable(classBlock.getClassName().getText(), new ContanClassObject(contanEngine, classBlock));
         }
     }
 

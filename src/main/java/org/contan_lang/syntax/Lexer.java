@@ -122,13 +122,11 @@ public class Lexer {
                         if (identifier == Identifier.DOT) {
                             if (i != 0) {
                                 if (Character.isDigit(text.charAt(i - 1))) {
-                                    continue;
-                                }
-                            }
-
-                            if (i != textLength - 1) {
-                                if (Character.isDigit(text.charAt(i + 1))) {
-                                    continue;
+                                    if (i != textLength - 1) {
+                                        if (Character.isDigit(text.charAt(i + 1))) {
+                                            continue;
+                                        }
+                                    }
                                 }
                             }
                         }

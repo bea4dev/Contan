@@ -10,7 +10,6 @@ import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.runtime.JavaCompletable;
-import org.contan_lang.standard.classes.Completable;
 import org.contan_lang.standard.classes.StandardClasses;
 import org.contan_lang.standard.functions.StandardFunctions;
 import org.contan_lang.syntax.exception.ContanParseException;
@@ -84,12 +83,13 @@ public class PreLinkedFunctionOperator extends Operator {
         ContanObject<?>[] variables = new ContanObject<?>[args.length];
     
         if (coroutineStatus != null) {
+            startIndex = (int) coroutineStatus.count;
+            
             //Cached return value
             if (startIndex == args.length) {
                 return coroutineStatus.results[0];
             }
-
-            startIndex = (int) coroutineStatus.count;
+            
             System.arraycopy(coroutineStatus.results, 0, variables, 0, startIndex);
         }
     
@@ -175,7 +175,12 @@ public class PreLinkedFunctionOperator extends Operator {
             }
         }
         
-        return leftResult.invokeFunction(contanThread, functionName, variables);
+        ContanObject<?> returned = leftResult.invokeFunction(contanThread, functionName, variables);
+        //Cache returned Completable
+        if (returned.getBasedJavaObject() == StandardClasses.COMPLETABLE) {
+            environment.setCoroutineStatus(this, args.length, returned);
+        }
+        return returned;
     }
     
 }

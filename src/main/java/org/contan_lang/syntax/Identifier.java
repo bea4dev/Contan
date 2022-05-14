@@ -22,6 +22,7 @@ public enum Identifier {
     SKIP(12, false, "skip", "continue"),
     ASYNC(3, false, "async"),
     SYNC(3, false, "sync"),
+    DELAY(3, false, "delay"),
     DOT(3, true, "."),
     OPERATOR_EQUAL(6, true, "=="),
     OPERATOR_AND(7, true, "&&"),

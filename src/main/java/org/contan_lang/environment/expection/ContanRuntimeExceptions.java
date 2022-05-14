@@ -12,7 +12,8 @@ public enum ContanRuntimeExceptions {
     JAVA_RUNTIME_ERROR(ContanJavaRuntimeException::new),
     ARGUMENT_NOT_MATCH(ContanJavaRuntimeException::new),
     FUNCTION_NOT_FOUND(ContanRuntimeException::new),
-    ACCESS_ERROR(ContanJavaRuntimeException::new);
+    ACCESS_ERROR(ContanJavaRuntimeException::new),
+    CONTAN_RUNTIME_EXCEPTION(ContanRuntimeException::new);
     
     private final CreateExceptionFunction createExceptionFunction;
     

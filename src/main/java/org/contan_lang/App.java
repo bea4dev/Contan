@@ -30,29 +30,55 @@ public class App
         
         
         
-        String test = "\n" +
+        String test1 = "\n" +
+                "import Thread = importJava(\"java.lang.Thread\")\n" +
+                "import TestModule2 = importModule(\"test/TestModule2.cntn\")\n" +
+                "import TestClass = TestModule2.TestClass\n" +
+                "\n" +
+                "data instance = new TestClass(20, 500)\n" +
+                "data text = instance.test(10).await()\n" +
+                "\n" +
+                "print(text)\n" +
+                "\n" +
+                "function test(s) {\n" +
+                "    return async {\n" +
+                "        Thread.sleep(1000)\n" +
+                "        print(\"Complete!\")\n" +
+                "        return \"ASYNC!!\"\n" +
+                "    }\n" +
+                "}\n" +
+                "\n";
+        
+        String test2 = "\n" +
                 "import Thread = importJava(\"java.lang.Thread\")\n" +
                 "\n" +
-                "async {\n" +
-                "    Thread.sleep(1000)\n" +
+                "class TestClass(i, j) {\n" +
                 "    \n" +
-                "    return \"TEST!!\"\n" +
-                "}.then(result => {\n" +
-                "    \n" +
-                "    if (@CURRENT_THREAD == @MAIN_THREAD) {\n" +
-                "        print(\"MAIN THREAD!!\")\n" +
+                "    data sum\n" +
+                "\n" +
+                "    initialize {\n" +
+                "        sum = i + j\n" +
                 "    }\n" +
-                "    \n" +
-                "    print(result)\n" +
-                "})";
+                "\n" +
+                "    function test(t) {\n" +
+                "        return async {\n" +
+                "            Thread.sleep(1000)\n" +
+                "            \n" +
+                "            return \"Result is \" + (sum + t)\n" +
+                "        }\n" +
+                "    }\n" +
+                "\n" +
+                "}";
 
 
         ContanEngine contanEngine = new ContanEngine();
-        Parser parser = new Parser("test", contanEngine, test);
 
         try {
-            ContanModule contanModule = parser.compile();
-            contanModule.eval();
+            ContanModule module1 = contanEngine.compile("test/TestModule1.cntn", test1);
+            ContanModule module2 = contanEngine.compile("test/TestModule2.cntn", test2);
+            
+            module2.eval();
+            module1.eval();
             
         } catch (ContanParseException | ExecutionException | InterruptedException e) {
             e.printStackTrace();

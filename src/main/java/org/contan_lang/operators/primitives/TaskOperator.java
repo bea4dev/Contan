@@ -19,6 +19,6 @@ public abstract class TaskOperator extends Operator {
         return runTask(environment);
     }
     
-    public abstract ContanClassInstance runTask(Environment environment);
+    public abstract ContanObject<?> runTask(Environment environment);
     
 }
