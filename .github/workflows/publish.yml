@@ -21,6 +21,6 @@ jobs:
         run: mvn -B package --file pom.xml
 
       - name: Publish a package
-        run: mvn -B -s $GITHUB_WORKSPACE/settings.xml clean deploy --batch-mode --no-transfer-progress
+        run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mvn -B -s $GITHUB_WORKSPACE/settings.xml clean deploy --batch-mode --no-transfer-progress
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
