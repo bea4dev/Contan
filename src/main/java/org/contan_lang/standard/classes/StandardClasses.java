@@ -34,6 +34,6 @@ public class StandardClasses {
         }
     };
 
-    public static ClassBlock COMPLETABLE = new Completable(null, "standard.Completable", new Environment(null, null, EMPTY_THREAD));
+    public static ClassBlock COMPLETABLE = new Completable(null, "standard.Completable", new Environment(null, null, EMPTY_THREAD), null);
 
 }

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ContanModule implements FunctionInvokable {
     
@@ -67,8 +68,29 @@ public class ContanModule implements FunctionInvokable {
 
     public Environment getModuleEnvironment() {return moduleEnvironment;}
     
-    public ContanObject<?> eval() throws ExecutionException, InterruptedException {
-        return contanEngine.getMainThread().runTaskImmediately(() -> {
+    
+    private boolean initialized = false;
+    
+    private final ReentrantLock INITIALIZE_LOCK = new ReentrantLock(true);
+    
+    public void initialize() throws ExecutionException, InterruptedException {
+        try {
+            INITIALIZE_LOCK.lock();
+            
+            if (initialized) {
+                return;
+            }
+            initialized = true;
+        } finally {
+            INITIALIZE_LOCK.unlock();
+        }
+        
+        //Eval class extends
+        for (ClassBlock classBlock : classBlocks) {
+            classBlock.evalSuperClass(moduleEnvironment);
+        }
+        
+        contanEngine.getMainThread().runTaskImmediately(() -> {
             ContanObject<?> result = globalEvaluator.eval(moduleEnvironment);
 
             if (moduleEnvironment.hasReturnValue()) {

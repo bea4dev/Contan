@@ -13,6 +13,8 @@ import org.contan_lang.variables.primitive.ContanModuleObject;
 import org.contan_lang.variables.primitive.ContanString;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.ExecutionException;
+
 public class ImportModule extends FunctionBlock {
     
     public ImportModule(ContanEngine contanEngine, Token functionName, Evaluator evaluator, Token... args) {
@@ -34,6 +36,17 @@ public class ImportModule extends FunctionBlock {
         ContanEngine contanEngine = contanThread.getContanEngine();
         
         ContanModule contanModule = contanEngine.getModule((String) contanObjects[0].getBasedJavaObject());
+        
+        if (contanModule == null) {
+            ContanRuntimeError.E0033.throwError("", null, token);
+            return null;
+        }
+        
+        try {
+            contanModule.initialize();
+        } catch (ExecutionException | InterruptedException e) {
+            ContanRuntimeError.E0034.throwError("", e, token);
+        }
         return new ContanModuleObject(contanEngine, contanModule);
     }
 }

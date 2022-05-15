@@ -97,7 +97,7 @@ public class Environment {
             return;
         }
         
-        completable.complete(contanThread, result);
+        completable.complete(result);
     }
     
     public void rerun() {

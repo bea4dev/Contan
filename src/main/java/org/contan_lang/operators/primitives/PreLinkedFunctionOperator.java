@@ -165,12 +165,25 @@ public class PreLinkedFunctionOperator extends Operator {
     
                 JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
     
-                if (javaCompletable.isDone()) {
-                    return javaCompletable.getResult();
-                } else {
-                    javaCompletable.addAwaitEnvironment(environment);
+                try {
+                    javaCompletable.LOCK.lock();
+                    
+                    if (javaCompletable.isDone()) {
+                        //Reset the return value later.
+                        environment.getContanThread().scheduleTask(() -> {
+                            environment.setReturnValue(null);
+                            return null;
+                        });
+                        //Rerun later
+                        environment.rerun();
+                        environment.setCoroutineStatus(this, args.length, javaCompletable.getResult());
+                    } else {
+                        javaCompletable.addAwaitEnvironment(environment);
+                    }
                     environment.setReturnValue(ContanYieldObject.INSTANCE);
                     return ContanYieldObject.INSTANCE;
+                } finally {
+                    javaCompletable.LOCK.unlock();
                 }
             }
         }

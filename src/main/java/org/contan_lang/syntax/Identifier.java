@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 public enum Identifier {
     EXPRESSION_SPLIT(1, true, "\n", ";"),
     CLASS(13, false, "class"),
+    EXTENDS(13, false, "extends"),
     INITIALIZE(14, false, "initialize"),
     FUNCTION(8, false, "function"),
     IF(13, false, "if"),

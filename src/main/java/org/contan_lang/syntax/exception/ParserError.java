@@ -35,7 +35,9 @@ public enum ParserError {
     E0028(ParserExceptions.UNEXPECTED_SYNTAX, "The specified label name cannot be found."),
     E0029(ParserExceptions.UNEXPECTED_SYNTAX, "A key is required in the '[]' operator."),
     E0030(ParserExceptions.UNEXPECTED_SYNTAX, "Expressions cannot be written on the right side of the '[]' operator."),
-    E0031(ParserExceptions.UNEXPECTED_SYNTAX, "The number of ticks to delay must be specified to the right of the 'delay' keyword.");
+    E0031(ParserExceptions.UNEXPECTED_SYNTAX, "The number of ticks to delay must be specified to the right of the 'delay' keyword."),
+    E0032(ParserExceptions.UNEXPECTED_SYNTAX, "Only class 'extends' expressions can be described on the right side of the class definition.");
+    
 
     private final ParserExceptions parserExceptions;
 

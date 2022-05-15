@@ -124,15 +124,32 @@ public class Parser {
                         if (scope.getScopeType() != ScopeType.MODULE) {
                             ParserError.E0004.throwError("", first);
                         }
+                        
+                        
+                        List<Token> argumentTokens = ParserUtil.getNestedToken(firstTokens, 2, Identifier.BLOCK_OPERATOR_START, Identifier.BLOCK_OPERATOR_END, true, false);
+                        int index = 2 + argumentTokens.size();
+                        
+                        Evaluator superClassEval = null;
+                        if (firstTokens.size() > index + 1) {
+                            Token extendsToken = firstTokens.get(index);
+                            List<Token> superClassTokens = firstTokens.subList(index + 1, firstTokens.size());
+                            
+                            if (extendsToken.getIdentifier() != Identifier.EXTENDS) {
+                                ParserError.E0032.throwError("", extendsToken);
+                                return null;
+                            }
+                            
+                            superClassEval = parseExpression(scope, superClassTokens);
+                        }
 
-                        List<Token> args = ParserUtil.getDefinedArguments(firstTokens.subList(2, firstTokens.size()));
+                        List<Token> args = ParserUtil.getDefinedArguments(argumentTokens);
 
                         Scope classScope = new Scope(moduleName + "." + classNameToken.getText(), scope, ScopeType.CLASS);
                         args.forEach(token -> classScope.addVariable(token.getText()));
 
                         Evaluator blockEval = parseBlock(classScope, null, blockTokens);
 
-                        ClassBlock classBlock = new ClassBlock(classNameToken, moduleName + "." + classNameToken.getText(), moduleEnvironment, args.toArray(new Token[0]));
+                        ClassBlock classBlock = new ClassBlock(classNameToken, moduleName + "." + classNameToken.getText(), moduleEnvironment, superClassEval, args.toArray(new Token[0]));
 
                         classFunctionBlocks.forEach(classBlock::addFunctionBlock);
                         classBlock.addInitializer(blockEval);

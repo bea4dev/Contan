@@ -4,6 +4,7 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.ClassBlock;
+import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.runtime.ContanObjectList;
 import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.runtime.JavaCompletable;
@@ -14,8 +15,8 @@ import org.contan_lang.variables.primitive.*;
 
 public class Completable extends ClassBlock {
     
-    public Completable(Token className, String classPath, Environment moduleEnvironment, Token... initializeArgs) {
-        super(className, classPath, moduleEnvironment, initializeArgs);
+    public Completable(Token className, String classPath, Environment moduleEnvironment, Evaluator superClassEval, Token... initializeArgs) {
+        super(className, classPath, moduleEnvironment, superClassEval, initializeArgs);
     }
     
     @Override
@@ -60,7 +61,18 @@ public class Completable extends ClassBlock {
                 }
                 
                 JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
-                javaCompletable.addThen(new JavaCompletable.FunctionExpressionWithThread(contanThread, functionExpression));
+                
+                try {
+                    javaCompletable.LOCK.lock();
+                    
+                    if (javaCompletable.isDone()){
+                        functionExpression.eval(contanThread, functionName, javaCompletable.getResult());
+                    } else {
+                        javaCompletable.addThen(new JavaCompletable.FunctionExpressionWithThread(contanThread, functionExpression));
+                    }
+                } finally {
+                    javaCompletable.LOCK.unlock();
+                }
                 
                 return ContanVoidObject.INSTANCE;
             }
@@ -94,7 +106,18 @@ public class Completable extends ClassBlock {
                 }
     
                 JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
-                javaCompletable.addCatch(new JavaCompletable.FunctionExpressionWithThread(contanThread, functionExpression));
+    
+                try {
+                    javaCompletable.LOCK.lock();
+        
+                    if (javaCompletable.isDone()){
+                        functionExpression.eval(contanThread, functionName, javaCompletable.getResult());
+                    } else {
+                        javaCompletable.addCatch(new JavaCompletable.FunctionExpressionWithThread(contanThread, functionExpression));
+                    }
+                } finally {
+                    javaCompletable.LOCK.unlock();
+                }
                 
                 return ContanVoidObject.INSTANCE;
             }
@@ -128,7 +151,7 @@ public class Completable extends ClassBlock {
 
                 JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
 
-                javaCompletable.complete(contanThread, variables[0]);
+                javaCompletable.complete(variables[0]);
                 return ContanVoidObject.INSTANCE;
             }
             

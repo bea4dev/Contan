@@ -1,13 +1,8 @@
 package org.contan_lang;
 
-import org.contan_lang.syntax.Lexer;
 import org.contan_lang.syntax.exception.ContanParseException;
-import org.contan_lang.syntax.parser.Parser;
-import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -62,10 +57,10 @@ public class App
                 "\n" +
                 "    function test(t) {\n" +
                 "        return async {\n" +
-                "            Thread.sleep(1000)\n" +
+                "            \n" +
                 "            \n" +
                 "            return \"Result is \" + (sum + t)\n" +
-                "        }\n" +
+                "        }.await()\n" +
                 "    }\n" +
                 "\n" +
                 "}";
@@ -77,8 +72,8 @@ public class App
             ContanModule module1 = contanEngine.compile("test/TestModule1.cntn", test1);
             ContanModule module2 = contanEngine.compile("test/TestModule2.cntn", test2);
             
-            module2.eval();
-            module1.eval();
+            module2.initialize();
+            module1.initialize();
             
         } catch (ContanParseException | ExecutionException | InterruptedException e) {
             e.printStackTrace();

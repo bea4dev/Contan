@@ -3,11 +3,14 @@ package org.contan_lang.evaluators;
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
+import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanClassInstance;
+import org.contan_lang.variables.primitive.ContanClassObject;
 import org.contan_lang.variables.primitive.ContanVoidObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -22,15 +25,20 @@ public class ClassBlock {
     private final Map<String, List<FunctionBlock>> functionMap;
 
     private final Token[] initializeArgs;
+    
+    private ClassBlock superClass = null;
+    
+    private final Evaluator superClassEval;
 
     private final Environment moduleEnvironment;
 
-    public ClassBlock(Token className, String classPath, Environment moduleEnvironment, Token... initializeArgs) {
+    public ClassBlock(Token className, String classPath, Environment moduleEnvironment, @Nullable Evaluator superClassEval, Token... initializeArgs) {
         this.className = className;
         this.classPath = classPath;
         this.initializers = new ArrayList<>();
         this.initializeArgs = initializeArgs;
         this.moduleEnvironment = moduleEnvironment;
+        this.superClassEval = superClassEval;
         this.functionMap = new HashMap<>();
     }
 
@@ -41,6 +49,22 @@ public class ClassBlock {
     public Token[] getInitializeArgs() {return initializeArgs;}
 
     public void addInitializer(Evaluator initializers) {this.initializers.add(initializers);}
+    
+    public void evalSuperClass(Environment environment) {
+        if (superClassEval == null) {
+            return;
+        }
+        
+        ContanObject<?> extendsResult = superClassEval.eval(environment);
+        extendsResult = ContanRuntimeUtil.removeReference(className, extendsResult);
+        
+        if (!(extendsResult.getBasedJavaObject() instanceof ClassBlock)) {
+            ContanRuntimeError.E0035.throwError("", null, className);
+            return;
+        }
+        
+        this.superClass = (ClassBlock) extendsResult.getBasedJavaObject();
+    }
 
     public void addFunctionBlock(FunctionBlock functionBlock) {
         List<FunctionBlock> functions = functionMap.computeIfAbsent(functionBlock.getFunctionName().getText(), k -> new ArrayList<>());
@@ -66,11 +90,13 @@ public class ClassBlock {
     }
 
 
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, Token functionName, boolean ignoreNotFound, ContanObject<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName.getText());
         if (functions == null) {
-            ContanRuntimeError.E0011.throwError("", null, functionName);
-            return null;
+            if (!ignoreNotFound){
+                ContanRuntimeError.E0011.throwError("", null, functionName);
+            }
+            return ContanVoidObject.INSTANCE;
         }
 
         for (FunctionBlock functionBlock : functions) {
@@ -78,9 +104,15 @@ public class ClassBlock {
                 return functionBlock.eval(classInstanceEnvironment, functionName, contanThread, variables);
             }
         }
+        
+        if (superClass != null) {
+            return superClass.invokeFunction(contanThread, classInstanceEnvironment, functionName, ignoreNotFound, variables);
+        }
     
-        ContanRuntimeError.E0011.throwError("", null, functionName);
-        return null;
+        if (!ignoreNotFound){
+            ContanRuntimeError.E0011.throwError("", null, functionName);
+        }
+        return ContanVoidObject.INSTANCE;
     }
 
 }

@@ -8,6 +8,7 @@ import org.contan_lang.variables.primitive.ContanFunctionExpression;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class JavaCompletable {
     
@@ -22,6 +23,8 @@ public class JavaCompletable {
     private ContanObject<?> result = null;
     
     private final List<Environment> awaitEnvironmentList = new ArrayList<>();
+    
+    public final ReentrantLock LOCK = new ReentrantLock(true);
     
     public JavaCompletable(ContanClassInstance completable) {
         this.completable = completable;
@@ -39,24 +42,29 @@ public class JavaCompletable {
     
     public boolean isDone() {return isDone;}
     
-    public void complete(ContanThread contanThread, ContanObject<?> result) {
-        this.result = result;
-        isDone = true;
-        
-        for (FunctionExpressionWithThread functionExpression : thenList) {
-            functionExpression.contanThread.scheduleTask(() ->
-                functionExpression.functionExpression.eval(functionExpression.contanThread, null, result)
-            );
-        }
-        
-        for (Environment environment : awaitEnvironmentList) {
-            Environment returnEnv = environment.getReturnEnvironment();
-            if (returnEnv == null) {
-                continue;
+    public void complete(ContanObject<?> result) {
+        try {
+            LOCK.lock();
+            this.result = result;
+            isDone = true;
+    
+            for (FunctionExpressionWithThread functionExpression : thenList) {
+                functionExpression.contanThread.scheduleTask(() ->
+                        functionExpression.functionExpression.eval(functionExpression.contanThread, null, result)
+                );
             }
-
-            environment.setReturnValue(null);
-            returnEnv.rerun();
+    
+            for (Environment environment : awaitEnvironmentList) {
+                Environment returnEnv = environment.getReturnEnvironment();
+                if (returnEnv == null) {
+                    continue;
+                }
+        
+                environment.setReturnValue(null);
+                returnEnv.rerun();
+            }
+        } finally {
+            LOCK.unlock();
         }
     }
 

@@ -37,7 +37,10 @@ public enum ContanRuntimeError {
     E0029(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Array length cannot have negative values."),
     E0030(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "The index must be less than or equal to '" + Integer.MAX_VALUE + "'."),
     E0031(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "The task delay time must be specified as an integer."),
-    E0032(ContanRuntimeExceptions.CONTAN_RUNTIME_EXCEPTION, "Task delay is valid only for tick-based threads.");
+    E0032(ContanRuntimeExceptions.CONTAN_RUNTIME_ERROR, "Task delay is valid only for tick-based threads."),
+    E0033(ContanRuntimeExceptions.ACCESS_ERROR, "The specified module cannot be found."),
+    E0034(ContanRuntimeExceptions.CONTAN_RUNTIME_ERROR, "Module initialization failed."),
+    E0035(ContanRuntimeExceptions.INVALID_TYPE, "It is trying to extend a non-class.");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;
