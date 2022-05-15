@@ -30,7 +30,7 @@ public class Completable extends ClassBlock {
     }
     
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, Token functionName, boolean ignoreNotFound, ContanObject<?>... variables) {
         switch (functionName.getText()) {
             case "then" : {
                 if (variables.length != 1) {
