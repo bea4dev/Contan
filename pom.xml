@@ -12,9 +12,9 @@
 
   <distributionManagement>
     <repository>
-      <id>github</id>
-      <name>Contan</name>
-      <url>https://maven.pkg.github.com/Be4rJP/Contan</url>
+      <id>internal.repo</id>
+      <name>Temporary Staging Repository</name>
+      <url>file://${project.build.directory}/mvn-repo</url>
     </repository>
   </distributionManagement>
 
@@ -91,7 +91,7 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
+        <artifactId>maven-javadoc-plugin</artifactId>
         <executions>
           <execution>
             <phase>package</phase>
@@ -102,14 +102,34 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+        <configuration>
+          <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version>0.12</version>
+        <configuration>
+          <message>Maven artifacts for ${project.version}</message>
+          <noJekyll>true</noJekyll>
+          <merge>true</merge>
+          <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
+          <branch>refs/heads/mvn-repo</branch>
+          <includes><include>**/*</include></includes>
+          <repositoryName>Contan</repositoryName>
+          <repositoryOwner>Be4rJP</repositoryOwner>
+          <!--suppress UnresolvedMavenProperty -->
+          <userName>${env.USER_NAME}</userName>
+        </configuration>
         <executions>
           <execution>
-            <phase>package</phase>
             <goals>
-              <goal>jar</goal>
+              <goal>site</goal>
             </goals>
+            <phase>deploy</phase>
           </execution>
         </executions>
       </plugin>
