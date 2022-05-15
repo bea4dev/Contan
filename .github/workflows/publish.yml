@@ -24,7 +24,7 @@ jobs:
           USER_NAME: ${{ inputs.username }}
 
       - name: Publish a package
-        run: mvn -B -s $GITHUB_WORKSPACE/settings.xml clean deploy --batch-mode --no-transfer-progress
+        run: mvn -B -s $GITHUB_WORKSPACE/settings.xml clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           USER_NAME: ${{ inputs.username }}

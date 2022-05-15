@@ -122,7 +122,7 @@
           <repositoryName>Contan</repositoryName>
           <repositoryOwner>Be4rJP</repositoryOwner>
           <!--suppress UnresolvedMavenProperty -->
-          <userName>${env.USER_NAME}</userName>
+          <userName>Be4rJP</userName>
         </configuration>
         <executions>
           <execution>
