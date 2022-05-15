@@ -19,8 +19,8 @@ public class StandardClasses {
         }
     
         @Override
-        public <T> Future<T> scheduleTask(Callable<T> task) {
-            return null;
+        public <T> void scheduleTask(Callable<T> task) {
+            return;
         }
 
         @Override

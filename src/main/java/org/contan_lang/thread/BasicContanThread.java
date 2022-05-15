@@ -24,8 +24,8 @@ public class BasicContanThread implements ContanThread {
     }
     
     @Override
-    public <T> Future<T> scheduleTask(Callable<T> task) {
-        return javaThread.submit(task);
+    public <T> void scheduleTask(Callable<T> task) {
+        javaThread.submit(task);
     }
 
     @Override
