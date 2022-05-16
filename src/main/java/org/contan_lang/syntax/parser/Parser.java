@@ -146,6 +146,7 @@ public class Parser {
 
                         Scope classScope = new Scope(moduleName + "." + classNameToken.getText(), scope, ScopeType.CLASS);
                         args.forEach(token -> classScope.addVariable(token.getText()));
+                        classScope.addVariable("this");
 
                         Evaluator blockEval = parseBlock(classScope, null, blockTokens);
 
@@ -575,6 +576,18 @@ public class Parser {
                 Evaluator right = parseExpression(scope, rightTokenList);
                 
                 return new SetValueOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+
+            //some instanceof Class
+            case INSTANCE_OF: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+
+                return new InstanceOfOperator(contanEngine, highestIdentifierToken, left, right);
             }
             
             //null

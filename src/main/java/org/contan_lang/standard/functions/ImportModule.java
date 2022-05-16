@@ -43,8 +43,8 @@ public class ImportModule extends FunctionBlock {
         }
         
         try {
-            contanModule.initialize();
-        } catch (ExecutionException | InterruptedException e) {
+            contanModule.initialize(contanThread);
+        } catch (Exception e) {
             ContanRuntimeError.E0034.throwError("", e, token);
         }
         return new ContanModuleObject(contanEngine, contanModule);

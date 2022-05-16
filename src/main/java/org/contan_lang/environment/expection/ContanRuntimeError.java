@@ -40,7 +40,9 @@ public enum ContanRuntimeError {
     E0032(ContanRuntimeExceptions.CONTAN_RUNTIME_ERROR, "Task delay is valid only for tick-based threads."),
     E0033(ContanRuntimeExceptions.ACCESS_ERROR, "The specified module cannot be found."),
     E0034(ContanRuntimeExceptions.CONTAN_RUNTIME_ERROR, "Module initialization failed."),
-    E0035(ContanRuntimeExceptions.INVALID_TYPE, "It is trying to extend a non-class.");
+    E0035(ContanRuntimeExceptions.INVALID_TYPE, "It is trying to extend a non-class."),
+    E0036(ContanRuntimeExceptions.INVALID_TYPE, ""),
+    E0037(ContanRuntimeExceptions.INVALID_TYPE, "");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

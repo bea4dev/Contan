@@ -26,23 +26,43 @@ public class App
         
         
         String test1 = "\n" +
-                "import Thread = importJava(\"java.lang.Thread\")\n" +
-                "import TestModule2 = importModule(\"test/TestModule2.cntn\")\n" +
-                "import TestClass = TestModule2.TestClass\n" +
-                "\n" +
                 "data instance = new TestClass(20, 500)\n" +
-                "data text = instance.test(10).await()\n" +
+                "instance.test()\n" +
                 "\n" +
-                "print(text)\n" +
-                "\n" +
-                "function test(s) {\n" +
-                "    return async {\n" +
-                "        Thread.sleep(1000)\n" +
-                "        print(\"Complete!\")\n" +
-                "        return \"ASYNC!!\"\n" +
-                "    }\n" +
+                "if (instance instanceof TestClass) {\n" +
+                "    print(\"This is TestClass!\")\n" +
                 "}\n" +
-                "\n";
+                "\n" +
+                "if (instance instanceof SuperClass) {\n" +
+                "    print(\"This is SuperClass!\")\n" +
+                "}\n" +
+                "\n" +
+                "if (instance instanceof T) {print(\"THIS IS T!?\")}\n" +
+                "\n" +
+                "class TestClass(i, j) extends SuperClass {\n" +
+                "    \n" +
+                "    function test() {\n" +
+                "        print(this.super(50))\n" +
+                "    }\n" +
+                "    \n" +
+                "}\n" +
+                "\n" +
+                "class T(){}\n" +
+                "\n" +
+                "\n" +
+                "class SuperClass(i) {\n" +
+                "    \n" +
+                "    data sum = i + 100\n" +
+                "    \n" +
+                "    initialize {\n" +
+                "        print(\"initialize with sum = \" + sum)\n" +
+                "    }\n" +
+                "    \n" +
+                "    function super(j) {\n" +
+                "        return sum + j\n" +
+                "    }\n" +
+                "    \n" +
+                "}";
         
         String test2 = "\n" +
                 "import Thread = importJava(\"java.lang.Thread\")\n" +
@@ -67,15 +87,16 @@ public class App
 
 
         ContanEngine contanEngine = new ContanEngine();
+        ContanThread mainThread = contanEngine.getMainThread();
 
         try {
             ContanModule module1 = contanEngine.compile("test/TestModule1.cntn", test1);
             ContanModule module2 = contanEngine.compile("test/TestModule2.cntn", test2);
             
-            module2.initialize();
-            module1.initialize();
+            //module2.initialize(mainThread);
+            module1.initialize(mainThread);
             
-        } catch (ContanParseException | ExecutionException | InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

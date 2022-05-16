@@ -49,7 +49,9 @@ public class ClassBlock {
     public Token[] getInitializeArgs() {return initializeArgs;}
 
     public void addInitializer(Evaluator initializers) {this.initializers.add(initializers);}
-    
+
+    public ClassBlock getSuperClass() {return superClass;}
+
     public void evalSuperClass(Environment environment) {
         if (superClassEval == null) {
             return;
@@ -74,6 +76,9 @@ public class ClassBlock {
     public ContanClassInstance createInstance(ContanEngine contanEngine, ContanThread contanThread, ContanObject<?>... contanObjects) {
         Environment environment = new Environment(contanEngine, moduleEnvironment, contanThread);
 
+        ContanClassInstance instance = new ContanClassInstance(contanEngine,this, environment);
+        environment.createConstVariable("this", instance);
+
         for (int i = 0; i < initializeArgs.length; i++) {
             if (i < contanObjects.length) {
                 environment.createVariable(initializeArgs[i].getText(), contanObjects[i]);
@@ -82,26 +87,44 @@ public class ClassBlock {
             }
         }
 
-        for (Evaluator evaluator : initializers) {
-            evaluator.eval(environment);
+
+        ClassBlock currentClass = this;
+        List<ClassBlock> initializeClasses = new ArrayList<>();
+        initializeClasses.add(this);
+
+        while (true) {
+            currentClass = currentClass.superClass;
+
+            if (currentClass == null) {
+                break;
+            }
+
+            initializeClasses.add(currentClass);
+        }
+        Collections.reverse(initializeClasses);
+
+        for (ClassBlock classBlock : initializeClasses) {
+            for (Evaluator evaluator : classBlock.initializers) {
+                evaluator.eval(environment);
+            }
         }
 
-        return new ContanClassInstance(contanEngine,this, environment);
+        return instance;
     }
 
 
     public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, Token functionName, boolean ignoreNotFound, ContanObject<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName.getText());
         if (functions == null) {
-            if (!ignoreNotFound){
+            if (!ignoreNotFound && superClass == null){
                 ContanRuntimeError.E0011.throwError("", null, functionName);
+                return ContanVoidObject.INSTANCE;
             }
-            return ContanVoidObject.INSTANCE;
-        }
-
-        for (FunctionBlock functionBlock : functions) {
-            if (functionBlock.getArgs().length == variables.length) {
-                return functionBlock.eval(classInstanceEnvironment, functionName, contanThread, variables);
+        } else {
+            for (FunctionBlock functionBlock : functions) {
+                if (functionBlock.getArgs().length == variables.length) {
+                    return functionBlock.eval(classInstanceEnvironment, functionName, contanThread, variables);
+                }
             }
         }
         
@@ -113,6 +136,28 @@ public class ClassBlock {
             ContanRuntimeError.E0011.throwError("", null, functionName);
         }
         return ContanVoidObject.INSTANCE;
+    }
+
+    public boolean hasFunction(String functionName, int variableLength) {
+        List<FunctionBlock> functions = functionMap.get(functionName);
+
+        if (functions == null) {
+            if (superClass == null) {
+                return false;
+            }
+        } else {
+            for (FunctionBlock functionBlock : functions) {
+                if (functionBlock.getArgs().length == variableLength) {
+                    return true;
+                }
+            }
+        }
+
+        if (superClass != null) {
+            return superClass.hasFunction(functionName, variableLength);
+        }
+
+        return false;
     }
 
 }

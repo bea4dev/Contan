@@ -5,6 +5,7 @@ import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.CoroutineStatus;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
+import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.operators.Operator;
@@ -118,7 +119,25 @@ public class PreLinkedFunctionOperator extends Operator {
             }
             return returned;
         }
-    
+
+
+        ContanObjectReference reference = environment.getVariable("this");
+        if (reference != null) {
+            ContanObject<?> classInstance = ContanRuntimeUtil.removeReference(functionName, reference);
+
+            if (!(classInstance instanceof ContanClassInstance)) {
+                ContanRuntimeError.E0000.throwError("\n'this' is not class instance.", null, functionName);
+                return null;
+            }
+
+            ContanClassInstance instance = (ContanClassInstance) classInstance;
+            ClassBlock classBlock = instance.getBasedJavaObject();
+
+            if (classBlock.hasFunction(functionName.getText(), variables.length)) {
+                return instance.invokeFunction(contanThread, functionName, variables);
+            }
+        }
+
 
         //For function or lambda expression
         if (left == null) {
@@ -187,7 +206,7 @@ public class PreLinkedFunctionOperator extends Operator {
                 }
             }
         }
-        
+
         ContanObject<?> returned = leftResult.invokeFunction(contanThread, functionName, variables);
         //Cache returned Completable
         if (returned.getBasedJavaObject() == StandardClasses.COMPLETABLE) {

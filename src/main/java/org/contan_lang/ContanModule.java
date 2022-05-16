@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -73,7 +74,7 @@ public class ContanModule implements FunctionInvokable {
     
     private final ReentrantLock INITIALIZE_LOCK = new ReentrantLock(true);
     
-    public void initialize() throws ExecutionException, InterruptedException {
+    public void initialize(ContanThread currentThread) throws Exception {
         try {
             INITIALIZE_LOCK.lock();
             
@@ -89,8 +90,9 @@ public class ContanModule implements FunctionInvokable {
         for (ClassBlock classBlock : classBlocks) {
             classBlock.evalSuperClass(moduleEnvironment);
         }
-        
-        contanEngine.getMainThread().runTaskImmediately(() -> {
+
+
+        Callable<?> initializeTask = () -> {
             ContanObject<?> result = globalEvaluator.eval(moduleEnvironment);
 
             if (moduleEnvironment.hasReturnValue()) {
@@ -98,7 +100,13 @@ public class ContanModule implements FunctionInvokable {
             } else {
                 return result;
             }
-        });
+        };
+
+        if (currentThread == contanEngine.getMainThread()) {
+            initializeTask.call();
+        } else {
+            contanEngine.getMainThread().runTaskImmediately(initializeTask);
+        }
     }
 
     @Override
