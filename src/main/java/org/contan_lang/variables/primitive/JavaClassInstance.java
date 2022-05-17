@@ -149,6 +149,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                     }
                 }
                 
+                method.setAccessible(true);
                 Object returned = method.invoke(based, convertedArgs);
                 if (returned == null) {
                     return ContanVoidObject.INSTANCE;
