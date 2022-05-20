@@ -26,43 +26,9 @@ public class App
         
         
         String test1 = "\n" +
-                "data instance = new TestClass(20, 500)\n" +
-                "instance.test()\n" +
+                "data list = list(\"test1\", \"test2\")\n" +
                 "\n" +
-                "if (instance instanceof TestClass) {\n" +
-                "    print(\"This is TestClass!\")\n" +
-                "}\n" +
-                "\n" +
-                "if (instance instanceof SuperClass) {\n" +
-                "    print(\"This is SuperClass!\")\n" +
-                "}\n" +
-                "\n" +
-                "if (instance instanceof T) {print(\"THIS IS T!?\")}\n" +
-                "\n" +
-                "class TestClass(i, j) extends SuperClass {\n" +
-                "    \n" +
-                "    function test() {\n" +
-                "        print(this.super(50))\n" +
-                "    }\n" +
-                "    \n" +
-                "}\n" +
-                "\n" +
-                "class T(){}\n" +
-                "\n" +
-                "\n" +
-                "class SuperClass(i) {\n" +
-                "    \n" +
-                "    data sum = i + 100\n" +
-                "    \n" +
-                "    initialize {\n" +
-                "        print(\"initialize with sum = \" + sum)\n" +
-                "    }\n" +
-                "    \n" +
-                "    function super(j) {\n" +
-                "        return sum + j\n" +
-                "    }\n" +
-                "    \n" +
-                "}";
+                "print(list[0] + \".\" + list[1])";
         
         String test2 = "\n" +
                 "import Thread = importJava(\"java.lang.Thread\")\n" +

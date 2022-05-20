@@ -46,22 +46,26 @@ public class Lexer {
                     String key = keyWord.toString();
                     
                     Token token = null;
-                    //Check identifier
-                    id : for (Identifier identifier : Identifier.values()) {
-                        for (String word : identifier.words) {
-                            if (word.equals(key)) {
-                                token = new Token(this, key, currentColumn, currentLineToken, identifier);
-                                break id;
+
+                    if (text.charAt(i - 1) == '"') {
+                        token = new StringToken(this, key, currentColumn, currentLineToken, null);
+                    }
+
+                    if (token == null) {
+                        //Check identifier
+                        id:
+                        for (Identifier identifier : Identifier.values()) {
+                            for (String word : identifier.words) {
+                                if (word.equals(key)) {
+                                    token = new Token(this, key, currentColumn, currentLineToken, identifier);
+                                    break id;
+                                }
                             }
                         }
                     }
                     
                     if (token == null) {
-                        if (text.charAt(i - 1) == '"') {
-                            token = new StringToken(this, key, currentColumn, currentLineToken, null);
-                        } else {
-                            token = new Token(this, key, currentColumn, currentLineToken, null);
-                        }
+                        token = new Token(this, key, currentColumn, currentLineToken, null);
                     }
                     
                     tokens.add(token);
