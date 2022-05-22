@@ -2,6 +2,7 @@ package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 
 import java.lang.reflect.Field;
@@ -27,6 +28,7 @@ public class ContanJavaBaseObjectReference extends ContanObjectReference {
 
     @Override
     public ContanObject<?> getContanObject() throws Exception {
-        return new JavaClassInstance(contanEngine, field.get(javaObject));
+        Object result = field.get(javaObject);
+        return new JavaClassInstance(contanEngine, result == null ? ContanVoidObject.INSTANCE : result);
     }
 }
