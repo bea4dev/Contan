@@ -17,7 +17,7 @@ public class IfEvaluator implements Evaluator {
     private final Evaluator termsEvaluator;
     private final Evaluator trueExpression;
     
-    private IfEvaluator linkedElseEvaluator = null;
+    private Evaluator linkedElseEvaluator = null;
     
     public IfEvaluator(ContanEngine contanEngine, Token token, Evaluator termsEvaluator, @Nullable Evaluator trueExpression) {
         this.contanEngine = contanEngine;
@@ -26,7 +26,7 @@ public class IfEvaluator implements Evaluator {
         this.trueExpression = trueExpression;
     }
     
-    public void setLinkedElseEvaluator(IfEvaluator linkedElseEvaluator) {
+    public void setLinkedElseEvaluator(Evaluator linkedElseEvaluator) {
         this.linkedElseEvaluator = linkedElseEvaluator;
     }
     

@@ -56,9 +56,9 @@ public class GetLinkedValueOperator extends Operator {
         Token lastToken = tokens[tokens.length - 1];
         
         if (left instanceof List) {
-            return new JavaListIndexReference(contanEngine, lastToken.getText(), ContanVoidObject.INSTANCE, (List<?>) left, toIndexInteger(key));
+            return new JavaListIndexReference(contanEngine, lastToken.getText(), ContanVoidObject.INSTANCE, (List<?>) left, toIndexInteger(key), tokens);
         } else if (left.getClass().isArray()) {
-            return new JavaArrayIndexReference(contanEngine, lastToken.getText(), ContanVoidObject.INSTANCE, left, toIndexInteger(key));
+            return new JavaArrayIndexReference(contanEngine, lastToken.getText(), ContanVoidObject.INSTANCE, left, toIndexInteger(key), tokens);
         }
         
         return null;

@@ -2,6 +2,7 @@ package org.contan_lang.runtime;
 
 import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.Environment;
+import org.contan_lang.environment.expection.ContanReferenceException;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
@@ -15,6 +16,8 @@ public class ContanRuntimeUtil {
         if (contanObject instanceof ContanObjectReference) {
             try {
                 contanObject = ((ContanObjectReference) contanObject).getContanObject();
+            } catch (ContanReferenceException e) {
+                throw e;
             } catch (Exception e) {
                 ContanRuntimeError.E0015.throwError("", e, operationToken);
             }
@@ -31,6 +34,8 @@ public class ContanRuntimeUtil {
             if (contanObject instanceof ContanObjectReference) {
                 try {
                     contanObjects[i] = ((ContanObjectReference) contanObject).getContanObject();
+                } catch (ContanReferenceException e) {
+                    throw e;
                 } catch (Exception e) {
                     ContanRuntimeError.E0015.throwError("", e, operationToken);
                 }

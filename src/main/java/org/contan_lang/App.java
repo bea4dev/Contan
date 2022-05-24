@@ -25,10 +25,18 @@ public class App
         
         
         
-        String test1 = "\n" +
-                "data list = list(\"test1\", \"test2\")\n" +
+        String test1 = "data a = 20 + 50\n" +
                 "\n" +
-                "print(list[0] + \".\" + list[1])";
+                "data term1 = async { a == 70 }\n" +
+                "data term2 = async { a == 100 }\n" +
+                "\n" +
+                "if (term1.await()) {\n" +
+                "    print(\"a == 70\")\n" +
+                "} else if (term2.await()) {\n" +
+                "    print(\"a == 100\")\n" +
+                "} else {\n" +
+                "    print(\"NOT ALL!!\")\n" +
+                "}";
         
         String test2 = "\n" +
                 "import Thread = importJava(\"java.lang.Thread\")\n" +

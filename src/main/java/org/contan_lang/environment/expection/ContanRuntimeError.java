@@ -42,7 +42,9 @@ public enum ContanRuntimeError {
     E0034(ContanRuntimeExceptions.CONTAN_RUNTIME_ERROR, "Module initialization failed."),
     E0035(ContanRuntimeExceptions.INVALID_TYPE, "It is trying to extend a non-class."),
     E0036(ContanRuntimeExceptions.INVALID_TYPE, ""),
-    E0037(ContanRuntimeExceptions.INVALID_TYPE, "");
+    E0037(ContanRuntimeExceptions.INVALID_TYPE, ""),
+    E0038(ContanRuntimeExceptions.INVALID_INDEX_OR_KEY, "%s"),
+    E0039(ContanRuntimeExceptions.INVALID_REFERENCE_VALUE, "%s");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

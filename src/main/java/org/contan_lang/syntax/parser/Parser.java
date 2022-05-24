@@ -215,6 +215,40 @@ public class Parser {
                         return ifEvaluator;
                     }
 
+                    case ELSE: {
+                        Scope ifScope = new Scope(scope.getRootName() + ".else", scope, ScopeType.FUNCTION);
+
+                        if (firstTokens.get(Math.min(1, firstTokens.size() - 1)).getIdentifier() == Identifier.IF) {
+                            Evaluator termsEval = parseBlock(ifScope, null, firstTokens.subList(2, firstTokens.size()));
+                            Evaluator blockEval = parseBlock(ifScope, null, blockTokens);
+
+                            IfEvaluator previousIf = scope.getPreviousIfEvaluator();
+
+                            IfEvaluator ifEvaluator = new IfEvaluator(contanEngine, first, termsEval, blockEval);
+                            scope.setPreviousIfEvaluator(ifEvaluator);
+
+                            if (previousIf == null) {
+                                ParserError.E0033.throwError("", first);
+                                return null;
+                            }
+
+                            previousIf.setLinkedElseEvaluator(ifEvaluator);
+                        } else {
+                            Evaluator blockEval = parseBlock(ifScope, null, blockTokens);
+
+                            IfEvaluator previousIf = scope.getPreviousIfEvaluator();
+                            if (previousIf == null) {
+                                ParserError.E0033.throwError("", first);
+                                return null;
+                            }
+
+                            previousIf.setLinkedElseEvaluator(blockEval);
+                            scope.setPreviousIfEvaluator(null);
+                        }
+
+                        return NullEvaluator.INSTANCE;
+                    }
+
                     case REPEAT: {
                         Scope repeatScope = new Scope(scope.getRootName() + ".repeat", scope, ScopeType.FUNCTION);
 
@@ -295,6 +329,8 @@ public class Parser {
                         parseBlock(scope, first, block);
                         continue;
                     }
+
+                    case ELSE:
 
                     case IF:
 
