@@ -25,18 +25,14 @@ public class App
         
         
         
-        String test1 = "data a = 20 + 50\n" +
+        String test1 = "\n" +
+                "data map = map()\n" +
                 "\n" +
-                "data term1 = async { a == 70 }\n" +
-                "data term2 = async { a == 100 }\n" +
+                "map[\"1\"] = \"aaa\"\n" +
+                "map[\"2\"] = \"bbb\"\n" +
+                "map[\"3\"] = \"ccc\"\n" +
                 "\n" +
-                "if (term1.await()) {\n" +
-                "    print(\"a == 70\")\n" +
-                "} else if (term2.await()) {\n" +
-                "    print(\"a == 100\")\n" +
-                "} else {\n" +
-                "    print(\"NOT ALL!!\")\n" +
-                "}";
+                "print(map[\"3\"])";
         
         String test2 = "\n" +
                 "import Thread = importJava(\"java.lang.Thread\")\n" +

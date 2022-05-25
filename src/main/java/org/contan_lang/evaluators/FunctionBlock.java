@@ -6,10 +6,7 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanYieldObject;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 public class FunctionBlock {
     
@@ -47,7 +44,7 @@ public class FunctionBlock {
         ContanObject<?> variable = evaluator.eval(environment);
         if (environment.hasReturnValue()) {
             if (environment.hasYieldReturnValue()) {
-                return environment.getCompletable().getContanInstance();
+                return environment.getFuture().getContanInstance();
             } else {
                 return environment.getReturnValue();
             }

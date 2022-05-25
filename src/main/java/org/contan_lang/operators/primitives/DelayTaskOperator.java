@@ -52,12 +52,12 @@ public class DelayTaskOperator extends TaskOperator {
             
             tickBasedThread.scheduleTask(() -> operators[1].eval(newEnvironment), delay);
             
-            environment.setCoroutineStatus(this, 0, newEnvironment.getCompletable().getContanInstance());
+            environment.setCoroutineStatus(this, 0, newEnvironment.getFuture().getContanInstance());
         } else {
             return coroutineStatus.results[0];
         }
     
-        return newEnvironment.getCompletable().getContanInstance();
+        return newEnvironment.getFuture().getContanInstance();
     }
     
 }

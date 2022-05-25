@@ -38,6 +38,10 @@ public class IfEvaluator implements Evaluator {
 
         if (coroutineStatus == null) {
             termResult = termsEvaluator.eval(environment);
+            
+            if (environment.hasYieldReturnValue()) {
+                return ContanVoidObject.INSTANCE;
+            }
 
             if (!(termResult.getBasedJavaObject() instanceof Boolean)) {
                 ContanRuntimeError.E0024.throwError("", null, token);

@@ -7,7 +7,7 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
-import org.contan_lang.runtime.JavaCompletable;
+import org.contan_lang.runtime.JavaContanFuture;
 import org.contan_lang.standard.classes.StandardClasses;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
@@ -77,9 +77,9 @@ public class CreateClassInstanceOperator implements Evaluator {
             ClassBlock classBlock = (ClassBlock) leftResult.getBasedJavaObject();
             ContanClassInstance instance = classBlock.createInstance(contanEngine, environment.getContanThread(), variables);
 
-            if (classBlock == StandardClasses.COMPLETABLE) {
+            if (classBlock == StandardClasses.FUTURE) {
                 Environment instanceEnv = instance.getEnvironment();
-                instanceEnv.createOrSetVariable("javaCompletable", new JavaClassInstance(contanEngine, new JavaCompletable(instance)));
+                instanceEnv.createOrSetVariable("javaFuture", new JavaClassInstance(contanEngine, new JavaContanFuture(instance)));
             }
 
             return instance;
@@ -143,9 +143,9 @@ public class CreateClassInstanceOperator implements Evaluator {
                     return new JavaClassInstance(contanEngine, instance);
                 }
             } catch (Exception e) {
-                ContanRuntimeError.E0005.throwError(System.lineSeparator() + "ClassPath : " + javaClass.getName()
-                        + System.lineSeparator() + "ClassName : " + nameToken.getText()
-                        + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), e, nameToken);
+                ContanRuntimeError.E0005.throwError("\nClassPath : " + javaClass.getName()
+                        + " | ClassName : " + nameToken.getText()
+                        + " | Arguments : " + Arrays.toString(variables), e, nameToken);
             }
 
         }

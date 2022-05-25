@@ -157,15 +157,15 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                     return new JavaClassInstance(contanEngine, returned);
                 }
             }
-        } catch (Exception e){
-            ContanRuntimeError.E0007.throwError(System.lineSeparator() + "Method : " + functionName.getText()
-                    + (based == null ? "" : System.lineSeparator() + "Class : " + based.getClass().getName())
-                    + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), e, functionName);
+        } catch (Exception e) {
+            ContanRuntimeError.E0007.throwError("\nMethod : " + functionName.getText()
+                    + (based == null ? "" : " | Class : " + based.getClass().getName())
+                    + " | Arguments : " + Arrays.toString(variables), e, functionName);
         }
     
-        ContanRuntimeError.E0007.throwError(System.lineSeparator() + "Method : " + functionName.getText()
-                + (based == null ? "" : System.lineSeparator() + "Class : " + based.getClass().getName())
-                + System.lineSeparator() + "Arguments : " + Arrays.toString(variables), null, functionName);
+        ContanRuntimeError.E0007.throwError("\nMethod : " + functionName.getText()
+                + (based == null ? "" : " | Class : " + based.getClass().getName())
+                + " | Arguments : " + Arrays.toString(variables), null, functionName);
         
         return null;
     }

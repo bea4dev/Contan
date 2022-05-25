@@ -147,6 +147,10 @@ public class Parser {
                         Scope classScope = new Scope(moduleName + "." + classNameToken.getText(), scope, ScopeType.CLASS);
                         args.forEach(token -> classScope.addVariable(token.getText()));
                         classScope.addVariable("this");
+                        
+                        if (superClassEval != null) {
+                            classScope.addVariable("super");
+                        }
 
                         Evaluator blockEval = parseBlock(classScope, null, blockTokens);
 
@@ -599,7 +603,22 @@ public class Parser {
                 Evaluator left = parseExpression(scope, leftTokenList);
                 Evaluator right = parseExpression(scope, rightTokenList);
                 
-                return new EqualOperator(contanEngine, highestIdentifierToken, left, right);
+                return new EqualBaseOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+            
+            //a == 2 && b == 40
+            case OPERATOR_AND:
+            
+            //a == 2 || b == 40
+            case OPERATOR_OR: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+    
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+    
+                return new BooleanOperator(contanEngine, highestIdentifierToken, highestIdentifier, left, right);
             }
             
             //value = 20
@@ -624,6 +643,16 @@ public class Parser {
                 Evaluator right = parseExpression(scope, rightTokenList);
 
                 return new InstanceOfOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+
+            //true
+            case TRUE: {
+                return new DefineValueOperator(contanEngine, highestIdentifierToken, new ContanBoolean(contanEngine, true));
+            }
+
+            //false
+            case FALSE: {
+                return new DefineValueOperator(contanEngine, highestIdentifierToken, new ContanBoolean(contanEngine, false));
             }
             
             //null

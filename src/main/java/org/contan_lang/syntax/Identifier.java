@@ -10,7 +10,6 @@ public enum Identifier {
     FUNCTION(8, false, "function"),
     IF(13, false, "if"),
     ELSE(13, false, "else"),
-    LABEL(13, true, ":"),
     REPEAT(13, false, "repeat"),
     BLOCK_START(0, true, "{"),
     BLOCK_END(0, true, "}"),
@@ -18,7 +17,7 @@ public enum Identifier {
     BLOCK_OPERATOR_END(0, true, ")"),
     BLOCK_GET_START(0, true, "["),
     BLOCK_GET_END(0, true, "]"),
-    DEFINE_VARIABLE(11, false, "data", "var"),
+    DEFINE_VARIABLE(11, false, "data"),
     RETURN(12, false, "return"),
     STOP(12, false, "stop"),
     SKIP(12, false, "skip"),
@@ -27,8 +26,9 @@ public enum Identifier {
     DELAY(3, false, "delay"),
     DOT(3, true, "."),
     OPERATOR_EQUAL(6, true, "=="),
-    INSTANCE_OF(6, false, "instanceof"),
+    INSTANCE_OF(6, false, "is"),
     OPERATOR_AND(7, true, "&&"),
+    OPERATOR_OR(7, true, "||"),
     OPERATOR_PLUS(5, true, "+"),
     OPERATOR_MINUS(5, true, "-"),
     OPERATOR_MULTIPLY(4, true, "*"),
@@ -38,6 +38,8 @@ public enum Identifier {
     NEW(3, false, "new"),
     CONSTANT_VARIABLE(11, false, "import", "const"),
     ARGUMENT_SPLIT(0, true, ","),
+    TRUE(1, false, "true"),
+    FALSE(1, false, "false"),
     NULL(1, false, "null", "NULL");
     
     

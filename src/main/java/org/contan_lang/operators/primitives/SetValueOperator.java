@@ -4,6 +4,7 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
+import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
@@ -45,10 +46,14 @@ public class SetValueOperator extends Operator {
             reference.setContanObject(resultClone);
             
             return resultClone;
+            
+        } catch (ContanRuntimeException e) {
+            throw e;
         } catch (Exception e) {
+            
             ContanRuntimeError.E0012.throwError("", e, token);
+            return ContanVoidObject.INSTANCE;
+            
         }
-        
-        return ContanVoidObject.INSTANCE;
     }
 }

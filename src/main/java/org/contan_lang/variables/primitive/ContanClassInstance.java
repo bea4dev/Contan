@@ -14,6 +14,11 @@ public class ContanClassInstance extends ContanPrimitiveObject<ClassBlock> {
     public ContanClassInstance(ContanEngine contanEngine, ClassBlock based, Environment environment) {
         super(contanEngine, based);
         this.environment = environment;
+    
+        //Set super
+        if (based.getSuperClass() != null) {
+            environment.createVariable("super", new ContanClassInstance(contanEngine, based.getSuperClass(), environment));
+        }
     }
 
     @Override

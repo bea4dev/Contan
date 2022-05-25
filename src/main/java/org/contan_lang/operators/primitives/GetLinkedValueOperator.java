@@ -1,10 +1,7 @@
 package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.CoroutineStatus;
-import org.contan_lang.environment.Environment;
-import org.contan_lang.environment.JavaArrayIndexReference;
-import org.contan_lang.environment.JavaListIndexReference;
+import org.contan_lang.environment.*;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
@@ -15,6 +12,7 @@ import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.contan_lang.variables.primitive.ContanYieldObject;
 
 import java.util.List;
+import java.util.Map;
 
 public class GetLinkedValueOperator extends Operator {
     
@@ -59,9 +57,12 @@ public class GetLinkedValueOperator extends Operator {
             return new JavaListIndexReference(contanEngine, lastToken.getText(), ContanVoidObject.INSTANCE, (List<?>) left, toIndexInteger(key), tokens);
         } else if (left.getClass().isArray()) {
             return new JavaArrayIndexReference(contanEngine, lastToken.getText(), ContanVoidObject.INSTANCE, left, toIndexInteger(key), tokens);
+        } else if (left instanceof Map) {
+            return new JavaMapReference(contanEngine, lastToken.getText(), ContanVoidObject.INSTANCE, (Map<?, ?>) left, key, tokens);
         }
         
-        return null;
+        ContanRuntimeError.E0043.throwError("", null, tokens);
+        return ContanVoidObject.INSTANCE;
     }
     
     private int toIndexInteger(Object key) {

@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class JavaCompletable {
+public class JavaContanFuture {
     
-    private final ContanClassInstance completable;
+    private final ContanClassInstance future;
     
     private final List<FunctionExpressionWithThread> thenList = new ArrayList<>();
     
@@ -26,8 +26,8 @@ public class JavaCompletable {
     
     public final ReentrantLock LOCK = new ReentrantLock(true);
     
-    public JavaCompletable(ContanClassInstance completable) {
-        this.completable = completable;
+    public JavaContanFuture(ContanClassInstance future) {
+        this.future = future;
     }
     
     public void addThen(FunctionExpressionWithThread functionExpression) {this.thenList.add(functionExpression);}
@@ -38,7 +38,7 @@ public class JavaCompletable {
     
     public ContanObject<?> getResult() {return result;}
     
-    public ContanClassInstance getContanInstance() {return completable;}
+    public ContanClassInstance getContanInstance() {return future;}
     
     public boolean isDone() {return isDone;}
     

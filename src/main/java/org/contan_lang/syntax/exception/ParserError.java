@@ -6,8 +6,7 @@ public enum ParserError {
 
     E0000(ParserExceptions.INTERNAL_ERROR, "Internal error %0."),
     E0001(ParserExceptions.UNDEFINED_VARIABLE, "Undefined variable : %0"),
-    E0002(ParserExceptions.UNEXPECTED_SYNTAX, "Does not match the expected token."
-            + System.lineSeparator() + "Expected : %s"),
+    E0002(ParserExceptions.UNEXPECTED_SYNTAX, "Does not match the expected token.\nExpected : %s"),
     E0003(ParserExceptions.UNEXPECTED_SYNTAX, "The reserved word '%0' cannot be used in the argument name."),
     E0004(ParserExceptions.UNEXPECTED_SYNTAX, "Classes can only be defined within the module scope."),
     E0005(ParserExceptions.UNEXPECTED_SYNTAX, "Functions can only be defined within the module or class scope."),
@@ -37,7 +36,7 @@ public enum ParserError {
     E0030(ParserExceptions.UNEXPECTED_SYNTAX, "Expressions cannot be written on the right side of the '[]' operator."),
     E0031(ParserExceptions.UNEXPECTED_SYNTAX, "The number of ticks to delay must be specified to the right of the 'delay' keyword."),
     E0032(ParserExceptions.UNEXPECTED_SYNTAX, "Only class 'extends' expressions can be described on the right side of the class definition."),
-    E0033(ParserExceptions.UNEXPECTED_SYNTAX, "");
+    E0033(ParserExceptions.UNEXPECTED_SYNTAX, "The 'else' statement can only be written after the 'if' statement");
     
 
     private final ParserExceptions parserExceptions;

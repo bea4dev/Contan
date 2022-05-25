@@ -7,7 +7,6 @@ import org.contan_lang.thread.ContanThread;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class StandardClasses {
@@ -34,6 +33,6 @@ public class StandardClasses {
         }
     };
 
-    public static ClassBlock COMPLETABLE = new Completable(null, "standard.Completable", new Environment(null, null, EMPTY_THREAD), null);
+    public static ClassBlock FUTURE = new ContanFuture(null, "standard.Future", new Environment(null, null, EMPTY_THREAD), null);
 
 }

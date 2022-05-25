@@ -10,9 +10,9 @@ import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanBoolean;
 import org.contan_lang.variables.primitive.ContanYieldObject;
 
-public class EqualOperator extends BooleanOperator {
+public class EqualBaseOperator extends BooleanBaseOperator {
     
-    public EqualOperator(ContanEngine contanEngine, Token token, Evaluator... operators) {
+    public EqualBaseOperator(ContanEngine contanEngine, Token token, Evaluator... operators) {
         super(contanEngine, token, operators);
     }
     

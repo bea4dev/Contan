@@ -2,7 +2,7 @@ package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.evaluators.Evaluator;
-import org.contan_lang.runtime.JavaCompletable;
+import org.contan_lang.runtime.JavaContanFuture;
 import org.contan_lang.standard.classes.StandardClasses;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
@@ -29,7 +29,7 @@ public class Environment {
     
     protected Evaluator reEval;
     
-    protected JavaCompletable completable = null;
+    protected JavaContanFuture future = null;
     
     protected ContanObject<?> returnValue = null;
     
@@ -56,8 +56,8 @@ public class Environment {
         this.contanThread = contanThread;
         this.canHasReturnValue = canHasReturnValue;
         if (canHasReturnValue) {
-            this.completable = new JavaCompletable(StandardClasses.COMPLETABLE.createInstance(contanEngine, contanThread));
-            completable.getContanInstance().getEnvironment().createOrSetVariable("javaCompletable", new JavaClassInstance(contanEngine, completable));
+            this.future = new JavaContanFuture(StandardClasses.FUTURE.createInstance(contanEngine, contanThread));
+            future.getContanInstance().getEnvironment().createOrSetVariable("javaFuture", new JavaClassInstance(contanEngine, future));
 
             this.reEval = reEval;
         }
@@ -71,7 +71,7 @@ public class Environment {
     
     public ContanThread getContanThread() {return contanThread;}
     
-    public JavaCompletable getCompletable() {return completable;}
+    public JavaContanFuture getFuture() {return future;}
 
     public void setReEval(Evaluator reEval) {this.reEval = reEval;}
 
@@ -97,7 +97,7 @@ public class Environment {
             return;
         }
         
-        completable.complete(result);
+        future.complete(result);
     }
     
     public void rerun() {

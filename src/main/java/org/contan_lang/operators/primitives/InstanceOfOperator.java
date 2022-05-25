@@ -51,7 +51,7 @@ public class InstanceOfOperator extends Operator {
         contanObject1 = ContanRuntimeUtil.removeReference(token, contanObject1);
 
         if (!(contanObject1.getBasedJavaObject() instanceof ClassBlock) && !(contanObject1 instanceof JavaClassObject)) {
-            ContanRuntimeError.E0037.throwError("", null, token);
+            ContanRuntimeError.E0036.throwError("", null, token);
             return null;
         }
 

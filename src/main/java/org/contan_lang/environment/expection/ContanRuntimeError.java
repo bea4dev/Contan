@@ -7,7 +7,7 @@ public enum ContanRuntimeError {
     E0000(ContanRuntimeExceptions.INTERNAL_ERROR, "Internal error %0."),
     E0001(ContanRuntimeExceptions.NOT_FOUND_VARIABLE, "Variable '%0' not found."),
     E0002(ContanRuntimeExceptions.INVALID_TYPE, "Only numerical values can be multiplied.%s"),
-    E0003(ContanRuntimeExceptions.NOT_FOUND_VARIABLE, "The left-hand side must represent a reference to a variable."),
+    E0003(ContanRuntimeExceptions.NOT_FOUND_VARIABLE, "The left side must represent a reference to a variable."),
     E0004(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Not fount java class constructor."),
     E0005(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "A problem has occurred when executing a java method.%s"),
     E0006(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Not fount java class constructor.%s"),
@@ -22,8 +22,7 @@ public enum ContanRuntimeError {
     E0015(ContanRuntimeExceptions.JAVA_RUNTIME_ERROR, "Field not found."),
     E0016(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "The arguments specified do not match the arguments of the function."),
     E0017(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Arguments were expected to be function or lambda expressions, but others were specified."),
-    E0018(ContanRuntimeExceptions.INVALID_TYPE, "The data is in an unexpected format." +
-                                                        System.lineSeparator() + "Expected : %s"),
+    E0018(ContanRuntimeExceptions.INVALID_TYPE, "The data is in an unexpected format.\nExpected : %s"),
     E0019(ContanRuntimeExceptions.FUNCTION_NOT_FOUND, "You tried to call an internal function of a lambda or function expression. Are you sure you are describing it correctly?"),
     E0020(ContanRuntimeExceptions.ARGUMENT_NOT_MATCH, "Right next to the sync keyword, an expression representing the thread must be written."),
     E0021(ContanRuntimeExceptions.INVALID_TYPE, "Non-numeric values cannot be sign-reversed."),
@@ -41,10 +40,14 @@ public enum ContanRuntimeError {
     E0033(ContanRuntimeExceptions.ACCESS_ERROR, "The specified module cannot be found."),
     E0034(ContanRuntimeExceptions.CONTAN_RUNTIME_ERROR, "Module initialization failed."),
     E0035(ContanRuntimeExceptions.INVALID_TYPE, "It is trying to extend a non-class."),
-    E0036(ContanRuntimeExceptions.INVALID_TYPE, ""),
-    E0037(ContanRuntimeExceptions.INVALID_TYPE, ""),
-    E0038(ContanRuntimeExceptions.INVALID_INDEX_OR_KEY, "%s"),
-    E0039(ContanRuntimeExceptions.INVALID_REFERENCE_VALUE, "%s");
+    E0036(ContanRuntimeExceptions.INVALID_TYPE, "Only class objects can be specified to the right of the 'is' keyword."),
+    E0037(ContanRuntimeExceptions.INVALID_INDEX_OR_KEY, "Invalid key or index.\n%s"),
+    E0038(ContanRuntimeExceptions.INVALID_REFERENCE_VALUE, "The type does not match the type of the insert destination.\n%s"),
+    E0039(ContanRuntimeExceptions.INVALID_TYPE, "Values other than a boolean type cannot be specified."),
+    E0040(ContanRuntimeExceptions.REFERENCE_INSERT_FAILURE, "Insert failed for map."),
+    E0041(ContanRuntimeExceptions.REFERENCE_INSERT_FAILURE, "Insert failed for array."),
+    E0042(ContanRuntimeExceptions.REFERENCE_INSERT_FAILURE, "Insert failed for list."),
+    E0043(ContanRuntimeExceptions.INVALID_TYPE, "Could not retrieve reference. The target variable must be a Map or List or Array.");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

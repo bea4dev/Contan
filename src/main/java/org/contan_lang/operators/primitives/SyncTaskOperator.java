@@ -42,12 +42,12 @@ public class SyncTaskOperator extends TaskOperator {
             } else {
                 newEnvironment.rerun();
             }
-            environment.setCoroutineStatus(this, 0, newEnvironment.getCompletable().getContanInstance());
+            environment.setCoroutineStatus(this, 0, newEnvironment.getFuture().getContanInstance());
         } else {
             return (ContanClassInstance) coroutineStatus.results[0];
         }
 
-        return newEnvironment.getCompletable().getContanInstance();
+        return newEnvironment.getFuture().getContanInstance();
     }
 
 }

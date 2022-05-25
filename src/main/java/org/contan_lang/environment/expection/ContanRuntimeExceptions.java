@@ -15,7 +15,8 @@ public enum ContanRuntimeExceptions {
     ACCESS_ERROR(ContanJavaRuntimeException::new),
     CONTAN_RUNTIME_ERROR(ContanRuntimeException::new),
     INVALID_INDEX_OR_KEY(ContanReferenceException::new),
-    INVALID_REFERENCE_VALUE(ContanReferenceException::new);
+    INVALID_REFERENCE_VALUE(ContanReferenceException::new),
+    REFERENCE_INSERT_FAILURE(ContanReferenceException::new);
     
     private final CreateExceptionFunction createExceptionFunction;
     

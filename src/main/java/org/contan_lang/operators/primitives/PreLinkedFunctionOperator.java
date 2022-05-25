@@ -10,7 +10,7 @@ import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.evaluators.FunctionBlock;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
-import org.contan_lang.runtime.JavaCompletable;
+import org.contan_lang.runtime.JavaContanFuture;
 import org.contan_lang.standard.classes.StandardClasses;
 import org.contan_lang.standard.functions.StandardFunctions;
 import org.contan_lang.syntax.exception.ContanParseException;
@@ -114,33 +114,33 @@ public class PreLinkedFunctionOperator extends Operator {
             returned = ContanRuntimeUtil.removeReference(token, returned);
 
             //Cache returned Completable
-            if (returned.getBasedJavaObject() == StandardClasses.COMPLETABLE) {
+            if (returned.getBasedJavaObject() == StandardClasses.FUTURE) {
                 environment.setCoroutineStatus(this, args.length, returned);
             }
             return returned;
         }
 
-
-        ContanObjectReference reference = environment.getVariable("this");
-        if (reference != null) {
-            ContanObject<?> classInstance = ContanRuntimeUtil.removeReference(functionName, reference);
-
-            if (!(classInstance instanceof ContanClassInstance)) {
-                ContanRuntimeError.E0000.throwError("\n'this' is not class instance.", null, functionName);
-                return null;
-            }
-
-            ContanClassInstance instance = (ContanClassInstance) classInstance;
-            ClassBlock classBlock = instance.getBasedJavaObject();
-
-            if (classBlock.hasFunction(functionName.getText(), variables.length)) {
-                return instance.invokeFunction(contanThread, functionName, variables);
-            }
-        }
-
-
-        //For function or lambda expression
+        
         if (left == null) {
+            //For class method
+            ContanObjectReference reference = environment.getVariable("this");
+            if (reference != null) {
+                ContanObject<?> classInstance = ContanRuntimeUtil.removeReference(functionName, reference);
+        
+                if (!(classInstance instanceof ContanClassInstance)) {
+                    ContanRuntimeError.E0000.throwError("\n'this' is not class instance.", null, functionName);
+                    return null;
+                }
+        
+                ContanClassInstance instance = (ContanClassInstance) classInstance;
+                ClassBlock classBlock = instance.getBasedJavaObject();
+        
+                if (classBlock.hasFunction(functionName.getText(), variables.length)) {
+                    return instance.invokeFunction(contanThread, functionName, variables);
+                }
+            }
+    
+            //For function or lambda expression
             ContanObjectReference resultReference = environment.getVariable(functionName.getText());
             
             if (resultReference == null) {
@@ -154,7 +154,7 @@ public class PreLinkedFunctionOperator extends Operator {
                 ContanObject<?> returned = ((ContanFunctionExpression) result).eval(contanThread, functionName, variables);
 
                 //Cache returned Completable
-                if (returned.getBasedJavaObject() == StandardClasses.COMPLETABLE) {
+                if (returned.getBasedJavaObject() == StandardClasses.FUTURE) {
                     environment.setCoroutineStatus(this, args.length, ContanRuntimeUtil.removeReference(functionName, returned));
                 }
 
@@ -169,25 +169,25 @@ public class PreLinkedFunctionOperator extends Operator {
         
         //For 'Completable.await()'
         leftResult = ContanRuntimeUtil.removeReference(functionName, leftResult);
-        if (leftResult.getBasedJavaObject() == StandardClasses.COMPLETABLE) {
+        if (leftResult.getBasedJavaObject() == StandardClasses.FUTURE) {
             if (functionName.getText().equals("await")) {
-                ContanObject<?> contanObject = ((ContanClassInstance) leftResult).getEnvironment().getVariable("javaCompletable");
+                ContanObject<?> contanObject = ((ContanClassInstance) leftResult).getEnvironment().getVariable("javaFuture");
     
                 if (contanObject == null) {
                     return null;
                 }
     
-                if (!(contanObject.getBasedJavaObject() instanceof JavaCompletable)) {
+                if (!(contanObject.getBasedJavaObject() instanceof JavaContanFuture)) {
                     ContanRuntimeError.E0000.throwError("", null, functionName);
                     return null;
                 }
     
-                JavaCompletable javaCompletable = (JavaCompletable) contanObject.getBasedJavaObject();
+                JavaContanFuture javaContanFuture = (JavaContanFuture) contanObject.getBasedJavaObject();
     
                 try {
-                    javaCompletable.LOCK.lock();
+                    javaContanFuture.LOCK.lock();
                     
-                    if (javaCompletable.isDone()) {
+                    if (javaContanFuture.isDone()) {
                         //Reset the return value later.
                         environment.getContanThread().scheduleTask(() -> {
                             environment.setReturnValue(null);
@@ -195,21 +195,21 @@ public class PreLinkedFunctionOperator extends Operator {
                         });
                         //Rerun later
                         environment.rerun();
-                        environment.setCoroutineStatus(this, args.length, javaCompletable.getResult());
+                        environment.setCoroutineStatus(this, args.length, javaContanFuture.getResult());
                     } else {
-                        javaCompletable.addAwaitEnvironment(environment);
+                        javaContanFuture.addAwaitEnvironment(environment);
                     }
                     environment.setReturnValue(ContanYieldObject.INSTANCE);
                     return ContanYieldObject.INSTANCE;
                 } finally {
-                    javaCompletable.LOCK.unlock();
+                    javaContanFuture.LOCK.unlock();
                 }
             }
         }
 
         ContanObject<?> returned = leftResult.invokeFunction(contanThread, functionName, variables);
         //Cache returned Completable
-        if (returned.getBasedJavaObject() == StandardClasses.COMPLETABLE) {
+        if (returned.getBasedJavaObject() == StandardClasses.FUTURE) {
             environment.setCoroutineStatus(this, args.length, returned);
         }
         return returned;
