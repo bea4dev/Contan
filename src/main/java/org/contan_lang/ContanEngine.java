@@ -111,20 +111,22 @@ public class ContanEngine {
         int count = nextCount.getAndAdd(1);
         return asyncThreads.get(count % asyncThreads.size());
     }
-
+    
+    
+    public boolean setRuntimeVariable(String variableName, Object javaObject) {
+        return setRuntimeVariable(variableName, new JavaClassInstance(this, javaObject));
+    }
+    
     public boolean setRuntimeVariable(String variableName, ContanObject<?> contanObject) {
         boolean[] is = new boolean[]{false};
         runtimeVariableMap.computeIfAbsent(variableName, k -> {
             is[0] = true;
-            return new ContanObjectReference(this, variableName, contanObject);
+            return new ContanObjectReference(this, variableName, contanObject, true);
         });
 
         return is[0];
     }
-
-    public boolean setRuntimeVariable(String variableName, Object javaObject) {
-        return setRuntimeVariable(variableName, new JavaClassInstance(this, javaObject));
-    }
+    
 
     public @Nullable ContanObjectReference getRuntimeVariable(String variableName) {
         return runtimeVariableMap.get(variableName);

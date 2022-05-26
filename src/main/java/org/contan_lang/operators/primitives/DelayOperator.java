@@ -36,7 +36,7 @@ public class DelayOperator extends Operator {
         
         long delay;
         if (delayTicksResult.convertibleToLong()) {
-            delay = delayTicksResult.asLong();
+            delay = delayTicksResult.toLong();
         } else {
             ContanRuntimeError.E0031.throwError("", null, token);
             return null;

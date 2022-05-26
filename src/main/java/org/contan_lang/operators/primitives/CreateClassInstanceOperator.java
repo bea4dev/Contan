@@ -100,7 +100,7 @@ public class CreateClassInstanceOperator implements Evaluator {
                         Class<?> parameterType = parameter.getType();
 
                         if (variable.convertibleToDouble()) {
-                            double original = variable.asDouble();
+                            double original = variable.toDouble();
                             NumberType numberType = NumberType.getType(original);
 
                             if (parameterType == int.class || parameterType == Integer.class) {

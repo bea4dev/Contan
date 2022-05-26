@@ -101,7 +101,7 @@ public class CreateJavaArrayOperator extends Operator {
                 return null;
             }
             
-            long index = indexResult.asLong();
+            long index = indexResult.toLong();
             
             if (index < 0L) {
                 ContanRuntimeError.E0029.throwError("", null, token);

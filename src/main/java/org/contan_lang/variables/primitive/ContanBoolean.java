@@ -18,12 +18,12 @@ public class ContanBoolean extends ContanPrimitiveObject<Boolean> {
     }
     
     @Override
-    public long asLong() {
+    public long toLong() {
         return based ? 1L : 0L;
     }
     
     @Override
-    public double asDouble() {
+    public double toDouble() {
         return based ? 1.0 : 0.0;
     }
     
@@ -38,8 +38,13 @@ public class ContanBoolean extends ContanPrimitiveObject<Boolean> {
     }
     
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;
+    }
+    
+    @Override
+    public String toString() {
+        return based.toString();
     }
 }

@@ -31,4 +31,5 @@ public class ContanJavaBaseObjectReference extends ContanObjectReference {
         Object result = field.get(javaObject);
         return new JavaClassInstance(contanEngine, result == null ? ContanVoidObject.INSTANCE : result);
     }
+    
 }

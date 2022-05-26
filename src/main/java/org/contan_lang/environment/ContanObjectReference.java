@@ -38,7 +38,7 @@ public class ContanObjectReference extends ContanPrimitiveObject<Object> {
     }
     
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         return ((ContanObject<?>) based).invokeFunction(contanThread, functionName, variables);
     }
     
@@ -48,13 +48,13 @@ public class ContanObjectReference extends ContanPrimitiveObject<Object> {
     }
     
     @Override
-    public long asLong() {
-        return ((ContanObject<?>) based).asLong();
+    public long toLong() {
+        return ((ContanObject<?>) based).toLong();
     }
     
     @Override
-    public double asDouble() {
-        return ((ContanObject<?>) based).asDouble();
+    public double toDouble() {
+        return ((ContanObject<?>) based).toDouble();
     }
     
     @Override

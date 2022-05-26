@@ -65,7 +65,7 @@ public class RepeatEvaluator implements Evaluator {
                 ContanRuntimeError.E0025.throwError("", null, token);
             }
 
-            long maxNumberOfRepeat = termResult.asLong();
+            long maxNumberOfRepeat = termResult.toLong();
 
             long start = 0;
             if (coroutineStatus != null) {

@@ -27,12 +27,12 @@ public class ContanClassInstance extends ContanPrimitiveObject<ClassBlock> {
     }
     
     @Override
-    public long asLong() {
+    public long toLong() {
         return 0;
     }
     
     @Override
-    public double asDouble() {
+    public double toDouble() {
         return 0;
     }
     
@@ -49,12 +49,16 @@ public class ContanClassInstance extends ContanPrimitiveObject<ClassBlock> {
     public Environment getEnvironment() {return environment;}
     
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         return based.invokeFunction(contanThread, environment, functionName, false, variables);
     }
     
     public ContanObject<?> invokeFunctionIgnoreNotFound(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         return based.invokeFunction(contanThread, environment, functionName, true, variables);
     }
-
+    
+    @Override
+    public String toString() {
+        return "ContanClassInstance{Class=" + based.getClassPath() + "}";
+    }
 }

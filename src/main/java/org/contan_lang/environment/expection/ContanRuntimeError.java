@@ -49,7 +49,9 @@ public enum ContanRuntimeError {
     E0042(ContanRuntimeExceptions.REFERENCE_INSERT_FAILURE, "Insert failed for list."),
     E0043(ContanRuntimeExceptions.INVALID_TYPE, "Could not retrieve reference. The target variable must be a Map or List or Array."),
     E0044(ContanRuntimeExceptions.INVALID_TYPE, "Both sides of the exchange operator must be reference types."),
-    E0045(ContanRuntimeExceptions.INVALID_TYPE, "");
+    E0045(ContanRuntimeExceptions.INVALID_TYPE, ""),
+    E0046(ContanRuntimeExceptions.INVALID_TYPE, "This object cannot be converted to type Long."),
+    E0047(ContanRuntimeExceptions.INVALID_TYPE, "This object cannot be converted to type Double.");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

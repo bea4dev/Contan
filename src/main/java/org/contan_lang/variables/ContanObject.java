@@ -11,9 +11,9 @@ public interface ContanObject<T> extends FunctionInvokable {
     
     ContanObject<T> createClone();
     
-    long asLong();
+    long toLong();
     
-    double asDouble();
+    double toDouble();
     
     boolean convertibleToLong();
     

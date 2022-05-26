@@ -26,13 +26,13 @@ public class App
         
         
         String test1 = "\n" +
-                "data list = list(10, 10, 20)\n" +
+                "data list = list(0.9, 10.0, 25, \"apple\")\n" +
                 "\n" +
-                "if (list[0] != list[2] && !(list[0] == list[2])) {\n" +
-                "    print(\"NOT EQUAL!!\")\n" +
-                "} else {\n" +
-                "    print(\"EQUAL!!\")\n" +
-                "}";
+                "all element in list {\n" +
+                "\n" +
+                "    print(element.toString())\n" +
+                "    \n" +
+                "}\n";
         
         String test2 = "\n" +
                 "import Thread = importJava(\"java.lang.Thread\")\n" +

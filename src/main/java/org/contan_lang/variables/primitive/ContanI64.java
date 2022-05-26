@@ -18,12 +18,12 @@ public class ContanI64 extends ContanPrimitiveObject<Long> {
     }
     
     @Override
-    public long asLong() {
+    public long toLong() {
         return based;
     }
     
     @Override
-    public double asDouble() {
+    public double toDouble() {
         return (double) ((long) based);
     }
     
@@ -38,9 +38,13 @@ public class ContanI64 extends ContanPrimitiveObject<Long> {
     }
     
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;
     }
-
+    
+    @Override
+    public String toString() {
+        return based.toString();
+    }
 }

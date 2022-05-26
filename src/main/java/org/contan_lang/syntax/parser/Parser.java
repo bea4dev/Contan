@@ -468,7 +468,10 @@ public class Parser {
             if (first.getIdentifier() == null) {
     
                 String name = first.getText();
-                if (ParserUtil.isNumber(name)) {
+                if (first instanceof StringToken) {
+                    //String
+                    return new DefineValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
+                } else if (ParserUtil.isNumber(name)) {
                     if (name.contains(".")) {
                         //Float
                         return new DefineValueOperator(contanEngine, first, new ContanF64(contanEngine, Double.parseDouble(name)));
@@ -476,9 +479,6 @@ public class Parser {
                         //Integer
                         return new DefineValueOperator(contanEngine, first, new ContanI64(contanEngine, Long.parseLong(name)));
                     }
-                } else if (first instanceof StringToken) {
-                    //String
-                    return new DefineValueOperator(contanEngine, first, new ContanString(contanEngine, first.getText()));
                 } else {
                     //Not number
         

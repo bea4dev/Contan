@@ -42,7 +42,7 @@ public class DelayTaskOperator extends TaskOperator {
             
             long delay;
             if (delayResult.convertibleToLong()) {
-                delay = delayResult.asLong();
+                delay = delayResult.toLong();
             } else {
                 ContanRuntimeError.E0031.throwError("", null, token);
                 return null;

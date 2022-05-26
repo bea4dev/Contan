@@ -13,7 +13,7 @@ public class ContanModuleObject extends ContanPrimitiveObject<ContanModule> {
     }
 
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         return based.invokeFunction(contanThread, functionName, variables);
     }
 
@@ -23,12 +23,12 @@ public class ContanModuleObject extends ContanPrimitiveObject<ContanModule> {
     }
 
     @Override
-    public long asLong() {
+    public long toLong() {
         return 0;
     }
 
     @Override
-    public double asDouble() {
+    public double toDouble() {
         return 0;
     }
 
@@ -41,4 +41,10 @@ public class ContanModuleObject extends ContanPrimitiveObject<ContanModule> {
     public boolean convertibleToDouble() {
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return "ContanModuleObject{Module='" + based.getRootName() + "'}";
+    }
+    
 }

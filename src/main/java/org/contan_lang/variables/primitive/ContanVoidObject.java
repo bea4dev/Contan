@@ -18,18 +18,18 @@ public class ContanVoidObject extends ContanPrimitiveObject<Boolean> {
     public String toString() {return "NULL";}
     
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;
     }
     
     @Override
-    public long asLong() {
+    public long toLong() {
         return 0;
     }
     
     @Override
-    public double asDouble() {
+    public double toDouble() {
         return 0;
     }
     
@@ -47,4 +47,5 @@ public class ContanVoidObject extends ContanPrimitiveObject<Boolean> {
     public Boolean getBasedJavaObject() {
         return based;
     }
+    
 }

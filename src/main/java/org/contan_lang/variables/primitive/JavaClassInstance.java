@@ -19,7 +19,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
     }
     
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         return invokeJavaMethod(contanEngine, based.getClass(), based, functionName, variables);
     }
     
@@ -29,9 +29,9 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
     }
     
     @Override
-    public long asLong() {
+    public long toLong() {
         if (based instanceof String) {
-            return ContanString.asLong((String) based);
+            return ContanString.toLong((String) based);
         }
         
         if (based instanceof Integer) {
@@ -54,9 +54,9 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
     }
     
     @Override
-    public double asDouble() {
+    public double toDouble() {
         if (based instanceof String) {
-            return ContanString.asDouble((String) based);
+            return ContanString.toDouble((String) based);
         }
     
         if (based instanceof Integer) {
@@ -81,9 +81,26 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
     @Override
     public boolean convertibleToLong() {
         if (based instanceof Integer || based instanceof Long || based instanceof Float || based instanceof Double) {
-            return true;
+            double number;
+            if (based instanceof Integer) {
+                number = (Integer) based;
+            } else if (based instanceof Long) {
+                number = (Long) based;
+            } else if (based instanceof Float) {
+                number = (Float) based;
+            } else {
+                number = (Double) based;
+            }
+    
+            NumberType numberType = NumberType.getType(number);
+            return numberType == NumberType.INTEGER || numberType == NumberType.LONG;
         } else if (based instanceof String) {
-            return ((String) based).matches("[+-]?\\d+(?:\\.\\d+)?");
+            if (!((String) based).matches("[+-]?\\d+(?:\\.\\d+)?")) {
+                return false;
+            }
+    
+            NumberType numberType = NumberType.getType(Double.parseDouble((String) based));
+            return numberType == NumberType.INTEGER || numberType == NumberType.LONG;
         } else {
             return false;
         }
@@ -91,7 +108,13 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
     
     @Override
     public boolean convertibleToDouble() {
-        return convertibleToLong();
+        if (based instanceof Integer || based instanceof Long || based instanceof Float || based instanceof Double) {
+            return true;
+        } else if (based instanceof String) {
+            return ((String) based).matches("[+-]?\\d+(?:\\.\\d+)?");
+        } else {
+            return false;
+        }
     }
     
     @Override
@@ -114,7 +137,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                     Class<?> parameterType = parameter.getType();
                     
                     if (variable.convertibleToDouble()) {
-                        double original = variable.asDouble();
+                        double original = variable.toDouble();
                         NumberType numberType = NumberType.getType(original);
                         
                         if (parameterType == int.class || parameterType == Integer.class) {

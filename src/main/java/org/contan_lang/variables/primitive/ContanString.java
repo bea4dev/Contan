@@ -5,6 +5,7 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.NumberType;
 
 public class ContanString extends ContanPrimitiveObject<String> {
     
@@ -18,18 +19,23 @@ public class ContanString extends ContanPrimitiveObject<String> {
     }
     
     @Override
-    public long asLong() {
-        return asLong(based);
+    public long toLong() {
+        return toLong(based);
     }
     
     @Override
-    public double asDouble() {
-        return asDouble(based);
+    public double toDouble() {
+        return toDouble(based);
     }
     
     @Override
     public boolean convertibleToLong() {
-        return based.matches("[+-]?\\d+(?:\\.\\d+)?");
+        if (!based.matches("[+-]?\\d+(?:\\.\\d+)?")) {
+            return false;
+        }
+    
+        NumberType numberType = NumberType.getType(Double.parseDouble(based));
+        return numberType == NumberType.INTEGER || numberType == NumberType.LONG;
     }
     
     @Override
@@ -38,14 +44,17 @@ public class ContanString extends ContanPrimitiveObject<String> {
     }
     
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;
     }
     
+    @Override
+    public String toString() {
+        return based;
+    }
     
-    
-    public static long asLong(String based) {
+    public static long toLong(String based) {
         if (!based.matches("[+-]?\\d+(?:\\.\\d+)?")) {
             return 0L;
         } else if (based.contains(".")) {
@@ -56,7 +65,7 @@ public class ContanString extends ContanPrimitiveObject<String> {
     }
     
     
-    public static double asDouble(String based) {
+    public static double toDouble(String based) {
         if (!based.matches("[+-]?\\d+(?:\\.\\d+)?")) {
             return 0.0;
         } else if (based.contains(".")) {

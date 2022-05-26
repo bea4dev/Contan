@@ -12,7 +12,7 @@ public class JavaClassObject extends ContanPrimitiveObject<Class<?>> {
     }
 
     @Override
-    public ContanObject<?> invokeFunction(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
+    public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         //Invoke java class static method
         return JavaClassInstance.invokeJavaMethod(contanEngine, based, null, functionName, variables);
     }
@@ -23,12 +23,12 @@ public class JavaClassObject extends ContanPrimitiveObject<Class<?>> {
     }
 
     @Override
-    public long asLong() {
+    public long toLong() {
         return 0;
     }
 
     @Override
-    public double asDouble() {
+    public double toDouble() {
         return 0;
     }
 
@@ -41,4 +41,10 @@ public class JavaClassObject extends ContanPrimitiveObject<Class<?>> {
     public boolean convertibleToDouble() {
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return based.toString();
+    }
+    
 }

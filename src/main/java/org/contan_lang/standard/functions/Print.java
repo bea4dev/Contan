@@ -19,17 +19,7 @@ public class Print extends FunctionBlock {
     @Override
     public ContanObject<?> eval(Environment environment, Token token, ContanThread contanThread, ContanObject<?>... contanObjects) {
         for (ContanObject<?> variable : contanObjects) {
-            if (variable instanceof ContanVoidObject) {
-                System.out.println("NULL");
-                continue;
-            }
-            
-            if (variable instanceof ContanYieldObject) {
-                System.out.println("YIELD_OBJECT");
-                continue;
-            }
-            
-            System.out.println(variable.getBasedJavaObject());
+            System.out.println(variable.toString());
         }
         return ContanVoidObject.INSTANCE;
     }
