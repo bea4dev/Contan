@@ -47,7 +47,9 @@ public enum ContanRuntimeError {
     E0040(ContanRuntimeExceptions.REFERENCE_INSERT_FAILURE, "Insert failed for map."),
     E0041(ContanRuntimeExceptions.REFERENCE_INSERT_FAILURE, "Insert failed for array."),
     E0042(ContanRuntimeExceptions.REFERENCE_INSERT_FAILURE, "Insert failed for list."),
-    E0043(ContanRuntimeExceptions.INVALID_TYPE, "Could not retrieve reference. The target variable must be a Map or List or Array.");
+    E0043(ContanRuntimeExceptions.INVALID_TYPE, "Could not retrieve reference. The target variable must be a Map or List or Array."),
+    E0044(ContanRuntimeExceptions.INVALID_TYPE, "Both sides of the exchange operator must be reference types."),
+    E0045(ContanRuntimeExceptions.INVALID_TYPE, "");
     
     
     private final ContanRuntimeExceptions contanRuntimeExceptions;

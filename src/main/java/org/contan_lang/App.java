@@ -26,13 +26,13 @@ public class App
         
         
         String test1 = "\n" +
-                "data map = map()\n" +
+                "data list = list(10, 10, 20)\n" +
                 "\n" +
-                "map[\"1\"] = \"aaa\"\n" +
-                "map[\"2\"] = \"bbb\"\n" +
-                "map[\"3\"] = \"ccc\"\n" +
-                "\n" +
-                "print(map[\"3\"])";
+                "if (list[0] != list[2] && !(list[0] == list[2])) {\n" +
+                "    print(\"NOT EQUAL!!\")\n" +
+                "} else {\n" +
+                "    print(\"EQUAL!!\")\n" +
+                "}";
         
         String test2 = "\n" +
                 "import Thread = importJava(\"java.lang.Thread\")\n" +

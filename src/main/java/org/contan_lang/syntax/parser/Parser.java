@@ -277,7 +277,39 @@ public class Parser {
 
                         return new RepeatEvaluator(contanEngine, first, termsEval, blockEval, name);
                     }
-                    
+
+                    case ALL: {
+                        Scope allScope = new Scope(scope.getRootName() + ".all", scope, ScopeType.FUNCTION);
+
+                        Token second = firstTokens.get(1);
+                        Token third = firstTokens.get(2);
+                        if (second.getIdentifier() != null) {
+                            ParserError.E0034.throwError("", second);
+                        }
+                        if (third.getIdentifier() != Identifier.IN) {
+                            ParserError.E0035.throwError("", third);
+                        }
+
+                        String name = "";
+                        List<Token> iterableEvalTokens;
+                        Token lastToken = firstTokens.get(firstTokens.size() - 1);
+                        if (lastToken.isLabelToken()) {
+                            name = lastToken.getText();
+                            allScope.addVariable(name);
+
+                            iterableEvalTokens = firstTokens.subList(3, firstTokens.size() - 1);
+                        } else {
+                            iterableEvalTokens = firstTokens.subList(3, firstTokens.size());
+                        }
+
+                        Evaluator iterableEval = parseExpression(scope, iterableEvalTokens);
+
+                        allScope.addVariable(second.getText());
+                        Evaluator blockEval = parseBlock(allScope, null, blockTokens);
+
+                        return new AllRepeatEvaluator(contanEngine, iterableEval, blockEval, name, second.getText());
+                    }
+
                     default: {
                         ParserError.E0000.throwError("", first);
                     }
@@ -337,6 +369,8 @@ public class Parser {
                     case ELSE:
 
                     case IF:
+
+                    case ALL:
 
                     case REPEAT: {
                         List<Token> first = ParserUtil.getTokensUntilFoundIdentifier(blockTokens, i, Identifier.BLOCK_START);
@@ -399,7 +433,24 @@ public class Parser {
         if (tokenLength == 0) {
             return NullEvaluator.INSTANCE;
         }
-        
+
+        //For get operator
+        List<Token> newTokenList = new ArrayList<>();
+        for (int i = 0; i < tokenLength; i++) {
+            Token token = tokens.get(i);
+
+            if (token.getIdentifier() == Identifier.BLOCK_GET_START) {
+                List<Token> nestedTokens = ParserUtil.getNestedToken(tokens, i, Identifier.BLOCK_GET_START, Identifier.BLOCK_GET_END, false, false);
+                i += nestedTokens.size() + 1;
+                newTokenList.add(new BlockToken(lexer, nestedTokens, Identifier.DOT, token));
+
+                continue;
+            }
+
+            newTokenList.add(token);
+        }
+        tokens = newTokenList;
+        tokenLength = tokens.size();
 
         //If there is only a portion enclosed in parentheses, remove the parentheses.
         if (tokens.get(0).getIdentifier() == Identifier.BLOCK_OPERATOR_START && tokens.get(tokenLength - 1).getIdentifier() == Identifier.BLOCK_OPERATOR_END) {
@@ -593,17 +644,81 @@ public class Parser {
 
                 return new DivisionOperator(contanEngine, highestIdentifierToken, left, right);
             }
+
+            //i += 10
+            case OPERATOR_PLUS_ASSIGNMENT: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+
+                return new SetValueOperator(contanEngine, highestIdentifierToken, left,
+                        new AddOperator(contanEngine, highestIdentifierToken, left, right));
+            }
+
+            //i -= 10
+            case OPERATOR_MINUS_ASSIGNMENT: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = new InvertSignOperator(contanEngine, highestIdentifierToken, parseExpression(scope, rightTokenList));
+
+                return new SetValueOperator(contanEngine, highestIdentifierToken, left,
+                        new AddOperator(contanEngine, highestIdentifierToken, left, right));
+            }
+
+            //i *= 10
+            case OPERATOR_MULTIPLY_ASSIGNMENT: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+
+                return new SetValueOperator(contanEngine, highestIdentifierToken, left,
+                        new MultiplyOperator(contanEngine, highestIdentifierToken, left, right));
+            }
+
+            //i /= 10
+            case OPERATOR_DIVISION_ASSIGNMENT: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+
+                return new SetValueOperator(contanEngine, highestIdentifierToken, left,
+                        new DivisionOperator(contanEngine, highestIdentifierToken, left, right));
+            }
             
             //20 == 20
             case OPERATOR_EQUAL: {
                 if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
                     ParserError.E0012.throwError("", highestIdentifierToken);
                 }
-    
+
                 Evaluator left = parseExpression(scope, leftTokenList);
                 Evaluator right = parseExpression(scope, rightTokenList);
                 
-                return new EqualBaseOperator(contanEngine, highestIdentifierToken, left, right);
+                return new EqualOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+
+            //i <=> j
+            case OPERATOR_EXCHANGE: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+
+                return new ExchangeOperator(contanEngine, highestIdentifierToken, left, right);
             }
             
             //a == 2 && b == 40
@@ -643,6 +758,35 @@ public class Parser {
                 Evaluator right = parseExpression(scope, rightTokenList);
 
                 return new InstanceOfOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+
+            //!true
+            case OPERATOR_NOT: {
+                if (rightTokenList.size() == 0) {
+                    ParserError.E0025.throwError("", highestIdentifierToken);
+                }
+
+                if (leftTokenList.size() != 0) {
+                    ParserError.E0036.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator right = parseExpression(scope, rightTokenList);
+
+                return new NotOperator(contanEngine, highestIdentifierToken, right);
+            }
+
+            //i != j
+            case OPERATOR_NOT_EQUAL: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+
+                Evaluator equal = new EqualOperator(contanEngine, highestIdentifierToken, left, right);
+
+                return new NotOperator(contanEngine, highestIdentifierToken, equal);
             }
 
             //true

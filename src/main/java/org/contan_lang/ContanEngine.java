@@ -66,6 +66,10 @@ public class ContanEngine {
         setRuntimeVariable("@CURRENT_THREAD", ContanVoidObject.INSTANCE);
         setRuntimeVariable("@MAIN_THREAD", mainThread);
         setRuntimeVariable("Future", new ContanClassObject(this, StandardClasses.FUTURE));
+        setRuntimeVariable("Integer", new JavaClassObject(this, Integer.class));
+        setRuntimeVariable("Long", new JavaClassObject(this, Long.class));
+        setRuntimeVariable("Float", new JavaClassObject(this, Float.class));
+        setRuntimeVariable("Double", new JavaClassObject(this, Double.class));
         setRuntimeVariable("int", new JavaClassObject(this, Integer.class));
         setRuntimeVariable("long", new JavaClassObject(this, Long.class));
         setRuntimeVariable("float", new JavaClassObject(this, Float.class));

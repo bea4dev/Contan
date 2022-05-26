@@ -1,7 +1,6 @@
 package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.CoroutineStatus;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
@@ -10,39 +9,16 @@ import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanBoolean;
 import org.contan_lang.variables.primitive.ContanYieldObject;
 
-public class EqualBaseOperator extends BooleanBaseOperator {
+public class EqualOperator extends BooleanBaseOperator {
     
-    public EqualBaseOperator(ContanEngine contanEngine, Token token, Evaluator... operators) {
+    public EqualOperator(ContanEngine contanEngine, Token token, Evaluator... operators) {
         super(contanEngine, token, operators);
     }
     
     @Override
     public ContanObject<Boolean> eval(Environment environment) {
-        CoroutineStatus coroutineStatus = environment.getCoroutineStatus(this);
-        ContanObject<?> contanObject0;
-        ContanObject<?> contanObject1;
-    
-        if (coroutineStatus == null) {
-            contanObject0 = operators[0].eval(environment);
-            if (environment.hasYieldReturnValue() || contanObject0 == ContanYieldObject.INSTANCE) {
-                environment.setCoroutineStatus(this, 0, ContanYieldObject.INSTANCE);
-                environment.setReturnValue(ContanYieldObject.INSTANCE);
-                return ContanYieldObject.INSTANCE;
-            }
-        
-            contanObject1 = operators[1].eval(environment);
-            if (environment.hasYieldReturnValue() || contanObject1 == ContanYieldObject.INSTANCE) {
-                environment.setCoroutineStatus(this, 1, contanObject0);
-                environment.setReturnValue(ContanYieldObject.INSTANCE);
-                return ContanYieldObject.INSTANCE;
-            }
-        } else {
-            if (coroutineStatus.count == 0) {
-                contanObject0 = operators[0].eval(environment);
-            } else {
-                contanObject0 = coroutineStatus.results[0];
-            }
-            contanObject1 = operators[1].eval(environment);
+        if (super.evalLeftAndRight(environment) == ContanYieldObject.INSTANCE) {
+            return ContanYieldObject.INSTANCE;
         }
     
         contanObject0 = ContanRuntimeUtil.removeReference(token, contanObject0);
