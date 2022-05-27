@@ -26,13 +26,9 @@ public class App
         
         
         String test1 = "\n" +
-                "data list = list(0.9, 10.0, 25, \"apple\")\n" +
-                "\n" +
-                "all element in list {\n" +
-                "\n" +
-                "    print(element.toString())\n" +
-                "    \n" +
-                "}\n";
+                "print(20 * 40)\n" +
+                "print(20.1 * 40)\n" +
+                "print(20.1 * 40.1)";
         
         String test2 = "\n" +
                 "import Thread = importJava(\"java.lang.Thread\")\n" +

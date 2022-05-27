@@ -27,15 +27,10 @@ public class InvertSignOperator extends Operator {
             return ContanYieldObject.INSTANCE;
         }
 
-        Object based = rightResult.getBasedJavaObject();
-        if (based instanceof Integer) {
-            return new ContanI64(contanEngine, (long) ((Integer) based) * -1L);
-        } else if (based instanceof Long) {
-            return new ContanI64(contanEngine, (Long) based * -1L);
-        } else if (based instanceof Float) {
-            return new ContanF64(contanEngine, (double) ((Float) based) * -1.0);
-        } else if (based instanceof Double) {
-            return new ContanF64(contanEngine, (Double) based * -1.0);
+        if (rightResult.convertibleToLong()) {
+            return new ContanI64(contanEngine, rightResult.toLong() * -1);
+        } else if (rightResult.convertibleToDouble()) {
+            return new ContanF64(contanEngine, rightResult.toDouble() * -1.0);
         }
 
         ContanRuntimeError.E0021.throwError("", null, token);

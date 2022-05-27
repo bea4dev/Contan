@@ -5,6 +5,7 @@ import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.NumberType;
 
 public class ContanF64 extends ContanPrimitiveObject<Double> {
     
@@ -29,7 +30,8 @@ public class ContanF64 extends ContanPrimitiveObject<Double> {
     
     @Override
     public boolean convertibleToLong() {
-        return true;
+        NumberType numberType = NumberType.getType(based);
+        return numberType == NumberType.INTEGER || numberType == NumberType.LONG;
     }
     
     @Override

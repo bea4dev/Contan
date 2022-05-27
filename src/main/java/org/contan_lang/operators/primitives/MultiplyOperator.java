@@ -27,59 +27,29 @@ public class MultiplyOperator extends Operator {
     
         contanObject0 = ContanRuntimeUtil.removeReference(token, contanObject0);
         contanObject1 = ContanRuntimeUtil.removeReference(token, contanObject1);
-        
-        Object first = contanObject0.getBasedJavaObject();
-        Object second = contanObject1.getBasedJavaObject();
     
-        if ((first instanceof Integer || first instanceof Long || first instanceof Float || first instanceof Double) &&
-                (second instanceof Integer || second instanceof Long || second instanceof Float || second instanceof Double)) {
-        
-            if (first instanceof Float || first instanceof Double || second instanceof Float || second instanceof Double) {
-                double sum;
-            
-                if (first instanceof Integer) {
-                    sum = (Integer) first;
-                } else if (first instanceof Long) {
-                    sum = (Long) first;
-                } else if (first instanceof Float) {
-                    sum = (Float) first;
-                } else {
-                    sum = (Double) first;
-                }
-            
-                if (second instanceof Integer) {
-                    sum *= (Integer) second;
-                } else if (second instanceof Long) {
-                    sum *= (Long) second;
-                } else if (second instanceof Float) {
-                    sum *= (Float) second;
-                } else {
-                    sum *= (Double) second;
-                }
-            
-                return new ContanF64(contanEngine, sum);
+        if (contanObject0.convertibleToLong()) {
+            long left = contanObject0.toLong();
+
+            if (contanObject1.convertibleToLong()) {
+                long right = contanObject1.toLong();
+
+                return new ContanI64(contanEngine, left * right);
+            } else if (contanObject1.convertibleToDouble()) {
+                double right = contanObject1.toDouble();
+
+                return new ContanF64(contanEngine, (double) left * right);
             }
-        
-        
-            long sum;
-        
-            if (first instanceof Integer) {
-                sum = (Integer) first;
-            } else {
-                sum = (Long) first;
+        } else if (contanObject0.convertibleToDouble()) {
+            double left = contanObject0.toDouble();
+
+            if (contanObject1.convertibleToLong() || contanObject1.convertibleToDouble()) {
+                return new ContanF64(contanEngine, left * contanObject1.toDouble());
             }
-        
-            if (second instanceof Integer) {
-                sum *= (Integer) second;
-            } else {
-                sum *= (Long) second;
-            }
-        
-            return new ContanI64(contanEngine, sum);
         }
     
-        ContanRuntimeError.E0002.throwError(System.lineSeparator() + "Left : " + first.toString()
-                                                + System.lineSeparator() + "Right : " + second.toString(), null, token);
+        ContanRuntimeError.E0002.throwError("\nLeft : " + contanObject0.toString()
+                                                 + " | Right : " + contanObject1.toString(), null, token);
         return null;
     }
 }
