@@ -51,7 +51,11 @@ public class ClassBlock {
     public void addInitializer(Evaluator initializers) {this.initializers.add(initializers);}
 
     public ClassBlock getSuperClass() {return superClass;}
-
+    
+    public Map<String, List<FunctionBlock>> getFunctionMap() {return functionMap;}
+    
+    public @Nullable List<FunctionBlock> getFunctionsByName(String name) {return functionMap.get(name);}
+    
     public void evalSuperClass(Environment environment) {
         if (superClassEval == null) {
             return;
