@@ -177,7 +177,11 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                 if (returned == null) {
                     return ContanVoidObject.INSTANCE;
                 } else {
-                    return new JavaClassInstance(contanEngine, returned);
+                    if (returned instanceof ContanObject<?>) {
+                        return (ContanObject<?>) returned;
+                    } else {
+                        return new JavaClassInstance(contanEngine, returned);
+                    }
                 }
             }
         } catch (Exception e) {
