@@ -645,6 +645,18 @@ public class Parser {
                 return new DivisionOperator(contanEngine, highestIdentifierToken, left, right);
             }
 
+            //20 % 10
+            case OPERATOR_REMAINDER: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+        
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+        
+                return new RemainderOperator(contanEngine, highestIdentifierToken, left, right);
+            }
+
             //i += 10
             case OPERATOR_PLUS_ASSIGNMENT: {
                 if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
@@ -695,6 +707,19 @@ public class Parser {
 
                 return new SetValueOperator(contanEngine, highestIdentifierToken, left,
                         new DivisionOperator(contanEngine, highestIdentifierToken, left, right));
+            }
+
+            //i /= 10
+            case OPERATOR_REMAINDER_ASSIGNMENT: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+        
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+        
+                return new SetValueOperator(contanEngine, highestIdentifierToken, left,
+                        new RemainderOperator(contanEngine, highestIdentifierToken, left, right));
             }
             
             //20 == 20

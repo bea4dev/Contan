@@ -33,12 +33,16 @@ public class DivisionOperator extends Operator {
 
             if (contanObject1.convertibleToLong()) {
                 long right = contanObject1.toLong();
-
-                return new ContanI64(contanEngine, left / right);
+                
+                if (left < right) {
+                    return new ContanF64(contanEngine, (double) left / (double) right);
+                } else {
+                    return new ContanI64(contanEngine, left / right);
+                }
             } else if (contanObject1.convertibleToDouble()) {
                 double right = contanObject1.toDouble();
 
-                return new ContanF64(contanEngine, (double) left / right);
+                return new ContanF64(contanEngine, ((double) left) / right);
             }
         } else if (contanObject0.convertibleToDouble()) {
             double left = contanObject0.toDouble();

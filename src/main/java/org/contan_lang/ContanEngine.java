@@ -65,6 +65,14 @@ public class ContanEngine {
     private void initialize() {
         setRuntimeVariable("@CURRENT_THREAD", ContanVoidObject.INSTANCE);
         setRuntimeVariable("@MAIN_THREAD", mainThread);
+        setRuntimeVariable("@INT_MAX", new ContanI64(this, (long) Integer.MAX_VALUE));
+        setRuntimeVariable("@LONG_MAX", new ContanI64(this, Long.MAX_VALUE));
+        setRuntimeVariable("@FLOAT_MAX", new ContanF64(this, (double) Float.MAX_VALUE));
+        setRuntimeVariable("@DOUBLE_MAX", new ContanF64(this, Double.MAX_VALUE));
+        setRuntimeVariable("@INT_MIN", new ContanI64(this, (long) Integer.MIN_VALUE));
+        setRuntimeVariable("@LONG_MIN", new ContanI64(this, Long.MIN_VALUE));
+        setRuntimeVariable("@FLOAT_MIN", new ContanF64(this, (double) Float.MIN_VALUE));
+        setRuntimeVariable("@DOUBLE_MIN", new ContanF64(this, Double.MIN_VALUE));
         setRuntimeVariable("Future", new ContanClassObject(this, StandardClasses.FUTURE));
         setRuntimeVariable("Integer", new JavaClassObject(this, Integer.class));
         setRuntimeVariable("Long", new JavaClassObject(this, Long.class));
@@ -74,6 +82,7 @@ public class ContanEngine {
         setRuntimeVariable("long", new JavaClassObject(this, Long.class));
         setRuntimeVariable("float", new JavaClassObject(this, Float.class));
         setRuntimeVariable("double", new JavaClassObject(this, Double.class));
+        setRuntimeVariable("Math", new JavaClassObject(this, Math.class));
     }
 
     public void addClassBlock(ClassBlock classBlock) {
