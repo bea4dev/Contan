@@ -167,7 +167,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                         if (variable == ContanVoidObject.INSTANCE) {
                             convertedArgs[i] = null;
                         } else {
-                            if (variable instanceof ContanClassInstance) {
+                            if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
                                 convertedArgs[i] = variable;
                             } else {
                                 convertedArgs[i] = variable.getBasedJavaObject();

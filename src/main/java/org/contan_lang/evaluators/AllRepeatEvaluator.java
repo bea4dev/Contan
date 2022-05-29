@@ -5,9 +5,7 @@ import org.contan_lang.environment.CancelStatus;
 import org.contan_lang.environment.CoroutineStatus;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanVoidObject;
-import org.contan_lang.variables.primitive.ContanYieldObject;
-import org.contan_lang.variables.primitive.JavaClassInstance;
+import org.contan_lang.variables.primitive.*;
 
 import java.util.Iterator;
 
@@ -64,7 +62,11 @@ public class AllRepeatEvaluator implements Evaluator {
 
             while (iterator.hasNext()) {
                 Object element = iterator.next();
-                newEnv.createOrSetVariable(variableName, new JavaClassInstance(contanEngine, element));
+                if (element instanceof ContanClassInstance || element instanceof ContanFunctionExpression) {
+                    newEnv.createOrSetVariable(variableName, (ContanObject<?>) element);
+                } else {
+                    newEnv.createOrSetVariable(variableName, new JavaClassInstance(contanEngine, element));
+                }
 
                 ContanObject<?> result = evaluator.eval(newEnv);
 
