@@ -53,4 +53,8 @@ public class FunctionBlock {
         }
     }
     
+    public ContanObject<?> eval(@Nullable Environment parentEnvironment, ContanThread contanThread, ContanObject<?>... contanObjects) {
+        return eval(parentEnvironment, functionName, contanThread, contanObjects);
+    }
+    
 }

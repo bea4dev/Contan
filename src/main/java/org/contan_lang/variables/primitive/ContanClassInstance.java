@@ -53,8 +53,8 @@ public class ContanClassInstance extends ContanPrimitiveObject<ClassBlock> {
         return based.invokeFunction(contanThread, environment, functionName, false, variables);
     }
     
-    public ContanObject<?> invokeFunctionIgnoreNotFound(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
-        return based.invokeFunction(contanThread, environment, functionName, true, variables);
+    public ContanObject<?> invokeFunctionIgnoreNotFound(ContanThread contanThread, String functionName, ContanObject<?>... variables) {
+        return based.invokeFunction(contanThread, environment, functionName, variables);
     }
     
     @Override

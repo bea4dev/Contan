@@ -141,6 +141,25 @@ public class ClassBlock {
         }
         return ContanVoidObject.INSTANCE;
     }
+    
+    public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, String functionName, ContanObject<?>... variables) {
+        List<FunctionBlock> functions = functionMap.get(functionName);
+        if (functions == null) {
+            return ContanVoidObject.INSTANCE;
+        } else {
+            for (FunctionBlock functionBlock : functions) {
+                if (functionBlock.getArgs().length == variables.length) {
+                    return functionBlock.eval(classInstanceEnvironment, contanThread, variables);
+                }
+            }
+        }
+        
+        if (superClass != null) {
+            return superClass.invokeFunction(contanThread, classInstanceEnvironment, functionName, variables);
+        }
+        
+        return ContanVoidObject.INSTANCE;
+    }
 
     public boolean hasFunction(String functionName, int variableLength) {
         List<FunctionBlock> functions = functionMap.get(functionName);
