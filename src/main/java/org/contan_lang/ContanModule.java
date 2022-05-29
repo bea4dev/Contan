@@ -97,15 +97,15 @@ public class ContanModule implements FunctionInvokable {
         } finally {
             INITIALIZE_LOCK.unlock();
         }
-        
-        //Eval class extends
-        for (ClassBlock classBlock : classBlocks) {
-            classBlock.evalSuperClass(moduleEnvironment);
-        }
 
 
         Callable<?> initializeTask = () -> {
             ContanObject<?> result = globalEvaluator.eval(moduleEnvironment);
+    
+            //Eval class extends
+            for (ClassBlock classBlock : classBlocks) {
+                classBlock.evalSuperClass(moduleEnvironment);
+            }
 
             if (moduleEnvironment.hasReturnValue()) {
                 return moduleEnvironment.getReturnValue();
