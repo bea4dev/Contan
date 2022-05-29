@@ -13,6 +13,7 @@ import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanClassObject;
 import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.contan_lang.variables.primitive.JavaClassInstance;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,6 +70,17 @@ public class ContanModule implements FunctionInvokable {
 
     public Environment getModuleEnvironment() {return moduleEnvironment;}
     
+    public @Nullable ClassBlock getClassByName(String className) {
+        for (ClassBlock classBlock : classBlocks) {
+            if (classBlock.getClassName().getText().equals(className)) {
+                return classBlock;
+            }
+        }
+        
+        return null;
+    }
+    
+    public List<ClassBlock> getClassBlocks() {return classBlocks;}
     
     private boolean initialized = false;
     
