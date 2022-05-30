@@ -84,8 +84,6 @@ public class ClassBlock {
         superClass = (ClassBlock) extendsResult.getBasedJavaObject();
         superClass.initializeClassInfo(superClass.moduleEnvironment);
 
-        moduleEnvironment = moduleEnvironment.createMergedEnvironment(superClass.moduleEnvironment);
-
         ClassBlock currentClass = this;
         List<ClassBlock> superClasses = new ArrayList<>();
 
@@ -150,8 +148,9 @@ public class ClassBlock {
         Collections.reverse(superClasses);
 
         for (ClassBlock classBlock : superClasses) {
+            Environment mergedEnv = environment.createMergedEnvironment(classBlock.moduleEnvironment);
             for (Evaluator evaluator : classBlock.initializers) {
-                evaluator.eval(environment);
+                evaluator.eval(mergedEnv);
             }
         }
 
@@ -169,7 +168,7 @@ public class ClassBlock {
         } else {
             for (FunctionBlock functionBlock : functions) {
                 if (functionBlock.getArgs().length == variables.length) {
-                    return functionBlock.eval(classInstanceEnvironment, functionName, contanThread, variables);
+                    return functionBlock.eval(classInstanceEnvironment.createMergedEnvironment(moduleEnvironment), functionName, contanThread, variables);
                 }
             }
         }

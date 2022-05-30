@@ -1,6 +1,7 @@
 package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
+import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.runtime.JavaContanFuture;
 import org.contan_lang.standard.classes.StandardClasses;
@@ -42,6 +43,8 @@ public class Environment {
     protected String name = null;
 
     protected CancelStatus cancelStatus = CancelStatus.NONE;
+
+    public ClassBlock classBlock = null;
 
     public Environment(ContanEngine contanEngine, @Nullable Environment parent, @NotNull ContanThread contanThread) {
         this.contanEngine = contanEngine;
