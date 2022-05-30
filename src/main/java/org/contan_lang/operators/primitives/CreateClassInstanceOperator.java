@@ -156,7 +156,9 @@ public class CreateClassInstanceOperator implements Evaluator {
                     return new JavaClassInstance(contanEngine, instance);
                 }
 
-                ContanRuntimeError.E0004.throwError("", null, nameToken);
+                ContanRuntimeError.E0004.throwError("\nClassPath : " + javaClass.getName()
+                        + " | ClassName : " + nameToken.getText()
+                        + " | Arguments : " + Arrays.toString(variables), null, nameToken);
             } catch (ContanRuntimeException e) {
                 throw e;
             } catch (Exception e) {
