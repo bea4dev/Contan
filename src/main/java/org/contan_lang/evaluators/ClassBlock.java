@@ -148,11 +148,12 @@ public class ClassBlock {
         Collections.reverse(superClasses);
 
         for (ClassBlock classBlock : superClasses) {
-            Environment mergedEnv = environment.createMergedEnvironment(classBlock.moduleEnvironment);
+            environment.readOnlyEnv = classBlock.moduleEnvironment;
             for (Evaluator evaluator : classBlock.initializers) {
-                evaluator.eval(mergedEnv);
+                evaluator.eval(environment);
             }
         }
+        environment.readOnlyEnv = null;
 
         return instance;
     }

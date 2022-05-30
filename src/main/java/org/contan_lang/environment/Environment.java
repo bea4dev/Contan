@@ -44,7 +44,7 @@ public class Environment {
 
     protected CancelStatus cancelStatus = CancelStatus.NONE;
 
-    public ClassBlock classBlock = null;
+    public Environment readOnlyEnv = null;
 
     public Environment(ContanEngine contanEngine, @Nullable Environment parent, @NotNull ContanThread contanThread) {
         this.contanEngine = contanEngine;
@@ -241,6 +241,12 @@ public class Environment {
     public @Nullable ContanObjectReference getVariable(String name) {
         ContanObjectReference variable = variableMap.get(name);
         if(variable != null) return variable;
+
+        if (readOnlyEnv != null) {
+            variable = readOnlyEnv.getVariable(name);
+            if (variable != null) return variable;
+        }
+
         if(parent == null) return null;
         
         return parent.getVariable(name);
