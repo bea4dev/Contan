@@ -43,6 +43,9 @@ public class Lexer {
             
             if ((currentCharacter == ' ' || currentCharacter == '\n' || i == textLength - 1) && !isInString) {
                 if (keyWord.length() != 0) {
+                    if (i == textLength - 1) {
+                        keyWord.append(currentCharacter);
+                    }
                     String key = keyWord.toString();
                     
                     Token token = null;

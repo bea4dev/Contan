@@ -1,5 +1,6 @@
 package org.contan_lang;
 
+import org.contan_lang.syntax.Lexer;
 import org.contan_lang.syntax.exception.ContanParseException;
 import org.contan_lang.thread.ContanThread;
 
@@ -24,7 +25,8 @@ public class App
         }*/
 
 
-        String test1 = "";
+        String test1 = "import TestClass = importJava(\"org.contan_lang.TestClass\")\n" +
+                "data a = TestClass.TEST";
         
         String test2 = "\n" +
                 "import TestClass = importModule(\"test/TestModule1.cntn\").TestClass\n" +

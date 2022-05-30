@@ -33,16 +33,20 @@ public class GetFieldOperator extends Operator {
         if (environment.hasYieldReturnValue() || leftResult == ContanYieldObject.INSTANCE) {
             return ContanYieldObject.INSTANCE;
         }
-        
-        Object left = leftResult.getBasedJavaObject();
 
-        if (left instanceof JavaClassObject) {
+        if (leftResult instanceof JavaClassObject) {
             Class<?> clazz = (Class<?>) leftResult.getBasedJavaObject();
             //Get static field
             try {
                 Field field = clazz.getField(token.getText());
                 return new ContanJavaBaseObjectReference(contanEngine, token.getText(), ContanVoidObject.INSTANCE, field, null);
             } catch (NoSuchFieldException e) {
+                for (Object content : clazz.getEnumConstants()) {
+                    if (content.toString().equals(token.getText())) {
+                        return new JavaClassInstance(contanEngine, content);
+                    }
+                }
+
                 ContanRuntimeError.E0015.throwError("", e, token);
             }
         } else if (leftResult instanceof JavaClassInstance) {
