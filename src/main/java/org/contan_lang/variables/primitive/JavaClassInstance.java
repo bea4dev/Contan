@@ -135,51 +135,54 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                     Parameter parameter = parameters[i];
                     ContanObject<?> variable = variables[i];
                     Class<?> parameterType = parameter.getType();
-                    
+
                     if (variable.convertibleToDouble()) {
                         double original = variable.toDouble();
                         NumberType numberType = NumberType.getType(original);
-                        
+
                         if (parameterType == int.class || parameterType == Integer.class) {
                             if (numberType != NumberType.INTEGER) {
                                 continue methodLoop;
                             }
-                            
+
                             convertedArgs[i] = (int) original;
+                            continue;
                         } else if (parameterType == long.class || parameterType == Long.class) {
                             if (numberType != NumberType.LONG && numberType != NumberType.INTEGER) {
                                 continue methodLoop;
                             }
-                            
+
                             convertedArgs[i] = (long) original;
+                            continue;
                         } else if (parameterType == float.class || parameterType == Float.class) {
                             if (numberType != NumberType.FLOAT && numberType != NumberType.INTEGER) {
                                 continue methodLoop;
                             }
-                            
+
                             convertedArgs[i] = (float) original;
+                            continue;
                         } else if (parameterType == double.class || parameterType == Double.class) {
                             convertedArgs[i] = original;
-                        } else {
-                            convertedArgs[i] = variable.getBasedJavaObject();
+                            continue;
                         }
+                    }
+
+                    if (variable == ContanVoidObject.INSTANCE) {
+                        convertedArgs[i] = null;
                     } else {
-                        if (variable == ContanVoidObject.INSTANCE) {
-                            convertedArgs[i] = null;
-                        } else {
-                            if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
-                                if (!parameterType.isInstance(variable)) {
-                                    continue methodLoop;
-                                }
-
-                                convertedArgs[i] = variable;
-                            } else {
-                                if (!parameterType.isInstance(variable.getBasedJavaObject())) {
-                                    continue methodLoop;
-                                }
-
-                                convertedArgs[i] = variable.getBasedJavaObject();
+                        if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
+                            if (!parameterType.isInstance(variable)) {
+                                System.out.println(4);
+                                continue methodLoop;
                             }
+
+                            convertedArgs[i] = variable;
+                        } else {
+                            if (!parameterType.isInstance(variable.getBasedJavaObject())) {
+                                continue methodLoop;
+                            }
+
+                            convertedArgs[i] = variable.getBasedJavaObject();
                         }
                     }
                 }

@@ -110,44 +110,43 @@ public class CreateClassInstanceOperator implements Evaluator {
                                 }
 
                                 convertedArgs[i] = (int) original;
+                                continue;
                             } else if (parameterType == long.class || parameterType == Long.class) {
-                                if (numberType != NumberType.LONG) {
+                                if (numberType != NumberType.LONG && numberType != NumberType.INTEGER) {
                                     continue methodLoop;
                                 }
 
                                 convertedArgs[i] = (long) original;
+                                continue;
                             } else if (parameterType == float.class || parameterType == Float.class) {
-                                if (numberType != NumberType.FLOAT) {
+                                if (numberType != NumberType.FLOAT && numberType != NumberType.INTEGER) {
                                     continue methodLoop;
                                 }
 
                                 convertedArgs[i] = (float) original;
+                                continue;
                             } else if (parameterType == double.class || parameterType == Double.class) {
-                                if (numberType != NumberType.DOUBLE) {
+                                convertedArgs[i] = original;
+                                continue;
+                            }
+                        }
+
+                        if (variable == ContanVoidObject.INSTANCE) {
+                            convertedArgs[i] = null;
+                        } else {
+                            if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
+                                if (!parameterType.isInstance(variable)) {
+                                    System.out.println(4);
                                     continue methodLoop;
                                 }
 
-                                convertedArgs[i] = original;
+                                convertedArgs[i] = variable;
                             } else {
-                                convertedArgs[i] = variable.getBasedJavaObject();
-                            }
-                        } else {
-                            if (variable == ContanVoidObject.INSTANCE) {
-                                convertedArgs[i] = null;
-                            } else {
-                                if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
-                                    if (!parameterType.isInstance(variable)) {
-                                        continue methodLoop;
-                                    }
-
-                                    convertedArgs[i] = variable;
-                                } else {
-                                    if (!parameterType.isInstance(variable.getBasedJavaObject())) {
-                                        continue methodLoop;
-                                    }
-
-                                    convertedArgs[i] = variable.getBasedJavaObject();
+                                if (!parameterType.isInstance(variable.getBasedJavaObject())) {
+                                    continue methodLoop;
                                 }
+
+                                convertedArgs[i] = variable.getBasedJavaObject();
                             }
                         }
                     }

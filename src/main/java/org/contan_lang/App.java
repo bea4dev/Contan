@@ -22,14 +22,9 @@ public class App
                 System.out.println(token.getText());
             }
         }*/
-        
-        String test1 = "\n" +
-                "data list = list()\n" +
-                "list.add(20)\n" +
-                "print(list[0])\n" +
-                " \n" +
-                "\n" +
-                "";
+
+
+        String test1 = "";
         
         String test2 = "\n" +
                 "import TestClass = importModule(\"test/TestModule1.cntn\").TestClass\n" +
