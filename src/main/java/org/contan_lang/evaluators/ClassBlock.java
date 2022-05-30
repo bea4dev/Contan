@@ -30,7 +30,7 @@ public class ClassBlock {
     
     private final Evaluator superClassEval;
 
-    private final Environment moduleEnvironment;
+    private Environment moduleEnvironment;
 
     public final Set<String> classVariables = new HashSet<>();
 
@@ -81,8 +81,10 @@ public class ClassBlock {
             return;
         }
         
-        this.superClass = (ClassBlock) extendsResult.getBasedJavaObject();
+        superClass = (ClassBlock) extendsResult.getBasedJavaObject();
+        superClass.initializeClassInfo(superClass.moduleEnvironment);
 
+        moduleEnvironment = moduleEnvironment.createMergedEnvironment(superClass.moduleEnvironment);
 
         ClassBlock currentClass = this;
         List<ClassBlock> superClasses = new ArrayList<>();

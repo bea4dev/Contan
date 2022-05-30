@@ -44,8 +44,10 @@ public class App
         String test2 = "\n" +
                 "import TestClass = importModule(\"test/TestModule1.cntn\").TestClass\n" +
                 "\n" +
-                "data instance = new TestClass()\n" +
-                "instance.say()";
+                "data instance = new TestClass2()\n" +
+                "instance.say()\n" +
+                "\n" +
+                "class TestClass2() extends TestClass {}";
 
 
         ContanEngine contanEngine = new ContanEngine();
@@ -55,7 +57,7 @@ public class App
             ContanModule module1 = contanEngine.compile("test/TestModule1.cntn", test1);
             ContanModule module2 = contanEngine.compile("test/TestModule2.cntn", test2);
             
-            //module2.initialize(mainThread);
+            module2.initialize(mainThread);
             module1.initialize(mainThread);
             
         } catch (Exception e) {
