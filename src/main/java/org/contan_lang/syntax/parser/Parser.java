@@ -917,7 +917,10 @@ public class Parser {
                     ParserError.E0015.throwError("", rightTokenList.toArray(new Token[0]));
                 }
                 
-                moduleScope.addVariable(nameToken.getText());
+                scope.addVariable(nameToken.getText());
+                if (scope.classBlock != null) {
+                    scope.classBlock.classVariables.add(nameToken.getText());
+                }
                 
                 Evaluator right = parseExpression(scope, rightTokenList.subList(2, rightTokenList.size()));
                 

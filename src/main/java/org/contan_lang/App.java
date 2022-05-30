@@ -24,17 +24,16 @@ public class App
         }*/
         
         String test1 = "\n" +
-                "import TestClass2 = importModule(\"test/TestModule2.cntn\").TestClass2\n" +
-                "\n" +
+                "import text = \"TEST!!!!\"\n" +
+                "say()\n" +
                 "data instance = new TestClass()\n" +
-                "instance.test(\"TEST!!\")\n" +
                 "instance.say()\n" +
                 "\n" +
-                "class TestClass() extends TestClass2 {\n" +
+                "function say() {\n" +
+                "    print(text)\n" +
+                "}\n" +
                 "\n" +
-                "    function test(text) {\n" +
-                "        this.text = text\n" +
-                "    }\n" +
+                "class TestClass() {\n" +
                 "\n" +
                 "    function say() {\n" +
                 "        print(text)\n" +
@@ -43,9 +42,10 @@ public class App
                 "}";
         
         String test2 = "\n" +
-                "class TestClass2() {\n" +
-                "    data text\n" +
-                "}";
+                "import TestClass = importModule(\"test/TestModule1.cntn\").TestClass\n" +
+                "\n" +
+                "data instance = new TestClass()\n" +
+                "instance.say()";
 
 
         ContanEngine contanEngine = new ContanEngine();
