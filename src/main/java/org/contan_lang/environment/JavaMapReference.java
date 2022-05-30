@@ -4,6 +4,8 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanClassInstance;
+import org.contan_lang.variables.primitive.ContanFunctionExpression;
 import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 
@@ -30,7 +32,11 @@ public class JavaMapReference extends ContanObjectReference {
             if (contanObject == ContanVoidObject.INSTANCE) {
                 map.getClass().getMethod("put", Object.class, Object.class).invoke(map, key, null);
             } else {
-                map.getClass().getMethod("put", Object.class, Object.class).invoke(map, key, contanObject.getBasedJavaObject());
+                if (contanObject instanceof ContanClassInstance || contanObject instanceof ContanFunctionExpression) {
+                    map.getClass().getMethod("put", Object.class, Object.class).invoke(map, key, contanObject);
+                } else {
+                    map.getClass().getMethod("put", Object.class, Object.class).invoke(map, key, contanObject.getBasedJavaObject());
+                }
             }
         } catch (ClassCastException | IllegalArgumentException e) {
             ContanRuntimeError.E0038.throwError("", e, tokens);
@@ -47,7 +53,11 @@ public class JavaMapReference extends ContanObjectReference {
             if (result == null) {
                 return ContanVoidObject.INSTANCE;
             } else {
-                return new JavaClassInstance(contanEngine, result);
+                if (result instanceof ContanObject<?>) {
+                    return (ContanObject<?>) result;
+                } else {
+                    return new JavaClassInstance(contanEngine, result);
+                }
             }
         } catch (ClassCastException e) {
             ContanRuntimeError.E0037.throwError("Value type : " + key.getClass(), e, tokens);

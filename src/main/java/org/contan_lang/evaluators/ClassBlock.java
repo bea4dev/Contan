@@ -8,11 +8,11 @@ import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanClassInstance;
-import org.contan_lang.variables.primitive.ContanClassObject;
 import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClassBlock {
 
@@ -31,6 +31,11 @@ public class ClassBlock {
     private final Evaluator superClassEval;
 
     private final Environment moduleEnvironment;
+
+    public final Set<String> classVariables = new HashSet<>();
+
+    public final Set<Token> lazyCheckVariables = new HashSet<>();
+
 
     public ClassBlock(Token className, String classPath, Environment moduleEnvironment, @Nullable Evaluator superClassEval, Token... initializeArgs) {
         this.className = className;
@@ -55,8 +60,15 @@ public class ClassBlock {
     public Map<String, List<FunctionBlock>> getFunctionMap() {return functionMap;}
     
     public @Nullable List<FunctionBlock> getFunctionsByName(String name) {return functionMap.get(name);}
-    
-    public void evalSuperClass(Environment environment) {
+
+
+    private final AtomicBoolean isInitialized = new AtomicBoolean(false);
+
+    public void initializeClassInfo(Environment environment) {
+        if (isInitialized.getAndSet(true)) {
+            return;
+        }
+
         if (superClassEval == null) {
             return;
         }
@@ -70,6 +82,32 @@ public class ClassBlock {
         }
         
         this.superClass = (ClassBlock) extendsResult.getBasedJavaObject();
+
+
+        ClassBlock currentClass = this;
+        List<ClassBlock> superClasses = new ArrayList<>();
+
+        while (true) {
+            currentClass = currentClass.superClass;
+
+            if (currentClass == null) {
+                break;
+            }
+
+            superClasses.add(currentClass);
+        }
+        Collections.reverse(superClasses);
+
+        //Check lazy variables
+        var : for (Token variable : lazyCheckVariables) {
+            for (ClassBlock classBlock : superClasses) {
+                if (classBlock.classVariables.contains(variable.getText())) {
+                    continue var;
+                }
+            }
+
+            ContanRuntimeError.E0001.throwError("", null, variable);
+        }
     }
 
     public void addFunctionBlock(FunctionBlock functionBlock) {
@@ -78,6 +116,8 @@ public class ClassBlock {
     }
 
     public ContanClassInstance createInstance(ContanEngine contanEngine, ContanThread contanThread, ContanObject<?>... contanObjects) {
+        initializeClassInfo(moduleEnvironment);
+
         Environment environment = new Environment(contanEngine, moduleEnvironment, contanThread);
 
         ContanClassInstance instance = new ContanClassInstance(contanEngine,this, environment);
@@ -93,8 +133,8 @@ public class ClassBlock {
 
 
         ClassBlock currentClass = this;
-        List<ClassBlock> initializeClasses = new ArrayList<>();
-        initializeClasses.add(this);
+        List<ClassBlock> superClasses = new ArrayList<>();
+        superClasses.add(this);
 
         while (true) {
             currentClass = currentClass.superClass;
@@ -103,11 +143,11 @@ public class ClassBlock {
                 break;
             }
 
-            initializeClasses.add(currentClass);
+            superClasses.add(currentClass);
         }
-        Collections.reverse(initializeClasses);
+        Collections.reverse(superClasses);
 
-        for (ClassBlock classBlock : initializeClasses) {
+        for (ClassBlock classBlock : superClasses) {
             for (Evaluator evaluator : classBlock.initializers) {
                 evaluator.eval(environment);
             }

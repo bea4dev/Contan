@@ -4,6 +4,8 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
+import org.contan_lang.variables.primitive.ContanClassInstance;
+import org.contan_lang.variables.primitive.ContanFunctionExpression;
 import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.contan_lang.variables.primitive.JavaClassInstance;
 
@@ -29,7 +31,11 @@ public class JavaArrayIndexReference extends ContanObjectReference {
             if (contanObject == ContanVoidObject.INSTANCE) {
                 Array.set(array, index, null);
             } else {
-                Array.set(array, index, contanObject.getBasedJavaObject());
+                if (contanObject instanceof ContanClassInstance || contanObject instanceof ContanFunctionExpression) {
+                    Array.set(array, index, contanObject);
+                } else {
+                    Array.set(array, index, contanObject.getBasedJavaObject());
+                }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             ContanRuntimeError.E0037.throwError("Index : " + index, e, tokens);
@@ -49,7 +55,11 @@ public class JavaArrayIndexReference extends ContanObjectReference {
             if (result == null) {
                 return ContanVoidObject.INSTANCE;
             } else {
-                return new JavaClassInstance(contanEngine, result);
+                if (result instanceof ContanObject<?>) {
+                    return (ContanObject<?>) result;
+                } else {
+                    return new JavaClassInstance(contanEngine, result);
+                }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             ContanRuntimeError.E0037.throwError("Index : " + index, e, tokens);

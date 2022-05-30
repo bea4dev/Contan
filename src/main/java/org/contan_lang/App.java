@@ -22,56 +22,29 @@ public class App
                 System.out.println(token.getText());
             }
         }*/
-    
-        long start = System.currentTimeMillis();
-        
-        double i;
-        double s = 0.0;
-        for(i = 0; i <= 100000; i+=1.0){
-            s += Math.pow(-1.0, i)/(2.0 * i + 1.0);
-        }
-        System.out.println("Java Result : " + 4.0 * s);
-        long end = System.currentTimeMillis();
-        System.out.println("Java Time : " + (end - start) + " [ms]");
         
         String test1 = "\n" +
-                "import System = importJava(\"java.lang.System\")\n" +
+                "import TestClass2 = importModule(\"test/TestModule2.cntn\").TestClass2\n" +
                 "\n" +
-                "data start = System.currentTimeMillis()\n" +
+                "data instance = new TestClass()\n" +
+                "instance.test(\"TEST!!\")\n" +
+                "instance.say()\n" +
                 "\n" +
-                "data sum = 0.0;\n" +
-                "data i = 0.0\n" +
-                "repeat 100000 {\n" +
+                "class TestClass() extends TestClass2 {\n" +
                 "\n" +
-                "    sum += Math.pow(-1.0, i) / (2.0 * i + 1.0);\n" +
-                "    i += 1.0\n" +
+                "    function test(text) {\n" +
+                "        this.text = text\n" +
+                "    }\n" +
                 "\n" +
-                "}\n" +
+                "    function say() {\n" +
+                "        print(text)\n" +
+                "    }\n" +
                 "\n" +
-                "data end = System.currentTimeMillis()\n" +
-                "\n" +
-                "print(\"Contan Result : \" + (sum * 4.0))\n" +
-                "print(\"Contan Time : \" + (end - start) + \" [ms]\")";
+                "}";
         
         String test2 = "\n" +
-                "import Thread = importJava(\"java.lang.Thread\")\n" +
-                "\n" +
-                "class TestClass(i, j) {\n" +
-                "    \n" +
-                "    data sum\n" +
-                "\n" +
-                "    initialize {\n" +
-                "        sum = i + j\n" +
-                "    }\n" +
-                "\n" +
-                "    function test(t) {\n" +
-                "        return async {\n" +
-                "            \n" +
-                "            \n" +
-                "            return \"Result is \" + (sum + t)\n" +
-                "        }.await()\n" +
-                "    }\n" +
-                "\n" +
+                "class TestClass2() {\n" +
+                "    data text\n" +
                 "}";
 
 

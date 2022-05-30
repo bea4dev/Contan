@@ -29,7 +29,14 @@ public class ContanJavaBaseObjectReference extends ContanObjectReference {
     @Override
     public ContanObject<?> getContanObject() throws Exception {
         Object result = field.get(javaObject);
-        return new JavaClassInstance(contanEngine, result == null ? ContanVoidObject.INSTANCE : result);
+
+        if (result == null) {
+            return ContanVoidObject.INSTANCE;
+        } else if (result instanceof ContanObject<?>) {
+            return (ContanObject<?>) result;
+        } else {
+            return new JavaClassInstance(contanEngine, result);
+        }
     }
     
 }

@@ -37,14 +37,10 @@ public class SyncTaskOperator extends TaskOperator {
             
             newEnvironment = new Environment(contanEngine, environment, contanThread, operators[1], true);
             
-            if (environment.getContanThread() == contanThread) {
-                operators[1].eval(newEnvironment);
-            } else {
-                newEnvironment.rerun();
-            }
+            newEnvironment.rerun();
             environment.setCoroutineStatus(this, 0, newEnvironment.getFuture().getContanInstance());
         } else {
-            return (ContanClassInstance) coroutineStatus.results[0];
+            return coroutineStatus.results[0];
         }
 
         return newEnvironment.getFuture().getContanInstance();

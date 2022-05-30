@@ -174,6 +174,7 @@ public class PreLinkedFunctionOperator extends Operator {
                 ContanObject<?> contanObject = ((ContanClassInstance) leftResult).getEnvironment().getVariable("javaFuture");
     
                 if (contanObject == null) {
+                    ContanRuntimeError.E0000.throwError("", null, functionName);
                     return null;
                 }
     

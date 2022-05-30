@@ -27,6 +27,7 @@ public class SetValueOperator extends Operator {
         }
 
         if (!(contanObject0 instanceof ContanObjectReference)) {
+            System.out.println(contanObject0);
             ContanRuntimeError.E0003.throwError("", null, token);
             return null;
         }

@@ -56,10 +56,18 @@ public class GetFieldOperator extends Operator {
             }
         } else if (leftResult instanceof ContanModuleObject) {
             ContanModule contanModule = (ContanModule) leftResult.getBasedJavaObject();
-            return contanModule.getModuleEnvironment().getVariable(token.getText());
+            ContanObject<?> result = contanModule.getModuleEnvironment().getVariable(token.getText());
+            if (result == null) {
+                ContanRuntimeError.E0015.throwError("", null, token);
+            }
+            return result;
         } else if (leftResult instanceof ContanClassInstance) {
             Environment instanceEnvironment = ((ContanClassInstance) leftResult).getEnvironment();
-            return instanceEnvironment.getVariable(token.getText());
+            ContanObject<?> result = instanceEnvironment.getVariable(token.getText());
+            if (result == null) {
+                ContanRuntimeError.E0015.throwError("", null, token);
+            }
+            return result;
         }
 
         ContanRuntimeError.E0015.throwError("", null, token);

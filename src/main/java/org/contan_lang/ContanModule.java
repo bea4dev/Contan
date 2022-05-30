@@ -101,10 +101,10 @@ public class ContanModule implements FunctionInvokable {
 
         Callable<?> initializeTask = () -> {
             ContanObject<?> result = globalEvaluator.eval(moduleEnvironment);
-    
+
             //Eval class extends
             for (ClassBlock classBlock : classBlocks) {
-                classBlock.evalSuperClass(moduleEnvironment);
+                classBlock.initializeClassInfo(moduleEnvironment);
             }
 
             if (moduleEnvironment.hasReturnValue()) {

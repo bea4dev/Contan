@@ -144,17 +144,17 @@ public class Parser {
 
                         List<Token> args = ParserUtil.getDefinedArguments(argumentTokens);
 
-                        Scope classScope = new Scope(moduleName + "." + classNameToken.getText(), scope, ScopeType.CLASS);
+                        ClassBlock classBlock = new ClassBlock(classNameToken, moduleName + "." + classNameToken.getText(), moduleEnvironment, superClassEval, args.toArray(new Token[0]));
+
+                        Scope classScope = new Scope(moduleName + "." + classNameToken.getText(), scope, ScopeType.CLASS, classBlock);
                         args.forEach(token -> classScope.addVariable(token.getText()));
                         classScope.addVariable("this");
-                        
+
                         if (superClassEval != null) {
                             classScope.addVariable("super");
                         }
 
                         Evaluator blockEval = parseBlock(classScope, null, blockTokens);
-
-                        ClassBlock classBlock = new ClassBlock(classNameToken, moduleName + "." + classNameToken.getText(), moduleEnvironment, superClassEval, args.toArray(new Token[0]));
 
                         classFunctionBlocks.forEach(classBlock::addFunctionBlock);
                         classBlock.addInitializer(blockEval);
@@ -574,6 +574,9 @@ public class Parser {
                 }
 
                 scope.addVariable(variableNameToken.getText());
+                if (scope.classBlock != null) {
+                    scope.classBlock.classVariables.add(variableNameToken.getText());
+                }
                 
                 int rightTokenListLength = rightTokenList.size();
                 if (rightTokenListLength != 1) {
