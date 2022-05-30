@@ -27,7 +27,7 @@ public class App
                 "data list = list()\n" +
                 "list.add(20)\n" +
                 "print(list[0])\n" +
-                "\n" +
+                " \n" +
                 "\n" +
                 "";
         
