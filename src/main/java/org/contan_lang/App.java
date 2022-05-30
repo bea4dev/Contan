@@ -24,22 +24,12 @@ public class App
         }*/
         
         String test1 = "\n" +
-                "import text = \"TEST!!!!\"\n" +
-                "say()\n" +
-                "data instance = new TestClass()\n" +
-                "instance.say()\n" +
+                "data list = list()\n" +
+                "list.add(20)\n" +
+                "print(list[0])\n" +
                 "\n" +
-                "function say() {\n" +
-                "    print(text)\n" +
-                "}\n" +
                 "\n" +
-                "class TestClass() {\n" +
-                "\n" +
-                "    function say() {\n" +
-                "        print(text)\n" +
-                "    }\n" +
-                "\n" +
-                "}";
+                "";
         
         String test2 = "\n" +
                 "import TestClass = importModule(\"test/TestModule1.cntn\").TestClass\n" +
@@ -57,7 +47,7 @@ public class App
             ContanModule module1 = contanEngine.compile("test/TestModule1.cntn", test1);
             ContanModule module2 = contanEngine.compile("test/TestModule2.cntn", test2);
             
-            module2.initialize(mainThread);
+            //module2.initialize(mainThread);
             module1.initialize(mainThread);
             
         } catch (Exception e) {

@@ -168,8 +168,16 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                             convertedArgs[i] = null;
                         } else {
                             if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
+                                if (!parameterType.isInstance(variable)) {
+                                    continue methodLoop;
+                                }
+
                                 convertedArgs[i] = variable;
                             } else {
+                                if (!parameterType.isInstance(variable.getBasedJavaObject())) {
+                                    continue methodLoop;
+                                }
+
                                 convertedArgs[i] = variable.getBasedJavaObject();
                             }
                         }
