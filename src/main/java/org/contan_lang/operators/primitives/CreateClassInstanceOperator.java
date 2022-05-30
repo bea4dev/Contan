@@ -4,6 +4,7 @@ import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.CoroutineStatus;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
+import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
@@ -134,7 +135,19 @@ public class CreateClassInstanceOperator implements Evaluator {
                             if (variable == ContanVoidObject.INSTANCE) {
                                 convertedArgs[i] = null;
                             } else {
-                                convertedArgs[i] = variable.getBasedJavaObject();
+                                if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
+                                    if (!parameterType.isInstance(variable)) {
+                                        continue methodLoop;
+                                    }
+
+                                    convertedArgs[i] = variable;
+                                } else {
+                                    if (!parameterType.isInstance(variable.getBasedJavaObject())) {
+                                        continue methodLoop;
+                                    }
+
+                                    convertedArgs[i] = variable.getBasedJavaObject();
+                                }
                             }
                         }
                     }
@@ -142,6 +155,10 @@ public class CreateClassInstanceOperator implements Evaluator {
                     Object instance = constructor.newInstance(convertedArgs);
                     return new JavaClassInstance(contanEngine, instance);
                 }
+
+                ContanRuntimeError.E0004.throwError("", null, nameToken);
+            } catch (ContanRuntimeException e) {
+                throw e;
             } catch (Exception e) {
                 ContanRuntimeError.E0005.throwError("\nClassPath : " + javaClass.getName()
                         + " | ClassName : " + nameToken.getText()
