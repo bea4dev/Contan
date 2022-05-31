@@ -186,9 +186,7 @@ public class ClassBlock {
     
     public ContanObject<?> invokeFunction(ContanThread contanThread, Environment classInstanceEnvironment, String functionName, ContanObject<?>... variables) {
         List<FunctionBlock> functions = functionMap.get(functionName);
-        if (functions == null) {
-            return ContanVoidObject.INSTANCE;
-        } else {
+        if (functions != null) {
             for (FunctionBlock functionBlock : functions) {
                 if (functionBlock.getArgs().length == variables.length) {
                     return functionBlock.eval(classInstanceEnvironment, contanThread, variables);
