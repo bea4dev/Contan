@@ -172,7 +172,6 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                     } else {
                         if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
                             if (!parameterType.isInstance(variable)) {
-                                System.out.println(4);
                                 continue methodLoop;
                             }
 
