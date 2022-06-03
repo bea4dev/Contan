@@ -25,16 +25,15 @@ public class App
         }*/
 
 
-        String test1 = "import TestClass = importJava(\"org.contan_lang.TestClass\")\n" +
-                "data a = TestClass.TEST";
+        String test1 = "\n" +
+                "function test() {\n" +
+                "    data a = \"AAAAAA\"\n" +
+                "    \n" +
+                "\n" +
+                "    print(a.toString())\n" +
+                "}";
         
-        String test2 = "\n" +
-                "import TestClass = importModule(\"test/TestModule1.cntn\").TestClass\n" +
-                "\n" +
-                "data instance = new TestClass2()\n" +
-                "instance.say()\n" +
-                "\n" +
-                "class TestClass2() extends TestClass {}";
+        String test2 = "";
 
 
         ContanEngine contanEngine = new ContanEngine();
@@ -46,6 +45,9 @@ public class App
             
             //module2.initialize(mainThread);
             module1.initialize(mainThread);
+
+            module1.invokeFunctionAsync(contanEngine.getNextAsyncThread(), "test");
+            module1.invokeFunctionAsync(contanEngine.getNextAsyncThread(), "test");
             
         } catch (Exception e) {
             e.printStackTrace();
