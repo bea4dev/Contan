@@ -21,7 +21,6 @@ public class CreateVariableOperator extends Operator {
     
     @Override
     public ContanObject<?> eval(Environment environment) {
-        System.out.println(environment + ", " + variableName);
         environment.createVariable(variableName, ContanVoidObject.INSTANCE);
         return ContanVoidObject.INSTANCE;
     }

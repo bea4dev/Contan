@@ -22,12 +22,27 @@ public class SetValueOperator extends Operator {
     
     @Override
     public ContanObject<?> eval(Environment environment) {
-        if (super.evalLeftAndRight(environment) == ContanYieldObject.INSTANCE) {
+        ContanObject<?> contanObject0;
+        ContanObject<?> contanObject1;
+    
+        CoroutineStatus coroutineStatus = environment.getCoroutineStatus(this);
+        
+        if (coroutineStatus == null) {
+            contanObject0 = operators[0].eval(environment);
+            if (environment.hasYieldReturnValue() || contanObject0 == ContanYieldObject.INSTANCE) {
+                return ContanYieldObject.INSTANCE;
+            }
+        } else {
+            contanObject0 = coroutineStatus.results[0];
+        }
+    
+        contanObject1 = operators[1].eval(environment);
+        if (environment.hasYieldReturnValue() || contanObject1 == ContanYieldObject.INSTANCE) {
+            environment.setCoroutineStatus(this, 0, contanObject0);
             return ContanYieldObject.INSTANCE;
         }
 
         if (!(contanObject0 instanceof ContanObjectReference)) {
-            System.out.println(contanObject0);
             ContanRuntimeError.E0003.throwError("", null, token);
             return null;
         }
@@ -40,7 +55,8 @@ public class SetValueOperator extends Operator {
             if (reference.isConst()) {
                 ContanRuntimeError.E0023.throwError("", null, token);
             }
-
+            
+            
             reference.setContanObject(resultClone);
             
             return resultClone;

@@ -85,8 +85,9 @@ public class Environment {
     public CancelStatus getCancelStatus() {return cancelStatus;}
 
     public void setCancelStatus(CancelStatus cancelStatus) {this.cancelStatus = cancelStatus;}
-
-
+    
+    public Map<String, ContanObjectReference> getVariableMap() {return variableMap;}
+    
     private boolean returnEnvInitialize = false;
     
     public void complete(ContanObject<?> result) {

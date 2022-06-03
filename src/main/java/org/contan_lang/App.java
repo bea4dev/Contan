@@ -25,13 +25,18 @@ public class App
         }*/
 
 
-        String test1 = "\n" +
-                "function test() {\n" +
-                "    data a = \"AAAAAA\"\n" +
-                "    \n" +
+        String test1 = "import Thread = importJava(\"java.lang.Thread\")\n" +
                 "\n" +
-                "    print(a.toString())\n" +
-                "}";
+                "data text1 = async {\n" +
+                "    Thread.sleep(1000)\n" +
+                "    return \"Hello \"\n" +
+                "}\n" +
+                "data text2 = async {\n" +
+                "    Thread.sleep(1000)\n" +
+                "    return \"World!!\"\n" +
+                "}\n" +
+                "\n" +
+                "print(text1.await() + text2.await())";
         
         String test2 = "";
 
@@ -45,9 +50,6 @@ public class App
             
             //module2.initialize(mainThread);
             module1.initialize(mainThread);
-
-            module1.invokeFunctionAsync(contanEngine.getNextAsyncThread(), "test");
-            module1.invokeFunctionAsync(contanEngine.getNextAsyncThread(), "test");
             
         } catch (Exception e) {
             e.printStackTrace();
