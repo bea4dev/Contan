@@ -17,7 +17,7 @@ public class Lexer {
 
     public Lexer(String rootName, String text) {
         this.rootName = rootName;
-        this.text = text;
+        this.text = text + " ";
     }
     
     public List<Token> split() {
@@ -33,9 +33,88 @@ public class Lexer {
         
         boolean isInString = false;
         boolean escaped = false;
+        CommentType commentType = null;
         
         loop : for (int i = 0; i < textLength; i++) {
             char currentCharacter = text.charAt(i);
+            
+            
+            if (commentType != null) {
+                
+                currentColumn++;
+                if (currentCharacter == '\n') {
+                    currentLine++;
+                    currentColumn = 0;
+                    currentLineToken.build();
+                    currentLineToken = new LineToken(currentLine);
+                } else {
+                    currentLineToken.append(currentCharacter);
+                }
+                
+                if (commentType == CommentType.LINE) {
+                    if (currentCharacter == '\n') {
+                        commentType = null;
+                    }
+                } else {
+                    if (currentCharacter == '*' && !isInString && i + 1 != textLength) {
+                        if (text.charAt(i + 1) == '/') {
+                            i++;
+                            commentType = null;
+                        }
+                    }
+                }
+                
+                continue;
+            }
+            
+            if (currentCharacter == '/' && !isInString && i + 1 != textLength) {
+                char next = text.charAt(i + 1);
+                
+                if (next == '/') {
+                    commentType = CommentType.LINE;
+                } else if (next == '*') {
+                    commentType = CommentType.BLOCK;
+                }
+                
+                
+                if (commentType != null) {
+                    if (keyWord.length() != 0) {
+                        String key = keyWord.toString();
+        
+                        Token token = null;
+        
+                        if (text.charAt(i - 1) == '"') {
+                            token = new StringToken(this, key, currentColumn, currentLineToken, null);
+                        }
+        
+                        if (token == null) {
+                            //Check identifier
+                            id:
+                            for (Identifier identifier : Identifier.values()) {
+                                for (String word : identifier.words) {
+                                    if (word.equals(key)) {
+                                        token = new Token(this, key, currentColumn, currentLineToken, identifier);
+                                        break id;
+                                    }
+                                }
+                            }
+                        }
+        
+                        if (token == null) {
+                            token = new Token(this, key, currentColumn, currentLineToken, null);
+                        }
+        
+                        tokens.add(token);
+                        keyWord = new StringBuilder();
+                    }
+    
+                    currentColumn++;
+                    currentLineToken.append(currentCharacter);
+                    
+                    continue;
+                }
+            }
+            
             
             if (currentCharacter == '"' && !escaped) {
                 isInString = !isInString;
@@ -164,6 +243,11 @@ public class Lexer {
         this.tokens.addAll(tokens);
         
         return tokens;
+    }
+    
+    private enum CommentType {
+        LINE,
+        BLOCK
     }
     
 }

@@ -25,18 +25,18 @@ public class App
         }*/
 
 
-        String test1 = "import Thread = importJava(\"java.lang.Thread\")\n" +
+        String test1 = "\n" +
+                "data test = \"Hello world!\"//Comment!!\n" +
                 "\n" +
-                "data text1 = async {\n" +
-                "    Thread.sleep(1000)\n" +
-                "    return \"Hello \"\n" +
-                "}\n" +
-                "data text2 = async {\n" +
-                "    Thread.sleep(1000)\n" +
-                "    return \"World!!\"\n" +
-                "}\n" +
+                "/*\n" +
+                " * \n" +
+                " * \n" +
+                " * aaaaa\n" +
+                " * Commentaaa\n" +
+                " a*/\n" +
                 "\n" +
-                "print(text1.await() + text2.await())";
+                " //aaaa\n" +
+                " print(test)";
         
         String test2 = "";
 
