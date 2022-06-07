@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * Hello world!
  *
  */
-public class App 
+public class App
 {
     public static void main( String[] args )
     {
@@ -37,7 +37,7 @@ public class App
                 "\n" +
                 " //aaaa\n" +
                 " print(test)";
-        
+
         String test2 = "";
 
 
@@ -47,10 +47,10 @@ public class App
         try {
             ContanModule module1 = contanEngine.compile("test/TestModule1.cntn", test1);
             ContanModule module2 = contanEngine.compile("test/TestModule2.cntn", test2);
-            
+
             //module2.initialize(mainThread);
             module1.initialize(mainThread);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
