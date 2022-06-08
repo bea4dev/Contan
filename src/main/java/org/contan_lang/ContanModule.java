@@ -138,7 +138,7 @@ public class ContanModule implements FunctionInvokable {
     }
     
     
-    public Object invokeFunction(ContanThread contanThread, String functionName, Object... arguments) throws ExecutionException, InterruptedException {
+    public Object invokeFunctionSync(ContanThread contanThread, String functionName, Object... arguments) throws ExecutionException, InterruptedException {
         //Convert all arguments to ContanObject.
         ContanObject<?>[] variables = new ContanObject<?>[arguments.length];
         for (int i = 0; i < arguments.length; i++) {
@@ -156,7 +156,34 @@ public class ContanModule implements FunctionInvokable {
                     if (result instanceof ContanVoidObject) {
                         return null;
                     } else {
-                        return result.getBasedJavaObject();
+                        return result.convertToJavaObject();
+                    }
+                }
+            }
+        }
+        
+        throw new ContanJavaRuntimeException("Function not found : " + functionName, null);
+    }
+    
+    
+    public Object invokeFunction(ContanThread contanThread, String functionName, Object... arguments) throws ExecutionException, InterruptedException {
+        //Convert all arguments to ContanObject.
+        ContanObject<?>[] variables = new ContanObject<?>[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            variables[i] = new JavaClassInstance(contanEngine, arguments[i]);
+        }
+        
+        //Invoke function
+        List<FunctionBlock> functions = functionMap.get(functionName);
+        if (functions != null) {
+            for (FunctionBlock functionBlock : functions) {
+                if (functionBlock.getArgs().length == variables.length) {
+                    ContanObject<?> result = functionBlock.eval(new Environment(contanEngine, moduleEnvironment, contanThread), null, contanThread, variables);
+                    
+                    if (result instanceof ContanVoidObject) {
+                        return null;
+                    } else {
+                        return result.convertToJavaObject();
                     }
                 }
             }
