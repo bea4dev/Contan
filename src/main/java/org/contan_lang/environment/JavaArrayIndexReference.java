@@ -27,6 +27,7 @@ public class JavaArrayIndexReference extends ContanObjectReference {
     @Override
     public void setContanObject(ContanObject<?> contanObject) throws Exception {
         super.setContanObject(contanObject);
+        
         try {
             if (contanObject == ContanVoidObject.INSTANCE) {
                 Array.set(array, index, null);
