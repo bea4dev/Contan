@@ -43,6 +43,11 @@ public class ContanModuleObject extends ContanPrimitiveObject<ContanModule> {
     }
     
     @Override
+    public Object convertToJavaObject() {
+        return this;
+    }
+    
+    @Override
     public String toString() {
         return "ContanModuleObject{Module='" + based.getRootName() + "'}";
     }

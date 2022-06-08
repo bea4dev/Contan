@@ -32,11 +32,7 @@ public class JavaMapReference extends ContanObjectReference {
             if (contanObject == ContanVoidObject.INSTANCE) {
                 map.getClass().getMethod("put", Object.class, Object.class).invoke(map, key, null);
             } else {
-                if (contanObject instanceof ContanClassInstance || contanObject instanceof ContanFunctionExpression) {
-                    map.getClass().getMethod("put", Object.class, Object.class).invoke(map, key, contanObject);
-                } else {
-                    map.getClass().getMethod("put", Object.class, Object.class).invoke(map, key, contanObject.getBasedJavaObject());
-                }
+                map.getClass().getMethod("put", Object.class, Object.class).invoke(map, key, contanObject.convertToJavaObject());
             }
         } catch (ClassCastException | IllegalArgumentException e) {
             ContanRuntimeError.E0038.throwError("", e, tokens);

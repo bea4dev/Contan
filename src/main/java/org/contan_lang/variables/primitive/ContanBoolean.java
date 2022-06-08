@@ -38,6 +38,11 @@ public class ContanBoolean extends ContanPrimitiveObject<Boolean> {
     }
     
     @Override
+    public Object convertToJavaObject() {
+        return based;
+    }
+    
+    @Override
     public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;

@@ -46,6 +46,11 @@ public class ContanClassInstance extends ContanPrimitiveObject<ClassBlock> {
         return false;
     }
     
+    @Override
+    public Object convertToJavaObject() {
+        return this;
+    }
+    
     public Environment getEnvironment() {return environment;}
     
     @Override

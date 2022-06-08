@@ -118,6 +118,11 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
     }
     
     @Override
+    public Object convertToJavaObject() {
+        return based;
+    }
+    
+    @Override
     public String toString() {
         return based.toString();
     }
@@ -170,19 +175,11 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                     if (variable == ContanVoidObject.INSTANCE) {
                         convertedArgs[i] = null;
                     } else {
-                        if (variable instanceof ContanClassInstance || variable instanceof ContanFunctionExpression) {
-                            if (!parameterType.isInstance(variable)) {
-                                continue methodLoop;
-                            }
-
-                            convertedArgs[i] = variable;
-                        } else {
-                            if (!parameterType.isInstance(variable.getBasedJavaObject())) {
-                                continue methodLoop;
-                            }
-
-                            convertedArgs[i] = variable.getBasedJavaObject();
+                        if (!parameterType.isInstance(variable.convertibleToDouble())) {
+                            continue methodLoop;
                         }
+    
+                        convertedArgs[i] = variable.getBasedJavaObject();
                     }
                 }
                 

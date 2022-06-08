@@ -57,6 +57,11 @@ public class ContanFunctionExpression extends ContanPrimitiveObject<FunctionBloc
     }
     
     @Override
+    public Object convertToJavaObject() {
+        return this;
+    }
+    
+    @Override
     public String toString() {
         return "ContanFunctionExpression{}";
     }

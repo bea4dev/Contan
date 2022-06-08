@@ -38,6 +38,11 @@ public class ContanI64 extends ContanPrimitiveObject<Long> {
     }
     
     @Override
+    public Object convertToJavaObject() {
+        return this;
+    }
+    
+    @Override
     public ContanObject<?> invokeFunctionChild(ContanThread contanThread, Token functionName, ContanObject<?>... variables) {
         ContanRuntimeError.E0011.throwError("", null, functionName);
         return null;

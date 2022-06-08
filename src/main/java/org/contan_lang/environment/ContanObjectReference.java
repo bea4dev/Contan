@@ -67,4 +67,9 @@ public class ContanObjectReference extends ContanPrimitiveObject<Object> {
         return ((ContanObject<?>) based).convertibleToDouble();
     }
     
+    @Override
+    public Object convertToJavaObject() {
+        return ((ContanObject<?>) based).convertToJavaObject();
+    }
+    
 }

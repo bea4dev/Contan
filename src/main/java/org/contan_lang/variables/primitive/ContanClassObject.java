@@ -45,6 +45,11 @@ public class ContanClassObject extends ContanPrimitiveObject<ClassBlock> {
     }
     
     @Override
+    public Object convertToJavaObject() {
+        return this;
+    }
+    
+    @Override
     public String toString() {
         return "ContanClassObject{Class=" + based.getClassPath() + "}";
     }

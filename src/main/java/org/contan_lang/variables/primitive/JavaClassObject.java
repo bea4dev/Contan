@@ -43,6 +43,11 @@ public class JavaClassObject extends ContanPrimitiveObject<Class<?>> {
     }
     
     @Override
+    public Object convertToJavaObject() {
+        return this;
+    }
+    
+    @Override
     public String toString() {
         return based.toString();
     }

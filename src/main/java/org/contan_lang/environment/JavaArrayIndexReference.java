@@ -31,11 +31,7 @@ public class JavaArrayIndexReference extends ContanObjectReference {
             if (contanObject == ContanVoidObject.INSTANCE) {
                 Array.set(array, index, null);
             } else {
-                if (contanObject instanceof ContanClassInstance || contanObject instanceof ContanFunctionExpression) {
-                    Array.set(array, index, contanObject);
-                } else {
-                    Array.set(array, index, contanObject.getBasedJavaObject());
-                }
+                Array.set(array, index, contanObject.convertToJavaObject());
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             ContanRuntimeError.E0037.throwError("Index : " + index, e, tokens);

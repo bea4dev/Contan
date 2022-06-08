@@ -19,4 +19,6 @@ public interface ContanObject<T> extends FunctionInvokable {
     
     boolean convertibleToDouble();
     
+    Object convertToJavaObject();
+    
 }

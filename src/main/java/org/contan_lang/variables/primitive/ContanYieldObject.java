@@ -46,6 +46,11 @@ public class ContanYieldObject extends ContanPrimitiveObject<Boolean> {
     }
     
     @Override
+    public Object convertToJavaObject() {
+        return this;
+    }
+    
+    @Override
     public String toString() {
         return "YIELD_OBJECT";
     }

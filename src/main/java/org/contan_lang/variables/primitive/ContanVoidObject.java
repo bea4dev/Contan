@@ -42,7 +42,12 @@ public class ContanVoidObject extends ContanPrimitiveObject<Boolean> {
     public boolean convertibleToDouble() {
         return false;
     }
-
+    
+    @Override
+    public Object convertToJavaObject() {
+        return null;
+    }
+    
     @Override
     public Boolean getBasedJavaObject() {
         return based;

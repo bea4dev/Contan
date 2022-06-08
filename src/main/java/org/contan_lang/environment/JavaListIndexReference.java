@@ -31,11 +31,7 @@ public class JavaListIndexReference extends ContanObjectReference {
             if (contanObject == ContanVoidObject.INSTANCE) {
                 list.getClass().getMethod("set", int.class, Object.class).invoke(list, index, null);
             } else {
-                if (contanObject instanceof ContanClassInstance || contanObject instanceof ContanFunctionExpression) {
-                    list.getClass().getMethod("set", int.class, Object.class).invoke(list, index, contanObject);
-                } else {
-                    list.getClass().getMethod("set", int.class, Object.class).invoke(list, index, contanObject.getBasedJavaObject());
-                }
+                list.getClass().getMethod("set", int.class, Object.class).invoke(list, index, contanObject.convertToJavaObject());
             }
         } catch (IndexOutOfBoundsException e) {
             ContanRuntimeError.E0037.throwError("Index : " + index, e, tokens);
