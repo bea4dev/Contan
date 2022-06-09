@@ -175,7 +175,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                     if (variable == ContanVoidObject.INSTANCE) {
                         convertedArgs[i] = null;
                     } else {
-                        if (!parameterType.isInstance(variable.convertibleToDouble())) {
+                        if (!parameterType.isInstance(variable.convertToJavaObject())) {
                             continue methodLoop;
                         }
     
