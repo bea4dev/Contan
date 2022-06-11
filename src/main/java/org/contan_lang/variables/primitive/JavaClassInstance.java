@@ -179,7 +179,7 @@ public class JavaClassInstance extends ContanPrimitiveObject<Object> {
                             continue methodLoop;
                         }
     
-                        convertedArgs[i] = variable.getBasedJavaObject();
+                        convertedArgs[i] = variable.convertToJavaObject();
                     }
                 }
                 

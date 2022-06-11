@@ -62,7 +62,7 @@ public class AllRepeatEvaluator implements Evaluator {
 
             while (iterator.hasNext()) {
                 Object element = iterator.next();
-                if (element instanceof ContanClassInstance || element instanceof ContanFunctionExpression) {
+                if (element instanceof ContanObject<?>) {
                     newEnv.createOrSetVariable(variableName, (ContanObject<?>) element);
                 } else {
                     newEnv.createOrSetVariable(variableName, new JavaClassInstance(contanEngine, element));
