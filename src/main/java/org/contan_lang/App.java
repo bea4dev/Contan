@@ -25,18 +25,9 @@ public class App
         }*/
 
 
-        String test1 = "\n" +
-                "data test = \"Hello world!\"//Comment!!\n" +
+        String test1 = "import TestClass = importJava(\"org.contan_lang.TestClass\")\n" +
                 "\n" +
-                "/*\n" +
-                " * \n" +
-                " * \n" +
-                " * aaaaa\n" +
-                " * Commentaaa\n" +
-                " a*/\n" +
-                "\n" +
-                " //aaaa\n" +
-                " print(test)";
+                "TestClass.setBool(true)";
 
         String test2 = "";
 

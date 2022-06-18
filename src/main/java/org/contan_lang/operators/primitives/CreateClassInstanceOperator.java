@@ -134,11 +134,17 @@ public class CreateClassInstanceOperator implements Evaluator {
                         if (variable == ContanVoidObject.INSTANCE) {
                             convertedArgs[i] = null;
                         } else {
-                            if (!parameterType.isInstance(variable.convertToJavaObject())) {
+                            Object converted = variable.convertToJavaObject();
+    
+                            if (converted instanceof Boolean) {
+                                if (parameterType != boolean.class && parameterType != Boolean.class) {
+                                    continue methodLoop;
+                                }
+                            } else if (!parameterType.isInstance(converted)) {
                                 continue methodLoop;
                             }
-        
-                            convertedArgs[i] = variable.convertToJavaObject();
+    
+                            convertedArgs[i] = converted;
                         }
                     }
 
