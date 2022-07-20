@@ -48,6 +48,7 @@ public class DelayOperator extends Operator {
         tickBasedThread.scheduleTask(() -> {
             Environment returnEnv = environment.getReturnEnvironment();
             if (returnEnv != null) {
+                returnEnv.setReturnValue(null);
                 returnEnv.rerun();
             }
             
