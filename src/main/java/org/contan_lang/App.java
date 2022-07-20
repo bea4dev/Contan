@@ -25,9 +25,21 @@ public class App
         }*/
 
 
-        String test1 = "import TestClass = importJava(\"org.contan_lang.TestClass\")\n" +
+        String test1 = "import Thread = importJava(\"java.lang.Thread\")\n" +
                 "\n" +
-                "TestClass.setBool(true)";
+                "function test() {\n" +
+                "    data func = () => {\n" +
+                "        return async {\n" +
+                "            Thread.sleep(1000);\n" +
+                "            return \"Hello world!!\"\n" +
+                "        }.await()\n" +
+                "    }\n" +
+                "\n" +
+                "    return func()\n" +
+                "}\n" +
+                "\n" +
+                "data text = test().await()\n" +
+                "print(text)";
 
         String test2 = "";
 
