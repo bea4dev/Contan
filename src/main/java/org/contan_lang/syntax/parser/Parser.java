@@ -422,6 +422,8 @@ public class Parser {
                 expressionTokens.clear();
             }
         }
+        
+        blockEvaluators.removeIf(evaluator -> evaluator == NullEvaluator.INSTANCE);
 
         return new Expressions(blockEvaluators.toArray(new Evaluator[0]));
     }
