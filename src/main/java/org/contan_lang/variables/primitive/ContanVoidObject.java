@@ -5,14 +5,14 @@ import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
 
-public class ContanVoidObject extends ContanPrimitiveObject<Boolean> {
+public class ContanVoidObject extends ContanPrimitiveObject<ContanVoidObject> {
     
     public static final ContanVoidObject INSTANCE = new ContanVoidObject();
     
-    private ContanVoidObject() {super(null, false);}
+    private ContanVoidObject() {super(null, null);}
     
     @Override
-    public ContanObject<Boolean> createClone() {return INSTANCE;}
+    public ContanVoidObject createClone() {return INSTANCE;}
     
     @Override
     public String toString() {return "NULL";}
@@ -49,8 +49,8 @@ public class ContanVoidObject extends ContanPrimitiveObject<Boolean> {
     }
     
     @Override
-    public Boolean getBasedJavaObject() {
-        return based;
+    public ContanVoidObject getBasedJavaObject() {
+        return ContanVoidObject.INSTANCE;
     }
     
 }
