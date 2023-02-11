@@ -29,6 +29,7 @@ public enum Identifier {
     DOT(3, true, "."),
     OPERATOR_EQUAL(6, true, "=="),
     OPERATOR_NOT_EQUAL(6, true, "!="),
+    OPERATOR_COMPARE(6, true, "<=", ">=", "<", ">"),
     OPERATOR_NOT(3, true, "!"),
     INSTANCE_OF(6, false, "is"),
     OPERATOR_AND(7, true, "&&"),

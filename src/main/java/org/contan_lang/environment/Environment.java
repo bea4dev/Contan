@@ -254,15 +254,11 @@ public class Environment {
     }
     
     public void createVariable(String name, ContanObject<?> contanObject) {
-        if (variableMap.containsKey(name)) return;
-    
         ContanObjectReference contanVariableReference = new ContanObjectReference(contanEngine, name, contanObject);
         variableMap.put(name, contanVariableReference);
     }
 
     public void createConstVariable(String name, ContanObject<?> contanObject) {
-        if (variableMap.containsKey(name)) return;
-
         ContanObjectReference contanVariableReference = new ContanObjectReference(contanEngine, name, contanObject, true);
         variableMap.put(name, contanVariableReference);
     }

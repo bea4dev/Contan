@@ -66,7 +66,7 @@ public class BooleanOperator extends BooleanBaseOperator {
             
             default: {
                 ContanRuntimeError.E0000.throwError("", null, token);
-                return ContanVoidObject.INSTANCE;
+                return null;
             }
         }
     }

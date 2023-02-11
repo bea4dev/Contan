@@ -765,6 +765,21 @@ public class Parser {
     
                 return new BooleanOperator(contanEngine, highestIdentifierToken, highestIdentifier, left, right);
             }
+
+            //a < 2
+            case OPERATOR_COMPARE: {
+                if (leftTokenList.size() == 0 || rightTokenList.size() == 0) {
+                    System.out.println(leftTokenList.size() + ", " + rightTokenList.size());
+                    ParserError.E0012.throwError("", highestIdentifierToken);
+                }
+
+                Evaluator left = parseExpression(scope, leftTokenList);
+                Evaluator right = parseExpression(scope, rightTokenList);
+
+                CompareOperator.CompareType compareType = CompareOperator.CompareType.getFromIdentifier(highestIdentifierToken);
+
+                return new CompareOperator(contanEngine, highestIdentifierToken, compareType, left, right);
+            }
             
             //value = 20
             case ASSIGNMENT: {
