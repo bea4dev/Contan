@@ -40,17 +40,19 @@ public abstract class ContanPrimitiveObject<T> implements ContanObject<T>, Evalu
                 }
                 
                 case "toLong": {
+                    /*
                     if (!this.convertibleToLong()) {
                         ContanRuntimeError.E0046.throwError("", null, functionName);
-                    }
+                    }*/
                     
                     return new ContanI64(contanEngine, this.toLong());
                 }
                 
                 case "toDouble": {
+                    /*
                     if (!this.convertibleToDouble()) {
                         ContanRuntimeError.E0047.throwError("", null, functionName);
-                    }
+                    }*/
                     
                     return new ContanF64(contanEngine, this.toDouble());
                 }
