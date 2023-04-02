@@ -184,7 +184,7 @@ public class PreLinkedFunctionOperator extends Operator {
                 }
     
                 JavaContanFuture javaContanFuture = (JavaContanFuture) contanObject.getBasedJavaObject();
-    
+
                 try {
                     javaContanFuture.LOCK.lock();
                     
@@ -195,8 +195,14 @@ public class PreLinkedFunctionOperator extends Operator {
                             return null;
                         });
                         //Rerun later
-                        environment.rerun();
-                        environment.setCoroutineStatus(this, args.length, javaContanFuture.getResult());
+                        //environment.rerun();
+                        //environment.setCoroutineStatus(this, args.length, javaContanFuture.getResult());
+
+                        Environment returnEnv = environment.getReturnableEnvironment();
+                        if (returnEnv != null) {
+                            returnEnv.rerun();
+                            returnEnv.setCoroutineStatus(this, args.length, javaContanFuture.getResult());
+                        }
                     } else {
                         javaContanFuture.addAwaitEnvironment(environment);
                     }

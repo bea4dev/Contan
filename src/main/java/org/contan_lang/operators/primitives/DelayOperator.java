@@ -53,14 +53,11 @@ public class DelayOperator extends Operator {
         ContanTickBasedThread tickBasedThread = (ContanTickBasedThread) contanThread;
         
         tickBasedThread.scheduleTask(() -> {
-            /*
-            Environment returnEnv = environment.getReturnEnvironment();
+            Environment returnEnv = environment.getReturnableEnvironment();
             if (returnEnv != null) {
                 returnEnv.setReturnValue(null);
                 returnEnv.rerun();
-            }*/
-            environment.setReturnValue(null);
-            environment.rerun();
+            }
             
             return null;
         }, delay);

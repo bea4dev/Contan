@@ -1,7 +1,6 @@
 package org.contan_lang.environment;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.evaluators.ClassBlock;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.runtime.JavaContanFuture;
 import org.contan_lang.standard.classes.StandardClasses;
@@ -92,7 +91,7 @@ public class Environment {
     
     public void complete(ContanObject<?> result) {
         if (!canHasReturnValue) {
-            Environment returnEnvironment = getReturnEnvironment();
+            Environment returnEnvironment = getReturnableEnvironment();
             if (returnEnvironment == null) {
                 return;
             }
@@ -142,7 +141,7 @@ public class Environment {
         }
     }
     
-    public @Nullable Environment getReturnEnvironment() {
+    public @Nullable Environment getReturnableEnvironment() {
         if (returnEnvInitialize) {
             return returnEnvironmentCache;
         }
@@ -172,7 +171,7 @@ public class Environment {
             return isCoroutineEnvironment;
         }
     
-        Environment returnEnvironment = getReturnEnvironment();
+        Environment returnEnvironment = getReturnableEnvironment();
         if (returnEnvironment == null) {
             return false;
         }
@@ -181,7 +180,7 @@ public class Environment {
     }
     
     public @Nullable CoroutineStatus getCoroutineStatus(Evaluator evaluator) {
-        Environment returnEnvironment = getReturnEnvironment();
+        Environment returnEnvironment = getReturnableEnvironment();
         if (returnEnvironment == null) {
             return null;
         }
@@ -190,7 +189,7 @@ public class Environment {
     }
     
     public void setCoroutineStatus(Evaluator evaluator, long count, ContanObject<?>... results) {
-        Environment returnEnvironment = getReturnEnvironment();
+        Environment returnEnvironment = getReturnableEnvironment();
         if (returnEnvironment == null) {
             return;
         }
@@ -203,7 +202,7 @@ public class Environment {
             return returnValue != null;
         }
         
-        Environment returnEnvironment = getReturnEnvironment();
+        Environment returnEnvironment = getReturnableEnvironment();
         if (returnEnvironment == null) {
             return false;
         }
@@ -216,7 +215,7 @@ public class Environment {
             return returnValue == ContanYieldObject.INSTANCE;
         }
         
-        Environment returnEnvironment = getReturnEnvironment();
+        Environment returnEnvironment = getReturnableEnvironment();
         if (returnEnvironment == null) {
             return false;
         }
@@ -231,7 +230,7 @@ public class Environment {
             return;
         }
         
-        Environment returnEnvironment = getReturnEnvironment();
+        Environment returnEnvironment = getReturnableEnvironment();
         if (returnEnvironment == null) {
             return;
         }

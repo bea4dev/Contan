@@ -8,6 +8,7 @@ import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.contan_lang.variables.primitive.ContanYieldObject;
+import org.contan_lang.variables.primitive.JavaClassInstance;
 import org.jetbrains.annotations.Nullable;
 
 public class IfEvaluator implements Evaluator {
@@ -54,11 +55,17 @@ public class IfEvaluator implements Evaluator {
         
         if (bool) {
             if(trueExpression != null) {
-                Environment nestedEnv = new Environment(contanEngine, environment, environment.getContanThread());
+                Environment nestedEnv;
+                if (coroutineStatus == null || coroutineStatus.count == 0) {
+                    nestedEnv = new Environment(contanEngine, environment, environment.getContanThread());
+                } else {
+                    nestedEnv = (Environment) coroutineStatus.results[1].getBasedJavaObject();
+                }
+
                 ContanObject<?> result = trueExpression.eval(nestedEnv);
 
                 if (environment.hasYieldReturnValue() || result == ContanYieldObject.INSTANCE) {
-                    environment.setCoroutineStatus(this, 0, termResult);
+                    environment.setCoroutineStatus(this, 1, termResult, new JavaClassInstance(contanEngine, nestedEnv));
                     return ContanVoidObject.INSTANCE;
                 }
             }

@@ -55,11 +55,11 @@ public class JavaContanFuture {
             }
     
             for (Environment environment : awaitEnvironmentList) {
-                Environment returnEnv = environment.getReturnEnvironment();
+                Environment returnEnv = environment.getReturnableEnvironment();
                 if (returnEnv == null) {
                     continue;
                 }
-        
+
                 environment.setReturnValue(null);
                 returnEnv.rerun();
             }
