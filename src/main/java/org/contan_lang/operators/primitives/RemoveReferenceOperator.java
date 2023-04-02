@@ -16,6 +16,6 @@ public class RemoveReferenceOperator extends Operator {
 
     @Override
     public ContanObject<?> eval(Environment environment) {
-        return ContanRuntimeUtil.removeReference(token, operators[0].eval(environment));
+        return ContanRuntimeUtil.dereference(token, operators[0].eval(environment));
     }
 }

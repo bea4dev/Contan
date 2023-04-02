@@ -34,7 +34,7 @@ public class DelayTaskOperator extends TaskOperator {
     
         if (coroutineStatus == null) {
             ContanObject<?> delayResult = operators[0].eval(environment);
-            delayResult = ContanRuntimeUtil.removeReference(token, delayResult);
+            delayResult = ContanRuntimeUtil.dereference(token, delayResult);
             
             if (environment.hasYieldReturnValue()) {
                 return ContanYieldObject.INSTANCE;

@@ -33,7 +33,7 @@ public class GetLinkedValueOperator extends Operator {
         } else {
             leftResult = coroutineStatus.results[0];
         }
-        leftResult = ContanRuntimeUtil.removeReference(token, leftResult);
+        leftResult = ContanRuntimeUtil.dereference(token, leftResult);
         
         if (environment.hasYieldReturnValue()) {
             return ContanYieldObject.INSTANCE;
@@ -41,7 +41,7 @@ public class GetLinkedValueOperator extends Operator {
         
         
         ContanObject<?> keyResult = operators[1].eval(environment);
-        keyResult = ContanRuntimeUtil.removeReference(token, keyResult);
+        keyResult = ContanRuntimeUtil.dereference(token, keyResult);
         
         if (environment.hasYieldReturnValue()) {
             environment.setCoroutineStatus(this, 0, leftResult);

@@ -35,7 +35,7 @@ public class DelayOperator extends Operator {
         
         
         ContanObject<?> delayTicksResult = operators[0].eval(environment);
-        delayTicksResult = ContanRuntimeUtil.removeReference(token, delayTicksResult);
+        delayTicksResult = ContanRuntimeUtil.dereference(token, delayTicksResult);
         
         if (environment.hasYieldReturnValue()) {
             return ContanYieldObject.INSTANCE;
@@ -55,7 +55,8 @@ public class DelayOperator extends Operator {
         tickBasedThread.scheduleTask(() -> {
             Environment returnEnv = environment.getReturnEnvironment();
             if (returnEnv != null) {
-                returnEnv.setReturnValue(null);
+                environment.setReturnValue(null);
+                //returnEnv.setReturnValue(null);
                 returnEnv.rerun();
             }
             

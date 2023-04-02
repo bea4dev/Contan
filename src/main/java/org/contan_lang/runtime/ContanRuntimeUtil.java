@@ -2,7 +2,6 @@ package org.contan_lang.runtime;
 
 import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.Environment;
-import org.contan_lang.environment.expection.ContanReferenceException;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.environment.expection.ContanRuntimeException;
 import org.contan_lang.syntax.tokens.Token;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ContanRuntimeUtil {
 
-    public static ContanObject<?> removeReference(Token operationToken, ContanObject<?> contanObject) {
+    public static ContanObject<?> dereference(Token operationToken, ContanObject<?> contanObject) {
 
         if (contanObject instanceof ContanObjectReference) {
             try {
@@ -27,7 +26,7 @@ public class ContanRuntimeUtil {
         return contanObject;
     }
 
-    public static ContanObject<?>[] removeReference(Token operationToken, ContanObject<?>... contanObjects) {
+    public static ContanObject<?>[] dereference(Token operationToken, ContanObject<?>... contanObjects) {
 
         for (int i = 0; i < contanObjects.length; i++) {
             ContanObject<?> contanObject = contanObjects[i];

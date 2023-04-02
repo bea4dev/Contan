@@ -48,7 +48,7 @@ public class SetValueOperator extends Operator {
         }
 
         try {
-            ContanObject<?> rightResult = ContanRuntimeUtil.removeReference(token, contanObject1);
+            ContanObject<?> rightResult = ContanRuntimeUtil.dereference(token, contanObject1);
             ContanObject<?> resultClone = rightResult.createClone();
 
             ContanObjectReference reference = (ContanObjectReference) contanObject0;

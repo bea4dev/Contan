@@ -9,7 +9,6 @@ import org.contan_lang.runtime.ContanRuntimeUtil;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.thread.ContanThread;
 import org.contan_lang.variables.ContanObject;
-import org.contan_lang.variables.primitive.ContanClassInstance;
 
 public class SyncTaskOperator extends TaskOperator {
 
@@ -26,7 +25,7 @@ public class SyncTaskOperator extends TaskOperator {
         if (coroutineStatus == null) {
             ContanThread contanThread;
             ContanObject<?> thread = operators[0].eval(environment);
-            thread = ContanRuntimeUtil.removeReference(token, thread);
+            thread = ContanRuntimeUtil.dereference(token, thread);
             
             if (thread.getBasedJavaObject() instanceof ContanThread) {
                 contanThread = (ContanThread) thread.getBasedJavaObject();

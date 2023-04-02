@@ -41,8 +41,8 @@ public class RemainderOperator extends Operator {
             return ContanYieldObject.INSTANCE;
         }
 
-        contanObject0 = ContanRuntimeUtil.removeReference(token, contanObject0);
-        contanObject1 = ContanRuntimeUtil.removeReference(token, contanObject1);
+        contanObject0 = ContanRuntimeUtil.dereference(token, contanObject0);
+        contanObject1 = ContanRuntimeUtil.dereference(token, contanObject1);
 
         if (contanObject0.convertibleToLong()) {
             long left = contanObject0.toLong();

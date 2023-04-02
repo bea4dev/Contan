@@ -25,7 +25,7 @@ public class NotOperator extends Operator {
             return ContanYieldObject.INSTANCE;
         }
 
-        rightResult = ContanRuntimeUtil.removeReference(token, rightResult);
+        rightResult = ContanRuntimeUtil.dereference(token, rightResult);
         Object based = rightResult.getBasedJavaObject();
 
         if (!(based instanceof Boolean)) {

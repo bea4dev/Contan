@@ -10,7 +10,6 @@ import org.contan_lang.syntax.Identifier;
 import org.contan_lang.syntax.tokens.Token;
 import org.contan_lang.variables.ContanObject;
 import org.contan_lang.variables.primitive.ContanBoolean;
-import org.contan_lang.variables.primitive.ContanVoidObject;
 import org.contan_lang.variables.primitive.ContanYieldObject;
 
 public class BooleanOperator extends BooleanBaseOperator {
@@ -44,8 +43,8 @@ public class BooleanOperator extends BooleanBaseOperator {
             return ContanYieldObject.INSTANCE;
         }
     
-        contanObject0 = ContanRuntimeUtil.removeReference(token, contanObject0);
-        contanObject1 = ContanRuntimeUtil.removeReference(token, contanObject1);
+        contanObject0 = ContanRuntimeUtil.dereference(token, contanObject0);
+        contanObject1 = ContanRuntimeUtil.dereference(token, contanObject1);
     
         Object first = contanObject0.getBasedJavaObject();
         Object second = contanObject1.getBasedJavaObject();

@@ -51,7 +51,7 @@ public class CreateClassInstanceOperator implements Evaluator {
         
         for (int i = startIndex; i < args.length; i++) {
             ContanObject<?> result = args[i].eval(environment).createClone();
-            result = ContanRuntimeUtil.removeReference(nameToken, result);
+            result = ContanRuntimeUtil.dereference(nameToken, result);
             
             if (environment.hasYieldReturnValue() || result == ContanYieldObject.INSTANCE) {
                 ContanObject<?>[] results = new ContanObject<?>[i + 1];
@@ -66,7 +66,7 @@ public class CreateClassInstanceOperator implements Evaluator {
 
 
         ContanObject<?> leftResult = left.eval(environment);
-        leftResult = ContanRuntimeUtil.removeReference(nameToken, leftResult);
+        leftResult = ContanRuntimeUtil.dereference(nameToken, leftResult);
         
         if (environment.hasYieldReturnValue()) {
             environment.setCoroutineStatus(this, args.length, variables);

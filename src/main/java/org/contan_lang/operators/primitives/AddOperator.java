@@ -1,10 +1,8 @@
 package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
-import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.CoroutineStatus;
 import org.contan_lang.environment.Environment;
-import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.Evaluator;
 import org.contan_lang.operators.Operator;
 import org.contan_lang.runtime.ContanRuntimeUtil;
@@ -43,8 +41,8 @@ public class AddOperator extends Operator {
             return ContanYieldObject.INSTANCE;
         }
         
-        contanObject0 = ContanRuntimeUtil.removeReference(token, contanObject0);
-        contanObject1 = ContanRuntimeUtil.removeReference(token, contanObject1);
+        contanObject0 = ContanRuntimeUtil.dereference(token, contanObject0);
+        contanObject1 = ContanRuntimeUtil.dereference(token, contanObject1);
         
         Object first = contanObject0.getBasedJavaObject();
         Object second = contanObject1.getBasedJavaObject();

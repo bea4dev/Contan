@@ -40,8 +40,8 @@ public class InstanceOfOperator extends Operator {
             return ContanYieldObject.INSTANCE;
         }
 
-        contanObject0 = ContanRuntimeUtil.removeReference(token, contanObject0);
-        contanObject1 = ContanRuntimeUtil.removeReference(token, contanObject1);
+        contanObject0 = ContanRuntimeUtil.dereference(token, contanObject0);
+        contanObject1 = ContanRuntimeUtil.dereference(token, contanObject1);
 
         if (!(contanObject1.getBasedJavaObject() instanceof ClassBlock) && !(contanObject1 instanceof JavaClassObject)) {
             ContanRuntimeError.E0036.throwError("", null, token);

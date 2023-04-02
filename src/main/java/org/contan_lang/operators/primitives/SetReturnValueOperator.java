@@ -19,7 +19,7 @@ public class SetReturnValueOperator extends Operator {
     @Override
     public ContanObject<?> eval(Environment environment) {
         ContanObject<?> variable = operators[0].eval(environment);
-        variable = ContanRuntimeUtil.removeReference(token, variable);
+        variable = ContanRuntimeUtil.dereference(token, variable);
     
         if (environment.hasYieldReturnValue() || variable == ContanYieldObject.INSTANCE) {
             return ContanYieldObject.INSTANCE;

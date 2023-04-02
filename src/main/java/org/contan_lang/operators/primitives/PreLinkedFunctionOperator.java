@@ -96,7 +96,7 @@ public class PreLinkedFunctionOperator extends Operator {
     
         for (int i = startIndex; i < args.length; i++) {
             ContanObject<?> result = args[i].eval(environment).createClone();
-            result = ContanRuntimeUtil.removeReference(token, result);
+            result = ContanRuntimeUtil.dereference(token, result);
         
             if (environment.hasYieldReturnValue() || result == ContanYieldObject.INSTANCE) {
                 ContanObject<?>[] results = new ContanObject<?>[i + 1];
@@ -111,7 +111,7 @@ public class PreLinkedFunctionOperator extends Operator {
         
         if (functionBlock != null) {
             ContanObject<?> returned = functionBlock.eval(moduleEnvironment, functionName, contanThread, variables);
-            returned = ContanRuntimeUtil.removeReference(token, returned);
+            returned = ContanRuntimeUtil.dereference(token, returned);
 
             //Cache returned Completable
             if (returned.getBasedJavaObject() == StandardClasses.FUTURE) {
@@ -125,7 +125,7 @@ public class PreLinkedFunctionOperator extends Operator {
             //For class method
             ContanObjectReference reference = environment.getVariable("this");
             if (reference != null) {
-                ContanObject<?> classInstance = ContanRuntimeUtil.removeReference(functionName, reference);
+                ContanObject<?> classInstance = ContanRuntimeUtil.dereference(functionName, reference);
         
                 if (!(classInstance instanceof ContanClassInstance)) {
                     ContanRuntimeError.E0000.throwError("\n'this' is not class instance.", null, functionName);
@@ -148,14 +148,14 @@ public class PreLinkedFunctionOperator extends Operator {
                 return null;
             }
             
-            ContanObject<?> result = ContanRuntimeUtil.removeReference(functionName, resultReference);
+            ContanObject<?> result = ContanRuntimeUtil.dereference(functionName, resultReference);
             
             if (result instanceof ContanFunctionExpression) {
                 ContanObject<?> returned = ((ContanFunctionExpression) result).eval(contanThread, functionName, variables);
 
                 //Cache returned Completable
                 if (returned.getBasedJavaObject() == StandardClasses.FUTURE) {
-                    environment.setCoroutineStatus(this, args.length, ContanRuntimeUtil.removeReference(functionName, returned));
+                    environment.setCoroutineStatus(this, args.length, ContanRuntimeUtil.dereference(functionName, returned));
                 }
 
                 return returned;
@@ -168,7 +168,7 @@ public class PreLinkedFunctionOperator extends Operator {
         ContanObject<?> leftResult = left.eval(environment);
         
         //For 'Completable.await()'
-        leftResult = ContanRuntimeUtil.removeReference(functionName, leftResult);
+        leftResult = ContanRuntimeUtil.dereference(functionName, leftResult);
         if (leftResult.getBasedJavaObject() == StandardClasses.FUTURE) {
             if (functionName.getText().equals("await")) {
                 ContanObject<?> contanObject = ((ContanClassInstance) leftResult).getEnvironment().getVariable("javaFuture");

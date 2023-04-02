@@ -18,7 +18,7 @@ public class CreateConstVariableOperator extends Operator {
     @Override
     public ContanObject<?> eval(Environment environment) {
         ContanObject<?> rightResult = operators[0].eval(environment);
-        rightResult = ContanRuntimeUtil.removeReference(token, rightResult);
+        rightResult = ContanRuntimeUtil.dereference(token, rightResult);
 
         if (environment.hasYieldReturnValue() || rightResult == ContanYieldObject.INSTANCE) {
             return ContanYieldObject.INSTANCE;

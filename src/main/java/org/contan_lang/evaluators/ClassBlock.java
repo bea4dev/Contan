@@ -74,7 +74,7 @@ public class ClassBlock {
         }
         
         ContanObject<?> extendsResult = superClassEval.eval(environment);
-        extendsResult = ContanRuntimeUtil.removeReference(className, extendsResult);
+        extendsResult = ContanRuntimeUtil.dereference(className, extendsResult);
         
         if (!(extendsResult.getBasedJavaObject() instanceof ClassBlock)) {
             ContanRuntimeError.E0035.throwError("", null, className);

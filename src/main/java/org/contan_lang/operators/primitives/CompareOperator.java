@@ -45,8 +45,8 @@ public class CompareOperator extends BooleanBaseOperator {
             return ContanYieldObject.INSTANCE;
         }
 
-        contanObject0 = ContanRuntimeUtil.removeReference(token, contanObject0);
-        contanObject1 = ContanRuntimeUtil.removeReference(token, contanObject1);
+        contanObject0 = ContanRuntimeUtil.dereference(token, contanObject0);
+        contanObject1 = ContanRuntimeUtil.dereference(token, contanObject1);
 
         Object first = contanObject0.getBasedJavaObject();
         Object second = contanObject1.getBasedJavaObject();

@@ -2,7 +2,6 @@ package org.contan_lang.operators.primitives;
 
 import org.contan_lang.ContanEngine;
 import org.contan_lang.environment.ContanJavaBaseObjectReference;
-import org.contan_lang.environment.ContanObjectReference;
 import org.contan_lang.environment.Environment;
 import org.contan_lang.environment.expection.ContanRuntimeError;
 import org.contan_lang.evaluators.Evaluator;
@@ -28,7 +27,7 @@ public class GetFieldOperator extends Operator {
     public ContanObject<?> eval(Environment environment) {
 
         ContanObject<?> leftResult = left.eval(environment);
-        leftResult = ContanRuntimeUtil.removeReference(token, leftResult);
+        leftResult = ContanRuntimeUtil.dereference(token, leftResult);
         
         if (environment.hasYieldReturnValue() || leftResult == ContanYieldObject.INSTANCE) {
             return ContanYieldObject.INSTANCE;

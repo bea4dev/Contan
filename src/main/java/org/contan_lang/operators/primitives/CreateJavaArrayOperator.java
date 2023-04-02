@@ -41,7 +41,7 @@ public class CreateJavaArrayOperator extends Operator {
     
             for (int i = startIndex; i < arguments.length; i++) {
                 ContanObject<?> result = arguments[i].eval(environment).createClone();
-                result = ContanRuntimeUtil.removeReference(token, result);
+                result = ContanRuntimeUtil.dereference(token, result);
         
                 if (environment.hasYieldReturnValue() || result == ContanYieldObject.INSTANCE) {
                     ContanObject<?>[] results = new ContanObject<?>[i + 1];
@@ -90,7 +90,7 @@ public class CreateJavaArrayOperator extends Operator {
             } else {
                 indexResult = coroutineStatus.results[0];
             }
-            indexResult = ContanRuntimeUtil.removeReference(token, indexResult);
+            indexResult = ContanRuntimeUtil.dereference(token, indexResult);
             
             if (environment.hasYieldReturnValue()) {
                 return ContanYieldObject.INSTANCE;
@@ -115,7 +115,7 @@ public class CreateJavaArrayOperator extends Operator {
     
             
             ContanObject<?> typeResult = typeEval.eval(environment);
-            typeResult = ContanRuntimeUtil.removeReference(token, typeResult);
+            typeResult = ContanRuntimeUtil.dereference(token, typeResult);
     
             if (environment.hasYieldReturnValue()) {
                 environment.setCoroutineStatus(this, 0, indexResult);

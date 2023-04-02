@@ -51,8 +51,8 @@ public class ExchangeOperator extends Operator {
             return null;
         }
 
-        ContanObject<?> value0 = ContanRuntimeUtil.removeReference(token, contanObject0);
-        ContanObject<?> value1 = ContanRuntimeUtil.removeReference(token, contanObject1);
+        ContanObject<?> value0 = ContanRuntimeUtil.dereference(token, contanObject0);
+        ContanObject<?> value1 = ContanRuntimeUtil.dereference(token, contanObject1);
 
         try {
             ((ContanObjectReference) contanObject0).setContanObject(value1);
